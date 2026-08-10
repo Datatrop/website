@@ -1,0 +1,14 @@
+Options -MultiViews
+RewriteEngine On
+RewriteBase /
+
+# Microsoft OAuth callback -> PHP handler.
+# Must come BEFORE the SPA catch-all, otherwise /auth/microsoft/callback would
+# be served index.html and the sign-in would never complete.
+# QSA keeps Microsoft's ?code=…&state=… query string intact.
+RewriteRule ^auth/microsoft/callback/?$ api/ms_callback.php [L,QSA]
+
+# Single-page app: send everything that isn't a real file/folder to index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]

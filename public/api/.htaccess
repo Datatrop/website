@@ -1,0 +1,7 @@
+# API folder: never apply the SPA rewrite here — serve the PHP files directly.
+RewriteEngine Off
+
+# Block direct browser access to internal includes (they hold config/logic).
+<FilesMatch "^(config|lib)\.php$">
+    Require all denied
+</FilesMatch>
