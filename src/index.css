@@ -7,8 +7,8 @@
 /* Brand theme colours — overridden at runtime from Site Settings (admin).
    Stored as space-separated RGB channels so they work with rgb(var(--x) / a). */
 :root {
-  --brand: 59 130 246;   /* #3B82F6 electric blue */
-  --accent: 16 185 129;  /* #10B981 emerald       */
+  --brand: 0 48 87;     /* #003057 deep navy  */
+  --accent: 200 16 46;  /* #C8102E signal red */
 }
 
 html {
@@ -17,8 +17,8 @@ html {
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background: #000;
-  color: #fff;
+  background: #F5F7FA;
+  color: #0A2447;
   margin: 0;
   -webkit-font-smoothing: antialiased;
 }
@@ -95,16 +95,6 @@ body {
   pointer-events: none;
 }
 
-/* ── Redesign: electric-blue data grid + flowing beams ───────── */
-.data-grid {
-  background-image:
-    linear-gradient(rgb(var(--brand)) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(var(--brand)) 1px, transparent 1px);
-  background-size: 72px 72px;
-  opacity: 0.045;
-  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 40% 40%, #000 0%, transparent 80%);
-  mask-image: radial-gradient(ellipse 80% 70% at 40% 40%, #000 0%, transparent 80%);
-}
 
 .beam {
   position: absolute;
@@ -120,26 +110,6 @@ body {
   8%   { opacity: 1; }
   92%  { opacity: 1; }
   100% { top: 105%; opacity: 0; }
-}
-
-/* ── Cursor highlighter (screen-blend light behind text) ────── */
-.cursor-glow {
-  position: fixed;
-  inset: 0;
-  z-index: 30;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  mix-blend-mode: screen;
-  background: radial-gradient(
-    circle 340px at var(--gx, 50%) var(--gy, 50%),
-    rgb(var(--brand) / 0.16) 0%,
-    rgb(var(--accent) / 0.05) 42%,
-    transparent 70%
-  );
-}
-@media (hover: none), (prefers-reduced-motion: reduce) {
-  .cursor-glow { display: none; }
 }
 
 /* ── Entrance animations ─────────────────────── */
