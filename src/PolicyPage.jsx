@@ -57,9 +57,9 @@ function renderBody(text) {
     const line = raw.trim()
     if (!line) return null
     if (line.startsWith('## ')) {
-      return <h2 key={i} className="text-white text-xl font-normal mt-10 mb-3">{line.slice(3)}</h2>
+      return <h2 key={i} className="font-display text-white text-xl font-medium mt-10 mb-3">{line.slice(3)}</h2>
     }
-    return <p key={i} className="text-slate-400 font-light leading-relaxed mb-4">{line}</p>
+    return <p key={i} className="text-white/60 font-light leading-relaxed mb-4">{line}</p>
   })
 }
 
@@ -84,21 +84,21 @@ export default function PolicyPage({ which }) {
   const body = (dbText && dbText.trim()) ? dbText : POLICY_DEFAULTS[which] || POLICY_DEFAULTS.privacy
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#F8FAFC]">
+    <div className="min-h-screen bg-[#070305] text-white">
       {/* Simple top bar */}
-      <header className="border-b border-white/[0.06]">
+      <header className="border-b border-white/[0.07] bg-brand-gradient">
         <div className="max-w-3xl mx-auto px-5 sm:px-8 h-20 flex items-center justify-between">
-          <a href="/" className="text-white font-medium tracking-tight">{company}</a>
+          <a href="/" className="font-display text-white font-medium tracking-tight">{company}</a>
           <a href="/" className="text-sm text-slate-400 hover:text-white font-light transition-colors">← Back to site</a>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-5 sm:px-8 py-16">
-        <span className="inline-flex items-center gap-2 text-[rgb(var(--brand))] text-[11px] font-medium uppercase tracking-[0.25em] mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--accent))]" />
+        <span className="inline-flex items-center gap-2 font-mono text-white/55 text-[11px] uppercase tracking-[0.22em] mb-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-rose" />
           Legal
         </span>
-        <h1 className="text-3xl sm:text-4xl font-light tracking-tight mb-10">{title}</h1>
+        <h1 className="font-display text-3xl sm:text-5xl font-medium tracking-[-0.03em] mb-10">{title}</h1>
         <div>{renderBody(body)}</div>
       </main>
 

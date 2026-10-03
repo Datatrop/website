@@ -1,26 +1,61 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Brand theme colours — overridden at runtime from Site Settings (admin).
-   Stored as space-separated RGB channels so they work with rgb(var(--x) / a). */
+   Stored as space-separated RGB channels so they work with rgb(var(--x) / a).
+   Palette: Grape #6B1E72 · Deep Grape #54133F · Maroon #3A0B20 ·
+            Dark Maroon #1B050D · Black #070305, with a rose glow accent. */
 :root {
-  --brand: 0 48 87;     /* #003057 deep navy  */
-  --accent: 200 16 46;  /* #C8102E signal red */
+  --brand: 107 30 114;    /* #6B1E72 grape       */
+  --accent: 224 69 123;   /* #E0457B rose glow   */
+
+  --grape-bright: 138 42 145; /* #8A2A91 */
+  --deep-grape: 84 19 63;     /* #54133F */
+  --maroon: 58 11 32;         /* #3A0B20 */
+  --dark-maroon: 27 5 13;     /* #1B050D */
+  --ink: 7 3 5;               /* #070305 */
+
+  /* Ambient glow colours used by .glow-section and the admin panel */
+  --glow-brand: 138 42 145;
+  --glow-accent: 224 69 123;
+  --glow-strength: 1.6;
+
+  /* The signature brand background */
+  --brand-gradient:
+    radial-gradient(circle at 15% 15%, #8A2A91 0%, transparent 30%),
+    linear-gradient(120deg, #3A0B20 0%, #1B050D 50%, #050204 100%);
+}
+
+.dark {
+  --glow-brand: 138 42 145;
+  --glow-accent: 224 69 123;
+  --glow-strength: 1.6;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
+/* Neutralize the browser's default :visited link color so links never turn
+   an unintended colour once clicked. */
+a:visited {
+  color: inherit;
+}
+
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background: #F5F7FA;
-  color: #0A2447;
+  background: #FAF6F9;
+  color: #1B050D;
   margin: 0;
   -webkit-font-smoothing: antialiased;
+}
+
+.dark body {
+  background: #070305;
+  color: #fff;
 }
 
 #root {
@@ -28,99 +63,235 @@ body {
   max-width: 100%;
 }
 
-/* ── Hero grid ─────────────────────────────── */
-.hero-grid {
-  background-image:
-    linear-gradient(rgba(59, 130, 246, 1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 130, 246, 1) 1px, transparent 1px);
-  background-size: 64px 64px;
-  animation: grid-breathe 5s ease-in-out infinite;
+::selection {
+  background: rgb(var(--accent) / 0.35);
+  color: #fff;
 }
 
-@keyframes grid-breathe {
-  0%, 100% { opacity: 0.03; }
-  50%       { opacity: 0.055; }
+/* ═══════════════════════════════════════════════════════════════════════
+   PUBLIC SITE — dark grape / maroon system
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.site {
+  background: #070305;
+  color: #fff;
 }
 
-/* ── Scroll-reveal ──────────────────────────── */
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+.bg-brand-gradient { background: var(--brand-gradient); }
 
-@keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-.anim-slide-up {
-  animation: slide-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.anim-fade-in {
-  animation: fade-in 0.8s ease both;
-}
-
-/* ── Card hover ─────────────────────────────── */
-.card-lift {
-  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
-}
-
-.card-lift:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 28px rgba(59, 130, 246, 0.07);
-  border-color: rgba(59, 130, 246, 0.18) !important;
-}
-
-/* ── Cyan glow button ───────────────────────── */
-.btn-cyan-glow:hover {
-  box-shadow: 0 0 32px rgba(59, 130, 246, 0.28);
-}
-
-/* ── Scan line (hero accent) ─────────────────── */
-@keyframes scan {
-  0%   { top: -2px; opacity: 0; }
-  5%   { opacity: 1; }
-  95%  { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
-}
-
-.scan-line {
+/* Soft ambient light behind a section. `alt` mirrors it to the other side so
+   the light seems to shift as you scroll. */
+.glow-section { position: relative; isolation: isolate; }
+.glow-section::before {
+  content: '';
   position: absolute;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent);
-  animation: scan 8s linear infinite;
+  inset: 0;
+  z-index: -1;
   pointer-events: none;
+  /* Light sources sit well inside the section and fade out before its edges,
+     so neighbouring sections never show a seam. */
+  background:
+    radial-gradient(ellipse 42% 32% at 6% 32%,
+      rgb(var(--glow-brand) / calc(0.09 * var(--glow-strength))) 0%, transparent 100%),
+    radial-gradient(ellipse 38% 30% at 96% 66%,
+      rgb(var(--maroon) / calc(0.45 * var(--glow-strength))) 0%, transparent 100%);
+}
+.glow-section.alt::before {
+  background:
+    radial-gradient(ellipse 42% 32% at 94% 32%,
+      rgb(var(--glow-brand) / calc(0.09 * var(--glow-strength))) 0%, transparent 100%),
+    radial-gradient(ellipse 38% 30% at 4% 66%,
+      rgb(var(--maroon) / calc(0.45 * var(--glow-strength))) 0%, transparent 100%);
 }
 
-
-.beam {
-  position: absolute;
-  left: 0;
-  right: 0;
+/* Hairline divider that fades at both ends */
+.hairline {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgb(var(--brand) / 0.55), rgb(var(--accent) / 0.4), transparent);
-  animation: beam-move 9s linear infinite;
-  pointer-events: none;
-}
-@keyframes beam-move {
-  0%   { top: -5%;  opacity: 0; }
-  8%   { opacity: 1; }
-  92%  { opacity: 1; }
-  100% { top: 105%; opacity: 0; }
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.10) 20%, rgb(255 255 255 / 0.10) 80%, transparent);
 }
 
-/* ── Entrance animations ─────────────────────── */
+@layer components {
+/* ── Buttons (match the brand-board "Primary / Secondary Button") ──── */
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  line-height: 1;
+  white-space: nowrap;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+.btn-primary {
+  color: #fff !important;
+  background: linear-gradient(90deg, #8A2A91 0%, #6B1E72 35%, #3A0B20 100%);
+  border: 1px solid rgb(var(--accent) / 0.45);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 10px 30px -12px rgb(138 42 145 / 0.7);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  border-color: rgb(var(--accent) / 0.8);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 18px 44px -12px rgb(224 69 123 / 0.55);
+}
+.btn-secondary {
+  color: #fff !important;
+  background: rgb(27 5 13 / 0.35);
+  border: 1px solid rgb(var(--accent) / 0.35);
+}
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  background: rgb(58 11 32 / 0.55);
+  border-color: rgb(var(--accent) / 0.7);
+}
+.btn-primary svg,
+.btn-secondary svg { transition: transform 0.25s ease; }
+.btn-primary:hover svg,
+.btn-secondary:hover svg { transform: translateX(3px); }
+
+/* ── Card surface (brand-board "UI element" card) ───────────────────── */
+.card {
+  position: relative;
+  border-radius: 1.25rem;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.045) 0%, rgb(255 255 255 / 0.012) 100%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 24px 48px -32px rgb(0 0 0 / 0.9);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease, background 0.35s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  border-color: rgb(var(--accent) / 0.35);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.06) 0%, rgb(var(--maroon) / 0.25) 100%);
+}
+
+/* Square icon tile with a maroon fill, as on the brand board */
+.icon-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.85rem;
+  color: #fff;
+  background: linear-gradient(145deg, rgb(var(--accent) / 0.35), rgb(var(--maroon) / 0.9));
+  border: 1px solid rgb(var(--accent) / 0.3);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
+}
+
+/* Gradient text for emphasis inside headlines */
+.text-glow {
+  background: linear-gradient(90deg, #F08DB0 0%, #E0457B 45%, #B048BA 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+}
+
+/* ── Glowing arcs (brand-board hero variations) ─────────────────────── */
+.arc-draw path {
+  stroke-dasharray: 2600;
+  stroke-dashoffset: 2600;
+  animation: arc-draw 2.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes arc-draw { to { stroke-dashoffset: 0; } }
+
+.arc-float { animation: arc-float 14s ease-in-out infinite; }
+@keyframes arc-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(-14px, 10px, 0); }
+}
+
+/* ── Marquee (technology strip) ──────────────────────────────────────── */
+.marquee {
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 38s linear infinite;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── FIG illustrations ──────────────────────────────────────────────── */
+.fig-pulse { animation: fig-pulse 3.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes fig-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.18); }
+}
+.fig-dash { stroke-dasharray: 4 6; animation: fig-dash 2.4s linear infinite; }
+@keyframes fig-dash { to { stroke-dashoffset: -40; } }
+.fig-spin { animation: fig-spin 22s linear infinite; transform-box: view-box; transform-origin: 50% 50%; }
+@keyframes fig-spin { to { transform: rotate(360deg); } }
+.fig-rise { animation: fig-rise 4s ease-in-out infinite; }
+@keyframes fig-rise {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+/* Live dot */
+.live-dot { animation: live 1.8s ease-in-out infinite; }
+@keyframes live {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(var(--accent) / 0.6); }
+  50%      { box-shadow: 0 0 0 6px rgb(var(--accent) / 0); }
+}
+
+/* Typing indicator */
+.typing span { animation: typing 1.2s ease-in-out infinite; }
+.typing span:nth-child(2) { animation-delay: 0.15s; }
+.typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes typing {
+  0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+  30%           { opacity: 1;    transform: translateY(-2px); }
+}
+
+/* ── Entrance animations ─────────────────────────────────────────────── */
 @keyframes rise {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.anim-rise { animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.anim-rise { animation: rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .anim-fade { animation: fade-in 0.9s ease both; }
 
+/* ── Admin panel surfaces (shared with the public palette) ───────────── */
+.surface {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s ease,
+              border-color 0.35s ease,
+              background 0.35s ease;
+}
+.surface:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 48px -20px rgb(58 11 32 / 0.28);
+  border-color: rgb(var(--brand) / 0.28);
+}
+.dark .surface {
+  background: linear-gradient(180deg,
+    rgb(255 255 255 / 0.05) 0%,
+    rgb(255 255 255 / 0.018) 100%) !important;
+  border-color: rgb(255 255 255 / 0.09);
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.05),
+    0 18px 40px -24px rgb(0 0 0 / 0.9);
+  backdrop-filter: blur(6px);
+}
+.dark .surface:hover {
+  border-color: rgb(var(--glow-accent) / 0.30);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .beam { animation: none; display: none; }
-  .anim-rise, .anim-fade { animation: none; }
+  html { scroll-behavior: auto; }
+  .anim-rise, .anim-fade, .arc-float, .marquee-track,
+  .fig-pulse, .fig-dash, .fig-spin, .fig-rise, .live-dot, .typing span { animation: none !important; }
+  .arc-draw path { animation: none; stroke-dashoffset: 0; }
+  .surface, .card, .btn-primary, .btn-secondary { transition: none; }
+  .surface:hover, .card-hover:hover, .btn-primary:hover, .btn-secondary:hover { transform: none; }
 }

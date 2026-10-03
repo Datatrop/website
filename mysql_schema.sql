@@ -217,16 +217,16 @@ INSERT INTO site_content
    contact_email, contact_phone, linkedin_url, location, brand_color, accent_color)
 SELECT
   'Datatrop AI Systems',
-  'Engineering Intelligence. Solving Complexity.',
-  'Engineering Intelligence for Complex Businesses.',
-  'When conventional software reaches its limits, we design AI-powered business systems that transform operational complexity into clarity, control, and autonomous execution.',
-  'Datatrop AI Systems is a technology engineering company focused on solving the complex operational, analytical, and data-driven challenges that conventional software cannot adequately address.',
+  'Engineering certainty in a complex world.',
+  'Engineering certainty in a complex world.',
+  'Datatrop is an intelligent systems engineering company. We design, build, and operate the systems that restore order wherever complexity prevents progress, whether the solution is known, unknown, or yet to be invented.',
+  'Datatrop AI Systems is an intelligent systems engineering company that designs, builds, and operates solutions for complex business and societal challenges. AI, automation, and software are not our identity; they are the delivery mechanisms we choose once we understand the problem.',
   'sales@datatrop.in',
   '+91 79029 17795',
   'https://www.linkedin.com/company/datatrop-ai',
   'Kerala, India',
-  '#3B82F6',
-  '#10B981'
+  '#6B1E72',
+  '#E0457B'
 FROM DUAL
 WHERE NOT EXISTS (SELECT 1 FROM site_content);
 
@@ -236,7 +236,7 @@ SELECT title, symptoms, solution, reference_case, sort_order FROM (
   SELECT 'Fragmented Operations' AS title,
          'Excel everywhere, data duplication, manual handoffs, no visibility.' AS symptoms,
          'Disconnected systems become one intelligent operating platform.' AS solution,
-         'Sufi Group Unified Operations System — covering sales, procurement, inventory, dispatch, finance, accounting and HR in one platform.' AS reference_case,
+         'Sufi Group Unified Operations System, covering sales, procurement, inventory, dispatch, finance, accounting and HR in one platform.' AS reference_case,
          0 AS sort_order
   UNION ALL SELECT 'Revenue Leakage',
          'Missed leads, poor follow-up, lost opportunities, low conversion.',
@@ -274,3 +274,11 @@ WHERE NOT EXISTS (SELECT 1 FROM service_lines);
 --   password_hash) since the plaintext was shared in chat.
 INSERT IGNORE INTO admin_users (email, password_hash) VALUES
 ('support@datatrop.in', '$2b$10$m/RR7wVZ/AP4dUmLez/Mqu2ZWPn9DfLusbSvna94fgJ8MKpyslSjC');
+
+-- Brand refresh (grape / maroon palette). Moves the stored theme colours off
+-- either earlier default pair (blue/green or navy/gold); leaves any custom
+-- colours chosen in admin alone.
+UPDATE site_content
+SET brand_color = '#6B1E72', accent_color = '#E0457B'
+WHERE (brand_color IS NULL OR brand_color = '' OR UPPER(brand_color) IN ('#003057', '#3B82F6'))
+  AND (accent_color IS NULL OR accent_color = '' OR UPPER(accent_color) IN ('#B08D4A', '#10B981'));

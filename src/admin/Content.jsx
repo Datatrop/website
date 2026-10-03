@@ -13,8 +13,8 @@ const DEFAULTS = {
   contact_phone: '+91 79029 17795',
   linkedin_url: 'https://www.linkedin.com/company/datatrop-ai',
   location: 'Kerala, India',
-  brand_color: '#3B82F6',
-  accent_color: '#10B981',
+  brand_color: '#6B1E72',
+  accent_color: '#E0457B',
   google_reviews_url: '',
 }
 
@@ -58,16 +58,16 @@ export default function Content() {
     }
   }
 
-  const inp = 'w-full px-4 py-3 rounded-xl bg-[#0c0c0c] border border-[#222] text-white placeholder-gray-600 text-sm focus:outline-none focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/[0.12] transition-colors'
-  const lbl = 'block text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-1.5'
-  const card = 'p-6 rounded-2xl border border-[#1a1a1a] bg-[#090909] flex flex-col gap-5'
+  const inp = 'w-full px-4 py-3 rounded-xl bg-[#FAF5F8] dark:bg-[#10060B] border border-black/10 dark:border-[#33142A] text-[#1B050D] dark:text-white placeholder-slate-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-[rgb(var(--brand)_/_0.5)] focus:ring-1 focus:ring-[rgb(var(--brand)_/_0.12)] transition-colors'
+  const lbl = 'block text-[10px] font-semibold text-slate-500 dark:text-gray-500 uppercase tracking-widest mb-1.5'
+  const card = 'p-6 rounded-2xl border border-black/[0.07] dark:border-[#2A0F1D] bg-white dark:bg-[#0D0509] flex flex-col gap-5'
 
   if (loading) {
     return (
       <div className="max-w-2xl">
-        <div className="h-7 w-48 bg-[#111] rounded-lg animate-pulse mb-2" />
-        <div className="h-4 w-72 bg-[#0c0c0c] rounded-lg animate-pulse mb-8" />
-        <div className="h-64 rounded-2xl bg-[#090909] border border-[#1a1a1a] animate-pulse" />
+        <div className="h-7 w-48 bg-black/[0.06] dark:bg-[#150811] rounded-lg animate-pulse mb-2" />
+        <div className="h-4 w-72 bg-black/[0.04] dark:bg-[#10060B] rounded-lg animate-pulse mb-8" />
+        <div className="h-64 rounded-2xl bg-white dark:bg-[#0D0509] border border-black/[0.07] dark:border-[#2A0F1D] animate-pulse" />
       </div>
     )
   }
@@ -76,9 +76,9 @@ export default function Content() {
     <div>
       <label className={lbl}>{label}</label>
       <div className="flex items-center gap-3">
-        <input type="color" value={form[k]} onChange={set(k)} className="h-11 w-14 rounded-lg bg-[#0c0c0c] border border-[#222] cursor-pointer p-1" />
+        <input type="color" value={form[k]} onChange={set(k)} className="h-11 w-14 rounded-lg bg-[#FAF5F8] dark:bg-[#10060B] border border-black/10 dark:border-[#33142A] cursor-pointer p-1" />
         <input type="text" value={form[k]} onChange={set(k)} className={`${inp} font-mono`} />
-        <span className="w-9 h-9 rounded-lg border border-[#222] flex-shrink-0" style={{ background: form[k] }} />
+        <span className="w-9 h-9 rounded-lg border border-black/10 dark:border-[#33142A] flex-shrink-0" style={{ background: form[k] }} />
       </div>
     </div>
   )
@@ -86,29 +86,29 @@ export default function Content() {
   return (
     <div className="max-w-2xl">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Site Settings</h1>
-        <p className="text-gray-500 text-sm mt-1">Company details, contact info, and theme — changes go live after saving.</p>
+        <h1 className="text-2xl font-display font-semibold text-[#1B050D] dark:text-white">Site Settings</h1>
+        <p className="text-slate-500 dark:text-gray-500 text-sm mt-1">Company details, contact info, and theme — changes go live after saving.</p>
       </div>
 
       <form onSubmit={handleSave} className="flex flex-col gap-5">
         {/* Company & brand */}
         <div className={card}>
-          <p className="text-[11px] font-bold text-blue-400 uppercase tracking-widest">Company</p>
+          <p className="text-[11px] font-bold text-[rgb(var(--brand))] uppercase tracking-widest">Company</p>
           <div>
             <label className={lbl}>Company Name</label>
             <input type="text" value={form.company_name} onChange={set('company_name')} className={inp} />
-            <p className="text-gray-700 text-xs mt-1.5">Used in the footer and copyright</p>
+            <p className="text-slate-500 dark:text-gray-700 text-xs mt-1.5">Used in the footer and copyright</p>
           </div>
           <div>
             <label className={lbl}>Tagline</label>
             <input type="text" value={form.tagline} onChange={set('tagline')} className={inp} />
-            <p className="text-gray-700 text-xs mt-1.5">Short line under the footer logo</p>
+            <p className="text-slate-500 dark:text-gray-700 text-xs mt-1.5">Short line under the footer logo</p>
           </div>
         </div>
 
         {/* Hero */}
         <div className={card}>
-          <p className="text-[11px] font-bold text-blue-400 uppercase tracking-widest">Hero</p>
+          <p className="text-[11px] font-bold text-[rgb(var(--brand))] uppercase tracking-widest">Hero</p>
           <div>
             <label className={lbl}>Headline</label>
             <input type="text" value={form.hero_headline} onChange={set('hero_headline')} className={inp} />
@@ -125,7 +125,7 @@ export default function Content() {
 
         {/* Contact */}
         <div className={card}>
-          <p className="text-[11px] font-bold text-blue-400 uppercase tracking-widest">Contact</p>
+          <p className="text-[11px] font-bold text-[rgb(var(--brand))] uppercase tracking-widest">Contact</p>
           <div className="grid sm:grid-cols-2 gap-5">
             <div>
               <label className={lbl}>Email</label>
@@ -149,29 +149,29 @@ export default function Content() {
           <div>
             <label className={lbl}>Google Reviews URL</label>
             <input type="url" value={form.google_reviews_url} onChange={set('google_reviews_url')} placeholder="https://g.page/r/…/review" className={inp} />
-            <p className="text-gray-700 text-xs mt-1.5">Adds a "Read all reviews on Google" button under the client feedback section</p>
+            <p className="text-slate-500 dark:text-gray-700 text-xs mt-1.5">Adds a "Read all reviews on Google" button under the client feedback section</p>
           </div>
         </div>
 
         {/* Theme */}
         <div className={card}>
-          <p className="text-[11px] font-bold text-blue-400 uppercase tracking-widest">Theme Colors</p>
+          <p className="text-[11px] font-bold text-[rgb(var(--brand))] uppercase tracking-widest">Theme Colors</p>
           <div className="grid sm:grid-cols-2 gap-5">
             <ColorField k="brand_color" label="Primary Color" />
             <ColorField k="accent_color" label="Accent Color" />
           </div>
-          <p className="text-gray-700 text-xs">Applied across buttons, links, highlights and the background on the live site.</p>
+          <p className="text-slate-500 dark:text-gray-700 text-xs">Applied across buttons, links, highlights and the background on the live site.</p>
         </div>
 
-        {error && <div className="text-red-400 text-sm px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20">{error}</div>}
+        {error && <div className="text-red-600 dark:text-red-400 text-sm px-4 py-3 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20">{error}</div>}
         {success && (
-          <div className="flex items-center gap-2.5 text-green-400 text-sm px-4 py-3 rounded-xl bg-green-500/10 border border-green-500/20">
+          <div className="flex items-center gap-2.5 text-green-600 dark:text-green-400 text-sm px-4 py-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20">
             <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
             Saved. The website now shows your changes.
           </div>
         )}
 
-        <button type="submit" disabled={saving} className="px-6 py-3.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-bold text-sm transition-all duration-200 hover:-translate-y-px disabled:opacity-50 btn-cyan-glow">
+        <button type="submit" disabled={saving} className="px-6 py-3.5 rounded-xl bg-[rgb(var(--brand))] text-white font-bold text-sm transition-all duration-200 hover:-translate-y-px hover:shadow-[0_10px_40px_-8px_rgb(var(--brand)_/_0.6)] disabled:opacity-50">
           {saving ? 'Saving…' : 'Save Changes'}
         </button>
       </form>
