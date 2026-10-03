@@ -133,6 +133,80 @@ CREATE TABLE IF NOT EXISTS leads (
   created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ── Deals (internal tracker — one table, two views) ──────────────────────────
+-- Admin-only, never exposed via public.php. A deal moves from the "Deals Under
+-- Discussion" pipeline view into the "Running Deals" execution view purely by
+-- flipping `phase` — same row, same deal_id, no data duplication.
+CREATE TABLE IF NOT EXISTS deals (
+  id                     BIGINT AUTO_INCREMENT PRIMARY KEY,
+  deal_id                VARCHAR(32)  NOT NULL UNIQUE,   -- e.g. DT-2026-001
+  phase                  VARCHAR(16)  NOT NULL DEFAULT 'discussion', -- discussion | running
+
+  -- Shared identity fields
+  deal_name              VARCHAR(255) NOT NULL,
+  company                VARCHAR(255) NULL,
+  contact_person         VARCHAR(255) NULL,
+  email                  VARCHAR(255) NULL,
+  phone                  VARCHAR(64)  NULL,
+  source                 VARCHAR(64)  NULL,
+  sales_owner            VARCHAR(255) NULL,
+
+  -- Pre-sales pipeline fields
+  stage                  VARCHAR(32)  NOT NULL DEFAULT 'Discovery',
+  probability            INT NULL,
+  estimated_value        DECIMAL(14,2) NULL,
+  proposed_value         DECIMAL(14,2) NULL,
+  expected_closing_date  DATE NULL,
+  last_discussion        DATE NULL,
+  next_followup          DATE NULL,
+  proposal_version       VARCHAR(32) NULL,
+  proposal_document_url  VARCHAR(512) NULL,
+  meeting_notes          TEXT NULL,
+  client_requirements    TEXT NULL,
+  risks_notes            TEXT NULL,
+  internal_notes         TEXT NULL,
+
+  -- Execution dashboard fields
+  project_manager        VARCHAR(255) NULL,
+  lead_developer         VARCHAR(255) NULL,
+  supporting_developers  VARCHAR(255) NULL,
+  account_manager        VARCHAR(255) NULL,
+  backend_developer      VARCHAR(255) NULL,
+  frontend_developer     VARCHAR(255) NULL,
+  ai_engineer            VARCHAR(255) NULL,
+  qa_engineer            VARCHAR(255) NULL,
+  ui_designer            VARCHAR(255) NULL,
+  priority               VARCHAR(16)  NOT NULL DEFAULT 'Medium',
+  start_date             DATE NULL,
+  expected_delivery      DATE NULL,
+  actual_completion      DATE NULL,
+  current_status         VARCHAR(32)  NOT NULL DEFAULT 'Planning',
+
+  -- Financials (Running Deals)
+  project_value          DECIMAL(14,2) NULL,
+  cost_estimate          DECIMAL(14,2) NULL,
+  development_cost       DECIMAL(14,2) NULL,
+  third_party_costs      DECIMAL(14,2) NULL,
+  amount_invoiced        DECIMAL(14,2) NULL,
+  amount_received        DECIMAL(14,2) NULL,
+
+  -- Next action
+  next_task               VARCHAR(255) NULL,
+  next_task_assigned      VARCHAR(255) NULL,
+  next_task_due           DATE NULL,
+
+  -- Repeating structures, stored as JSON arrays of objects
+  deliverables    JSON NULL,   -- [{name, status, due_date, completed_date}]
+  milestones      JSON NULL,   -- [{name, planned_date, actual_date, status}]
+  daily_updates   JSON NULL,   -- [{date, developer, update, hours, blockers}]
+  attachments     JSON NULL,   -- [{label, url, category}]
+  risks_issues    JSON NULL,   -- [{issue, priority, owner, status}]
+  communications  JSON NULL,   -- [{date, type, summary}]
+
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ============================================================================
 -- SEED DATA
 -- ============================================================================

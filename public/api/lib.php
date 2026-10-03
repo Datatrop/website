@@ -189,6 +189,25 @@ function resources(): array
             'bool'    => ['handled'],
             'order'   => 'created_at DESC',
         ],
+        // Admin-only internal deal tracker (pipeline + running, one table). NOT public.
+        'deals' => [
+            'table'   => 'deals',
+            'columns' => [
+                'deal_id', 'phase', 'deal_name', 'company', 'contact_person', 'email', 'phone', 'source', 'sales_owner',
+                'stage', 'probability', 'estimated_value', 'proposed_value', 'expected_closing_date', 'last_discussion',
+                'next_followup', 'proposal_version', 'proposal_document_url', 'meeting_notes', 'client_requirements',
+                'risks_notes', 'internal_notes',
+                'project_manager', 'lead_developer', 'supporting_developers', 'account_manager',
+                'backend_developer', 'frontend_developer', 'ai_engineer', 'qa_engineer', 'ui_designer',
+                'priority', 'start_date', 'expected_delivery', 'actual_completion', 'current_status',
+                'project_value', 'cost_estimate', 'development_cost', 'third_party_costs', 'amount_invoiced', 'amount_received',
+                'next_task', 'next_task_assigned', 'next_task_due',
+                'deliverables', 'milestones', 'daily_updates', 'attachments', 'risks_issues', 'communications',
+            ],
+            'json'    => ['deliverables', 'milestones', 'daily_updates', 'attachments', 'risks_issues', 'communications'],
+            'bool'    => [],
+            'order'   => 'updated_at DESC',
+        ],
     ];
 }
 
@@ -266,4 +285,15 @@ function fetch_by_id(PDO $pdo, array $res, int $id): ?array
     $stmt->execute([$id]);
     $row = $stmt->fetch();
     return $row ? shape_row($row, $res) : null;
+}
+
+// Generates the next "DT-2026-001" style deal_id for the current year.
+function next_deal_id(PDO $pdo): string
+{
+    $year = date('Y');
+    $stmt = $pdo->prepare("SELECT deal_id FROM deals WHERE deal_id LIKE ? ORDER BY deal_id DESC LIMIT 1");
+    $stmt->execute(["DT-{$year}-%"]);
+    $last = $stmt->fetchColumn();
+    $seq = $last ? ((int) substr($last, -3)) + 1 : 1;
+    return sprintf('DT-%s-%03d', $year, $seq);
 }
