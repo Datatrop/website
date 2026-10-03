@@ -311,16 +311,6 @@ function Arcs({ className = '', variant = 'hero' }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 const MEGA_MENU = [
   {
-    label: 'What We Do',
-    href: '#capabilities',
-    panel: [
-      { title: 'Enterprise AI Systems', desc: 'Unified operating platforms across every department.', href: '#capabilities' },
-      { title: 'AI Workforce Platforms', desc: 'Multi-agent teams that execute operational work.', href: '#workforce' },
-      { title: 'Revenue Intelligence', desc: 'Lead intelligence and sales automation.', href: '#capabilities' },
-      { title: 'Communication Intelligence', desc: 'Omnichannel, call and conversation intelligence.', href: '#capabilities' },
-    ],
-  },
-  {
     label: 'About',
     href: '#about',
     panel: [
@@ -328,6 +318,16 @@ const MEGA_MENU = [
       { title: 'How We Engage', desc: 'Build, solve and innovate.', href: '#engage' },
       { title: 'The Complexity Scale', desc: 'From automation to new products.', href: '#approach' },
       { title: 'Why Datatrop', desc: 'What sets our systems apart.', href: '#why' },
+    ],
+  },
+  {
+    label: 'What We Do',
+    href: '#capabilities',
+    panel: [
+      { title: 'Enterprise AI Systems', desc: 'Unified operating platforms across every department.', href: '#capabilities' },
+      { title: 'AI Workforce Platforms', desc: 'Multi-agent teams that execute operational work.', href: '#workforce' },
+      { title: 'Revenue Intelligence', desc: 'Lead intelligence and sales automation.', href: '#capabilities' },
+      { title: 'Communication Intelligence', desc: 'Omnichannel, call and conversation intelligence.', href: '#capabilities' },
     ],
   },
   {
