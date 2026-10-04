@@ -18,6 +18,9 @@ Submissions are stored securely and retained only as long as needed to serve you
 ## Third Parties
 We may use trusted service providers (such as hosting and communication tools) to operate this website. They process data only on our behalf.
 
+## Cookies and Analytics
+If you choose "Accept analytics" in the cookie banner, we use Google Analytics to understand how visitors use this website, such as which pages are viewed and which buttons are clicked. Google Analytics sets cookies and collects usage data, including an approximate location and device information; IP addresses are anonymised. We do not use advertising cookies. If you decline, no analytics cookies are set. You can change your choice at any time through "Cookie settings" in the footer of the main website.
+
 ## Your Rights
 You may request access to, correction of, or deletion of the personal information you have shared with us by contacting us.
 

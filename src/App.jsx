@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import { api } from './lib/api'
 import { PAGE_META, pageKeyFromPath, applyPageMeta } from './seo'
-import { initAnalytics, trackPageView, track } from './analytics'
+import { initAnalytics, trackPageView, track, analyticsAvailable, getConsent, setConsent } from './analytics'
 
 // ── Booking: handled natively by <BookingWidget/>, which reads real availability
 //    from the connected Outlook calendar and books the meeting on it.
@@ -1815,12 +1815,68 @@ function Footer({ settings }) {
         </div>
 
         <div className="relative pt-6 border-t border-white/[0.07] flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-white/40 text-xs">© {new Date().getFullYear()} {company}. All rights reserved.</p>
+          <p className="text-white/40 text-xs">
+            © {new Date().getFullYear()} {company}. All rights reserved.
+            {analyticsAvailable && (
+              <>
+                {' · '}
+                <button type="button" onClick={() => window.dispatchEvent(new Event(COOKIE_SETTINGS_EVENT))} className="underline decoration-white/20 underline-offset-2 hover:text-white">Cookie settings</button>
+              </>
+            )}
+          </p>
           <p className="font-display text-white/40 text-[11px] uppercase tracking-[0.3em]">Engineering impossibilities to reality</p>
           <p className="text-white/40 text-xs">{location}</p>
         </div>
       </div>
     </footer>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COOKIE CONSENT — analytics only load after "Accept"
+// ═══════════════════════════════════════════════════════════════════════════════
+const COOKIE_SETTINGS_EVENT = 'datatrop:cookie-settings'
+
+function ConsentBanner({ onAccept }) {
+  // Not rendered into the pre-built HTML (no window there), and only shown when
+  // analytics are configured and the visitor hasn't chosen yet.
+  const [open, setOpen] = useState(() => typeof window !== 'undefined' && analyticsAvailable && getConsent() === null)
+
+  useEffect(() => {
+    const reopen = () => setOpen(true)
+    window.addEventListener(COOKIE_SETTINGS_EVENT, reopen)
+    return () => window.removeEventListener(COOKIE_SETTINGS_EVENT, reopen)
+  }, [])
+
+  if (!open) return null
+  const choose = (value) => {
+    setConsent(value)
+    setOpen(false)
+    if (value === 'granted') onAccept()
+  }
+  return (
+    <div
+      role="dialog"
+      aria-live="polite"
+      aria-label="Cookie preferences"
+      className="fixed z-[60] left-4 right-4 sm:right-auto sm:left-6 sm:max-w-[420px] anim-rise"
+      style={{ bottom: 'calc(16px + env(safe-area-inset-bottom, 0px))' }}
+    >
+      <div
+        className="rounded-[1.25rem] p-6 border border-[rgb(var(--accent)_/_0.25)] shadow-[0_30px_80px_-20px_rgb(0_0_0/0.9),0_0_40px_-12px_rgb(var(--accent)/0.35)]"
+        style={{ background: 'linear-gradient(165deg, #2A0A22 0%, #14050C 60%, #0B0407 100%)' }}
+      >
+        <p className="font-display text-white text-base font-medium mb-2">Cookies, briefly</p>
+        <p className="text-white/60 text-sm font-light leading-relaxed mb-5">
+          We'd like to use Google Analytics cookies to see which pages help visitors. No advertising, and we never sell your data.{' '}
+          <a href="/privacy" className="text-white underline decoration-white/30 underline-offset-2 hover:decoration-rose">Privacy policy</a>
+        </p>
+        <div className="flex gap-2.5">
+          <button type="button" onClick={() => choose('granted')} className="btn-primary px-5 py-3 text-[13px] flex-1">Accept analytics</button>
+          <button type="button" onClick={() => choose('denied')} className="btn-secondary px-5 py-3 text-[13px] flex-1">Decline</button>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -1992,6 +2048,7 @@ export default function App({ page: initialPage = 'home' }) {
         </>
       )}
       <Footer settings={settings} />
+      <ConsentBanner onAccept={() => trackPageView(PAGE_META[page].path, PAGE_META[page].title)} />
     </div>
   )
 }
