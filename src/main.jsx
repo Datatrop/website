@@ -35,14 +35,18 @@ createRoot(document.getElementById('root')).render(
           }
         />
 
-        <Route
-          path="/contact"
-          element={
-            <SiteThemeProvider>
-              <App page="contact" />
-            </SiteThemeProvider>
-          }
-        />
+        {/* Site pages (one App, switched by `page`) */}
+        {['about', 'what-we-do', 'industries', 'contact'].map((page) => (
+          <Route
+            key={page}
+            path={`/${page}`}
+            element={
+              <SiteThemeProvider>
+                <App page={page} />
+              </SiteThemeProvider>
+            }
+          />
+        ))}
 
         {/* Legal pages */}
         <Route

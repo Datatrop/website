@@ -312,37 +312,40 @@ function Arcs({ className = '', variant = 'hero' }) {
 const MEGA_MENU = [
   {
     label: 'About',
-    href: '/#about',
+    page: 'about',
+    href: '/about',
     panel: [
-      { title: 'Who We Are', desc: 'Our engineering philosophy and approach.', href: '/#about' },
-      { title: 'How We Engage', desc: 'Build, solve and innovate.', href: '/#engage' },
-      { title: 'The Complexity Scale', desc: 'From automation to new products.', href: '/#approach' },
-      { title: 'Why Datatrop', desc: 'What sets our systems apart.', href: '/#why' },
+      { title: 'Who We Are', desc: 'Our engineering philosophy and approach.', href: '/about#who-we-are' },
+      { title: 'How We Engage', desc: 'Build, solve and innovate.', href: '/about#engage' },
+      { title: 'The Complexity Scale', desc: 'From automation to new products.', href: '/about#approach' },
+      { title: 'Why Datatrop', desc: 'Our philosophy, in numbers.', href: '/about#why' },
     ],
   },
   {
     label: 'What We Do',
-    href: '/#capabilities',
+    page: 'what-we-do',
+    href: '/what-we-do',
     panel: [
-      { title: 'Enterprise AI Systems', desc: 'Unified operating platforms across every department.', href: '/#capabilities' },
-      { title: 'AI Workforce Platforms', desc: 'Multi-agent teams that execute operational work.', href: '/#workforce' },
-      { title: 'Revenue Intelligence', desc: 'Lead intelligence and sales automation.', href: '/#capabilities' },
-      { title: 'Communication Intelligence', desc: 'Omnichannel, call and conversation intelligence.', href: '/#capabilities' },
+      { title: 'Capabilities', desc: 'The five system categories we engineer.', href: '/what-we-do#capabilities' },
+      { title: 'AI Workforce Platforms', desc: 'Multi-agent teams that execute operational work.', href: '/what-we-do#workforce' },
+      { title: 'Problems We Solve', desc: 'Fragmentation, leakage, delay and more.', href: '/what-we-do#solve' },
+      { title: 'Talk to an Engineer', desc: 'Book a 30-minute strategy call.', href: '/contact#book' },
     ],
   },
   {
     label: 'Industries',
-    href: '/#industries',
+    page: 'industries',
+    href: '/industries',
     panel: [
-      { title: 'Manufacturing', desc: 'Operational systems for production complexity.', href: '/#industries' },
-      { title: 'Distribution & Trading', desc: 'Systems that keep fast-moving supply chains in sync.', href: '/#industries' },
-      { title: 'Healthcare', desc: 'Intelligent systems for regulated, data-heavy environments.', href: '/#industries' },
-      { title: 'Financial Services', desc: 'Decision intelligence for complex, high-stakes operations.', href: '/#industries' },
+      { title: 'Manufacturing', desc: 'Operational systems for production complexity.', href: '/industries#manufacturing' },
+      { title: 'Distribution & Trading', desc: 'Systems that keep fast-moving supply chains in sync.', href: '/industries#distribution' },
+      { title: 'Healthcare', desc: 'Intelligent systems for regulated, data-heavy environments.', href: '/industries#healthcare' },
+      { title: 'Financial Services', desc: 'Decision intelligence for complex, high-stakes operations.', href: '/industries#financial-services' },
     ],
   },
 ]
 
-function Navbar() {
+function Navbar({ page }) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [openPanel, setOpenPanel] = useState(null)
@@ -377,16 +380,18 @@ function Navbar() {
                 <div key={m.label} onMouseEnter={() => setOpenPanel(m.label)}>
                   <a
                     href={m.href}
-                    className={`flex items-center gap-1.5 px-4 py-2.5 text-[14px] transition-colors duration-200 ${openPanel === m.label ? 'text-white' : 'text-white/65 hover:text-white'}`}
+                    aria-current={page === m.page ? 'page' : undefined}
+                    className={`relative flex items-center gap-1.5 px-4 py-2.5 text-[14px] transition-colors duration-200 ${openPanel === m.label || page === m.page ? 'text-white' : 'text-white/65 hover:text-white'}`}
                   >
                     {m.label}
+                    {page === m.page && <span className="absolute left-4 right-7 -bottom-0.5 h-px bg-gradient-to-r from-rose to-transparent" />}
                     <svg className={`w-3 h-3 transition-transform duration-200 ${openPanel === m.label ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </a>
                 </div>
               ))}
-              <a href="/contact" onMouseEnter={() => setOpenPanel(null)} className="px-4 py-2.5 text-[14px] text-white/65 hover:text-white transition-colors duration-200">Contact</a>
+              <a href="/contact" onMouseEnter={() => setOpenPanel(null)} aria-current={page === 'contact' ? 'page' : undefined} className={`px-4 py-2.5 text-[14px] hover:text-white transition-colors duration-200 ${page === 'contact' ? 'text-white' : 'text-white/65'}`}>Contact</a>
             </div>
 
             <div className="hidden lg:flex items-center gap-3">
@@ -438,6 +443,7 @@ function Navbar() {
                 </button>
                 {mobilePanel === m.label && (
                   <div className="pb-3 pl-1 flex flex-col">
+                    <a href={m.href} onClick={() => setMenuOpen(false)} className="block px-1 py-2.5 text-sm text-rose-soft font-medium">{m.label} overview</a>
                     {m.panel.map((p) => (
                       <a key={p.title} href={p.href} onClick={() => setMenuOpen(false)} className="block px-1 py-2.5 text-sm text-white/60 hover:text-white font-light">
                         {p.title}
@@ -504,7 +510,7 @@ function Hero({ headline, subtext }) {
 
         <div className="flex flex-col sm:flex-row gap-3.5 anim-rise" style={{ animationDelay: '0.22s' }}>
           <BookButton />
-          <GhostButton href="/#capabilities">Explore our systems</GhostButton>
+          <GhostButton href="/what-we-do">Explore what we do</GhostButton>
         </div>
       </div>
 
@@ -544,14 +550,13 @@ const PRINCIPLES = [
   'Measurable, lasting value',
 ]
 
-function Statement({ about }) {
+function Statement() {
   const [ref, progress] = useScrollProgress()
-  const [aboutRef, inView] = useInView()
   const words = [...STATEMENT_A.split(' ').map((w) => [w, false]), ...STATEMENT_B.split(' ').map((w) => [w, true])]
   const lit = progress * words.length * 1.08
 
   return (
-    <section id="about" className="glow-section py-28 sm:py-40">
+    <section id="statement" className="glow-section py-28 sm:py-40">
       <div className={WRAP}>
         <Eyebrow className="mb-10">Who we are</Eyebrow>
         <p ref={ref} className="font-display text-[28px] sm:text-[42px] lg:text-[54px] leading-[1.18] tracking-[-0.03em] font-medium max-w-6xl">
@@ -566,19 +571,33 @@ function Statement({ about }) {
           ))}
         </p>
 
-        <div ref={aboutRef} className={`mt-20 sm:mt-28 grid lg:grid-cols-12 gap-10 pt-10 border-t border-white/[0.08] ${reveal(inView)}`}>
-          <p className="lg:col-span-5 font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
-            Complexity is inevitable.<br />Chaos is optional.
+      </div>
+    </section>
+  )
+}
+
+// About page opener: the admin-editable bio + principles
+function AboutIntro({ about }) {
+  const [ref, inView] = useInView()
+  return (
+    <section id="who-we-are" className="glow-section scroll-mt-20 py-24 sm:py-32">
+      <div ref={ref} className={`${WRAP} grid lg:grid-cols-12 gap-10 ${reveal(inView)}`}>
+        <div className="lg:col-span-5">
+          <Eyebrow className="mb-5">Who we are</Eyebrow>
+          <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.06]">
+            Whenever complexity prevents progress, we build the system that <span className="text-glow">restores order.</span>
+          </h2>
+        </div>
+        <div className="lg:col-span-7 lg:pt-14">
+          <p className="text-white/75 text-lg font-light leading-relaxed mb-6">{about || DEFAULT_ABOUT}</p>
+          <p className="text-white/55 font-light leading-relaxed mb-8">
+            The market doesn't need to remember every service we offer. It needs to remember one thing: Datatrop exists
+            to solve complex problems by designing intelligent systems that create stability, capability and long-term value.
           </p>
-          <div className="lg:col-span-7">
-            <p className="text-white/75 text-lg font-light leading-relaxed mb-8">{about || DEFAULT_ABOUT}</p>
-            <div className="flex flex-wrap gap-2.5">
-              {PRINCIPLES.map((p) => (
-                <span key={p} className="text-[13px] px-4 py-2 rounded-full border border-white/10 bg-white/[0.03] text-white/70">
-                  {p}
-                </span>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-2.5">
+            {PRINCIPLES.map((p) => (
+              <span key={p} className="text-[13px] px-4 py-2 rounded-full border border-white/10 bg-white/[0.03] text-white/70">{p}</span>
+            ))}
           </div>
         </div>
       </div>
@@ -1038,12 +1057,12 @@ const INDUSTRIES = [
 function Industries() {
   const [ref, inView] = useInView()
   return (
-    <section id="industries" className="glow-section py-28 sm:py-36">
+    <section id="all-industries" className="glow-section scroll-mt-20 py-28 sm:py-36">
       <div className={WRAP} ref={ref}>
         <SectionHead
-          eyebrow="What we work on"
-          title="Defined by complexity, not by industry."
-          intro="We don't define ourselves by industries. We define ourselves by the complexity of the challenge. Wherever it falls on that spectrum, Datatrop can engage."
+          eyebrow="Also engaging across"
+          title="Wherever complexity slows progress."
+          intro="The industries above are where we're most often asked to help. The pattern repeats everywhere: fragmented systems, manual work and slow decisions."
           inView={inView}
           center
         />
@@ -1187,28 +1206,33 @@ function Stars({ value, className = 'w-4 h-4' }) {
   )
 }
 
-// Placeholder cards shown only in the approval-preview build (no backend there).
-// Never rendered in production: the real site shows admin-managed testimonials.
-const SAMPLE_TESTIMONIALS = [
-  { id: 'x1', rating: 5, name: 'Client name', role: 'Operations Head', company: 'Manufacturing company', quote: 'Datatrop mapped how our plant actually runs before proposing anything. The system they built replaced four spreadsheets and a lot of phone calls.' },
-  { id: 'x2', rating: 5, name: 'Client name', role: 'Managing Director', company: 'Distribution business', quote: 'They listened, challenged our assumptions and then shipped exactly what we needed. Our team now spends its time on customers instead of data entry.' },
-  { id: 'x3', rating: 5, name: 'Client name', role: 'Founder', company: 'Services firm', quote: 'Clear communication, fast iterations and real engineering depth. It felt like having our own systems team without having to build one.' },
-  { id: 'x4', rating: 5, name: 'Client name', role: 'Finance Lead', company: 'Trading company', quote: 'Month-end used to take a week. With the reconciliation agents it takes an afternoon, and every exception is traceable.' },
+// The approval preview has no backend, so it carries a copy of the published
+// testimonials. The real site always reads them from Admin → Testimonials.
+const PREVIEW_TESTIMONIALS = [
+  {
+    id: 'g1',
+    rating: 5,
+    source: 'Google',
+    name: 'Max Mooijenkind',
+    role: 'Customer Success Manager',
+    company: 'Flexxvoice',
+    quote: 'We’ve had a great experience working with Datatrop AI Systems. At the start, we didn’t have a fully clear idea of what we wanted—just a rough concept. However, as soon as we shared this, the team immediately understood our vision and translated it into exactly what we needed. Within just two days, everything was set up and ready to go. The gamification solution they built works perfectly and has been received very positively by our team on the floor. It’s something we definitely should have implemented much earlier. For any future projects, Datatrop AI Systems will absolutely be one of the first companies we reach out to.',
+  },
 ]
-const SHOW_SAMPLE_TESTIMONIALS = import.meta.env.VITE_SAMPLE_TESTIMONIALS === 'true'
+const SHOW_PREVIEW_TESTIMONIALS = import.meta.env.VITE_PREVIEW_TESTIMONIALS === 'true'
 
 function initials(name = '') {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('') || '•'
 }
 
-function Testimonials({ items, reviewsUrl, sample = false }) {
+function Testimonials({ items, reviewsUrl }) {
   const [ref, inView] = useInView()
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
   const touchX = useRef(null)
   const n = items.length
   const rated = items.filter((t) => Number(t.rating) > 0)
-  const avg = !sample && rated.length ? (rated.reduce((a, t) => a + Number(t.rating), 0) / rated.length).toFixed(1) : null
+  const avg = rated.length ? (rated.reduce((a, t) => a + Number(t.rating), 0) / rated.length).toFixed(1) : null
 
   const go = (d) => setActive((i) => (i + d + n) % n)
 
@@ -1250,9 +1274,6 @@ function Testimonials({ items, reviewsUrl, sample = false }) {
               <span className="text-white/45 font-light">from {rated.length} review{rated.length === 1 ? '' : 's'}</span>
             </div>
           )}
-          {sample && (
-            <p className="mt-6 inline-block font-mono text-[10px] uppercase tracking-[0.2em] text-white/45 border border-white/10 rounded-full px-3 py-1.5">Sample testimonials · real reviews are added in Admin</p>
-          )}
         </div>
 
         {/* Carousel */}
@@ -1289,7 +1310,7 @@ function Testimonials({ items, reviewsUrl, sample = false }) {
                   style={{ gridArea: 'stack', transform, zIndex: isCenter ? 3 : side ? 2 : 1 }}
                   aria-hidden={!isCenter}
                   onClick={() => !isCenter && setActive(i)}
-                  className={`justify-self-center w-[min(520px,88%)] sm:w-[min(520px,62%)] lg:w-[min(520px,42%)] flex flex-col rounded-[1.75rem] p-8 sm:p-10 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                  className={`justify-self-center ${n === 1 ? 'w-full sm:w-[min(760px,86%)]' : 'w-[min(520px,88%)] sm:w-[min(520px,62%)] lg:w-[min(520px,42%)]'} flex flex-col rounded-[1.75rem] p-8 sm:p-10 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                     isCenter
                       ? 'opacity-100 border-[1.5px] border-[rgb(var(--accent)_/_0.75)] bg-[linear-gradient(165deg,rgb(var(--grape-bright)/0.28),rgb(var(--maroon)/0.55)_55%,rgb(var(--ink)/0.9))] shadow-[0_0_0_1px_rgb(var(--accent)/0.15),0_0_70px_-10px_rgb(var(--accent)/0.45),0_40px_80px_-40px_rgb(0_0_0/0.9)]'
                       : side
@@ -1348,7 +1369,7 @@ function Testimonials({ items, reviewsUrl, sample = false }) {
           )}
         </div>
 
-        {reviewsUrl && !sample && (
+        {reviewsUrl && (
           <div className="text-center mt-12">
             <a href={reviewsUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary px-6 py-3.5">
               <GoogleG className="w-4 h-4" />
@@ -1364,7 +1385,7 @@ function Testimonials({ items, reviewsUrl, sample = false }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // VISION + FINAL CTA
 // ═══════════════════════════════════════════════════════════════════════════════
-function FinalCta() {
+function FinalCta({ vision = false }) {
   const [ref, inView] = useInView()
   return (
     <section className="py-12 sm:py-20">
@@ -1372,11 +1393,15 @@ function FinalCta() {
         <div className={`relative overflow-hidden rounded-[2rem] border border-white/10 bg-brand-gradient px-6 py-20 sm:px-16 sm:py-28 ${reveal(inView)}`}>
           <Arcs />
           <div className="relative max-w-3xl">
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-white/60 mb-8">Vision</p>
-            <p className="font-display text-2xl sm:text-3xl text-white/80 font-light leading-snug tracking-tight mb-12">
-              To become the world's most trusted systems engineering company for solving complex challenges through
-              <span className="text-white font-normal"> intelligence, engineering, and innovation.</span>
-            </p>
+            {vision && (
+              <>
+                <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-white/60 mb-8">Vision</p>
+                <p className="font-display text-2xl sm:text-3xl text-white/80 font-light leading-snug tracking-tight mb-12">
+                  To become the world's most trusted systems engineering company for solving complex challenges through
+                  <span className="text-white font-normal"> intelligence, engineering, and innovation.</span>
+                </p>
+              </>
+            )}
             <h2 className="font-display text-4xl sm:text-6xl font-medium text-white tracking-[-0.04em] leading-[1.02] mb-6">
               Ready to engineer your next competitive advantage?
             </h2>
@@ -1388,6 +1413,172 @@ function FinalCta() {
               <GhostButton href="/contact#message">Send a message</GhostButton>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INNER PAGE HEADER — shared by About / What We Do / Industries
+// ═══════════════════════════════════════════════════════════════════════════════
+function PageHero({ eyebrow, title, glow, intro, links = [] }) {
+  return (
+    <section className="relative overflow-hidden bg-brand-gradient">
+      <Arcs className="opacity-70" />
+      <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#070305] to-transparent pointer-events-none" />
+      <div className={`relative z-10 ${WRAP} pt-36 sm:pt-44 pb-16 sm:pb-20`}>
+        <Eyebrow className="mb-6 anim-fade">{eyebrow}</Eyebrow>
+        <h1 className="font-display max-w-4xl text-[40px] leading-[1.04] sm:text-6xl lg:text-[76px] font-medium text-white tracking-[-0.04em] mb-7 anim-rise text-balance">
+          {title} {glow && <span className="text-glow">{glow}</span>}
+        </h1>
+        {intro && (
+          <p className="max-w-2xl text-base sm:text-lg text-white/65 font-light leading-relaxed anim-rise" style={{ animationDelay: '0.1s' }}>
+            {intro}
+          </p>
+        )}
+        {links.length > 0 && (
+          <nav aria-label="On this page" className="mt-10 flex flex-wrap items-center gap-2.5 anim-fade" style={{ animationDelay: '0.25s' }}>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 mr-2">On this page</span>
+            {links.map(([label, href]) => (
+              <a key={href} href={href} className="text-[13px] px-4 py-2 rounded-full border border-white/12 bg-black/20 text-white/75 hover:text-white hover:border-rose/50 transition-colors">
+                {label}
+              </a>
+            ))}
+          </nav>
+        )}
+      </div>
+    </section>
+  )
+}
+
+// ── Home: one card per page, so the homepage stays short ────────────────────
+const EXPLORE = [
+  {
+    href: '/about',
+    label: 'About',
+    Figure: FigInnovate,
+    title: 'Who we are and how we work',
+    desc: 'Our philosophy, the three ways we engage, and the complexity scale we operate across.',
+    items: ['Build · Solve · Innovate', 'The complexity scale', 'Philosophy & vision'],
+  },
+  {
+    href: '/what-we-do',
+    label: 'What We Do',
+    Figure: FigBuild,
+    title: 'Intelligent systems, engineered end to end',
+    desc: 'Five system categories, AI workforces that run alongside your team, and the problems we have solved.',
+    items: ['Capabilities', 'AI workforce platforms', 'Problems we solve'],
+  },
+  {
+    href: '/industries',
+    label: 'Industries',
+    Figure: FigSolve,
+    title: 'Defined by complexity, not by industry',
+    desc: 'Where we are most often asked to help, from manufacturing floors to financial operations.',
+    items: ['Manufacturing', 'Distribution & trading', 'Healthcare · Finance'],
+  },
+]
+
+function ExplorePages() {
+  const [ref, inView] = useInView()
+  return (
+    <section id="explore" className="glow-section alt py-28 sm:py-36">
+      <div className={WRAP} ref={ref}>
+        <SectionHead eyebrow="Explore Datatrop" title="Start where your question is." inView={inView} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          {EXPLORE.map(({ href, label, Figure, title, desc, items }, i) => (
+            <a
+              key={href}
+              href={href}
+              className={`group card card-hover overflow-hidden flex flex-col ${reveal(inView)}`}
+              style={{ transitionDelay: `${i * 110}ms` }}
+            >
+              <div className="relative h-48 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.8),transparent_70%)]">
+                <span className="absolute top-4 left-5 font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft">{label}</span>
+                <div className="absolute inset-0 px-8 pt-8 pb-2"><Figure /></div>
+              </div>
+              <div className="p-7 flex flex-col flex-1">
+                <h3 className="font-display text-white text-xl font-medium tracking-tight mb-3">{title}</h3>
+                <p className="text-white/55 text-sm font-light leading-relaxed mb-6">{desc}</p>
+                <ul className="flex flex-col gap-2 mb-8 flex-1">
+                  {items.map((it) => (
+                    <li key={it} className="flex items-center gap-2.5 text-sm text-white/70">
+                      <span className="w-1 h-1 rounded-full bg-rose" />{it}
+                    </li>
+                  ))}
+                </ul>
+                <span className="inline-flex items-center gap-2 text-sm text-white">
+                  Explore {label}
+                  <Arrow className="w-4 h-4 text-rose-soft transition-transform group-hover:translate-x-1" />
+                </span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── Industries page: the four industries we are most often asked about ──────
+const FEATURED_INDUSTRIES = [
+  {
+    id: 'manufacturing',
+    name: 'Manufacturing',
+    lead: 'Operational systems for production complexity.',
+    body: 'Sales, procurement, inventory, dispatch and finance connected into one operating platform, so production runs on live data instead of spreadsheets and phone calls.',
+    icon: 'M3 21h18M5 21V10l5 3V10l5 3V6l4 2v13M9 17h1m4 0h1',
+  },
+  {
+    id: 'distribution',
+    name: 'Distribution & Trading',
+    lead: 'Systems that keep fast-moving supply chains in sync.',
+    body: 'Orders, stock, pricing and collections in one view, with AI agents that take on reconciliation, follow-ups and reporting.',
+    icon: 'M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a2 2 0 100-4 2 2 0 000 4zm10 0a2 2 0 100-4 2 2 0 000 4z',
+  },
+  {
+    id: 'healthcare',
+    name: 'Healthcare',
+    lead: 'Intelligent systems for regulated, data-heavy environments.',
+    body: 'Scheduling, records and patient communication workflows engineered with privacy, access control and auditability built in from the start.',
+    icon: 'M12 21s-7-4.35-9.5-8.5C.5 9 2.5 5 6.5 5c2 0 3.5 1 5.5 3 2-2 3.5-3 5.5-3 4 0 6 4 4 7.5C19 16.65 12 21 12 21zM9 12h6M12 9v6',
+  },
+  {
+    id: 'financial-services',
+    name: 'Financial Services',
+    lead: 'Decision intelligence for complex, high-stakes operations.',
+    body: 'Real-time visibility for leadership, automated reconciliation, and a traceable record of every decision for teams that cannot afford errors.',
+    icon: 'M3 10l9-6 9 6M5 10v8m4-8v8m6-8v8m4-8v8M3 20h18',
+  },
+]
+
+function FeaturedIndustries() {
+  const [ref, inView] = useInView()
+  return (
+    <section id="featured" className="glow-section alt py-24 sm:py-32">
+      <div className={WRAP} ref={ref}>
+        <SectionHead eyebrow="Where we're asked most" title="Four industries, one pattern." intro="Different domains, the same underlying problem: disconnected systems, manual work and decisions made on stale data." inView={inView} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {FEATURED_INDUSTRIES.map((ind, i) => (
+            <article
+              key={ind.id}
+              id={ind.id}
+              className={`card card-hover scroll-mt-28 p-8 sm:p-10 flex flex-col ${reveal(inView)}`}
+              style={{ transitionDelay: `${i * 90}ms` }}
+            >
+              <div className="icon-tile w-12 h-12 mb-7">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.4} d={ind.icon} /></svg>
+              </div>
+              <h3 className="font-display text-white text-2xl font-medium tracking-tight mb-2">{ind.name}</h3>
+              <p className="text-rose-soft text-sm mb-4">{ind.lead}</p>
+              <p className="text-white/60 font-light leading-relaxed flex-1">{ind.body}</p>
+              <a href="/contact#book" className="group mt-8 inline-flex items-center gap-2 text-sm text-white/85 hover:text-white">
+                Discuss your operation
+                <Arrow className="w-4 h-4 text-rose-soft transition-transform group-hover:translate-x-1" />
+              </a>
+            </article>
+          ))}
         </div>
       </div>
     </section>
@@ -1570,8 +1761,8 @@ function Contact({ settings }) {
 // FOOTER
 // ═══════════════════════════════════════════════════════════════════════════════
 const FOOTER_COLUMNS = [
-  { title: 'Company', links: [['Who We Are', '/#about'], ['How We Engage', '/#engage'], ['Why Datatrop', '/#why']] },
-  { title: 'Capabilities', links: [['What We Build', '/#capabilities'], ['AI Workforce', '/#workforce'], ['What We Solve', '/#solve'], ['Industries', '/#industries']] },
+  { title: 'About', links: [['Who We Are', '/about#who-we-are'], ['How We Engage', '/about#engage'], ['Complexity Scale', '/about#approach'], ['Why Datatrop', '/about#why']] },
+  { title: 'What We Do', links: [['Capabilities', '/what-we-do#capabilities'], ['AI Workforce', '/what-we-do#workforce'], ['Problems We Solve', '/what-we-do#solve'], ['Industries', '/industries']] },
   { title: 'Connect', links: [['Contact Us', '/contact'], ['Book a Call', '/contact#book'], ['Send a Message', '/contact#message']] },
   { title: 'Legal', links: [['Privacy Policy', '/privacy'], ['Terms of Service', '/terms']] },
 ]
@@ -1642,7 +1833,16 @@ function hexToChannels(hex) {
 
 const STATIC_PREVIEW = import.meta.env.VITE_STATIC_PREVIEW === 'true'
 
-const pageFromPath = (path) => (path.replace(/\/+$/, '') === '/contact' ? 'contact' : 'home')
+const PAGES = {
+  '/': { key: 'home', title: 'Datatrop: Engineering Certainty in a Complex World' },
+  '/about': { key: 'about', title: 'About Datatrop: Intelligent Systems Engineering' },
+  '/what-we-do': { key: 'what-we-do', title: 'What We Do: AI Systems, Workforces and Platforms | Datatrop' },
+  '/industries': { key: 'industries', title: 'Industries | Datatrop' },
+  '/contact': { key: 'contact', title: 'Contact Datatrop: Book a Strategy Call' },
+}
+const normalizePath = (path) => (path.replace(/\/+$/, '') || '/')
+const pageFromPath = (path) => PAGES[normalizePath(path)]?.key || 'home'
+const titleFor = (key) => Object.values(PAGES).find((p) => p.key === key)?.title || PAGES['/'].title
 
 function scrollToHash(hash) {
   const id = (hash || '').replace('#', '')
@@ -1680,16 +1880,14 @@ export default function App({ page: initialPage = 'home' }) {
 
   // Page title + land on any #section in the URL once the page has rendered
   useEffect(() => {
-    document.title = page === 'contact'
-      ? 'Contact Datatrop: Book a Strategy Call'
-      : 'Datatrop: Engineering Certainty in a Complex World'
+    document.title = titleFor(page)
     const hash = pendingHash.current
     pendingHash.current = ''
     const t = setTimeout(() => scrollToHash(hash), 60)
     return () => clearTimeout(t)
   }, [page])
 
-  // Browser back/forward between the two pages
+  // Browser back/forward between pages
   useEffect(() => {
     const onPop = () => {
       pendingHash.current = window.location.hash
@@ -1699,7 +1897,7 @@ export default function App({ page: initialPage = 'home' }) {
     return () => window.removeEventListener('popstate', onPop)
   }, [])
 
-  // Handle links between home and contact without a full reload. Same-page
+  // Handle links between site pages without a full reload. Same-page
   // section links just scroll; anything else (admin, legal, external) is left alone.
   const onLinkClick = (e) => {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
@@ -1707,7 +1905,7 @@ export default function App({ page: initialPage = 'home' }) {
     const href = a?.getAttribute('href')
     if (!href || !href.startsWith('/') || a.target === '_blank') return
     const [path, hash = ''] = href.split('#')
-    if (!['/', '/contact'].includes(path)) return
+    if (!PAGES[normalizePath(path)]) return
     const target = pageFromPath(path)
     e.preventDefault()
     // The static approval preview is a single file, so it switches pages without touching the URL
@@ -1721,31 +1919,73 @@ export default function App({ page: initialPage = 'home' }) {
     }
   }
 
+  const testimonialsSection = testimonials.length > 0
+    ? <Testimonials items={testimonials} reviewsUrl={settings.google_reviews_url} />
+    : SHOW_PREVIEW_TESTIMONIALS && <Testimonials items={PREVIEW_TESTIMONIALS} />
+
   return (
     <div className="site min-h-screen overflow-x-hidden" onClick={onLinkClick}>
-      <Navbar />
-      {page === 'contact' ? (
+      <Navbar page={page} />
+      {page === 'about' && (
+        <>
+          <PageHero
+            eyebrow="About"
+            title="We turn complexity into"
+            glow="stable systems."
+            intro={settings.hero_subtext || DEFAULT_SUBTEXT}
+            links={[['Who we are', '/about#who-we-are'], ['How we engage', '/about#engage'], ['Complexity scale', '/about#approach'], ['Why Datatrop', '/about#why']]}
+          />
+          <AboutIntro about={settings.about_bio} />
+          <ThreePillars />
+          <Approach />
+          <WhyDatatrop />
+          <FinalCta vision />
+        </>
+      )}
+      {page === 'what-we-do' && (
+        <>
+          <PageHero
+            eyebrow="What we do"
+            title="Intelligent systems,"
+            glow="engineered end to end."
+            intro="From a single automated workflow to an operating platform for the whole organization. We design it, build it and keep it running."
+            links={[['Capabilities', '/what-we-do#capabilities'], ['AI workforce', '/what-we-do#workforce'], ['Problems we solve', '/what-we-do#solve']]}
+          />
+          <WhatWeBuild serviceLines={serviceLines} />
+          <Workforce />
+          <WhatWeSolve problems={problems} />
+          {showcases.length > 0 && <Showcase items={showcases} />}
+          <FinalCta />
+        </>
+      )}
+      {page === 'industries' && (
+        <>
+          <PageHero
+            eyebrow="Industries"
+            title="Defined by complexity,"
+            glow="not by industry."
+            intro="We don't define ourselves by industries. We define ourselves by the complexity of the challenge. Wherever it falls on that spectrum, Datatrop can engage."
+            links={FEATURED_INDUSTRIES.map((f) => [f.name, `/industries#${f.id}`]).concat([['All industries', '/industries#all-industries']])}
+          />
+          <FeaturedIndustries />
+          <Industries />
+          <FinalCta />
+        </>
+      )}
+      {page === 'contact' && (
         <>
           <ContactHero settings={settings} />
           <Contact settings={settings} />
         </>
-      ) : (
+      )}
+      {page === 'home' && (
         <>
-      <Hero headline={settings.hero_headline} subtext={settings.hero_subtext} />
-      <Statement about={settings.about_bio} />
-      <ThreePillars />
-      <Workforce />
-      <WhatWeBuild serviceLines={serviceLines} />
-      <Approach />
-      <WhatWeSolve problems={problems} />
-      <Industries />
-      {showcases.length > 0 && <Showcase items={showcases} />}
-      {testimonials.length > 0
-        ? <Testimonials items={testimonials} reviewsUrl={settings.google_reviews_url} />
-        : SHOW_SAMPLE_TESTIMONIALS && <Testimonials items={SAMPLE_TESTIMONIALS} sample />}
-      {customers.length > 0 && <Clients customers={customers} />}
-      <WhyDatatrop />
-      <FinalCta />
+          <Hero headline={settings.hero_headline} subtext={settings.hero_subtext} />
+          <Statement />
+          <ExplorePages />
+          {testimonialsSection}
+          {customers.length > 0 && <Clients customers={customers} />}
+          <FinalCta vision />
         </>
       )}
       <Footer settings={settings} />
