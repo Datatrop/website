@@ -1179,7 +1179,7 @@ function Stars({ value, className = 'w-4 h-4' }) {
   return (
     <div className="flex gap-0.5">
       {Array.from({ length: 5 }).map((_, s) => (
-        <svg key={s} className={`${className} ${s < value ? 'text-rose' : 'text-white/10'}`} fill="currentColor" viewBox="0 0 20 20">
+        <svg key={s} className={`${className} ${s < value ? 'text-[#F6C453]' : 'text-white/15'}`} fill="currentColor" viewBox="0 0 20 20">
           <path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.28 3.95a1 1 0 00.95.69h4.15c.97 0 1.37 1.24.59 1.81l-3.36 2.44a1 1 0 00-.36 1.12l1.28 3.95c.3.92-.75 1.69-1.54 1.12l-3.36-2.44a1 1 0 00-1.18 0l-3.36 2.44c-.79.57-1.84-.2-1.54-1.12l1.28-3.95a1 1 0 00-.36-1.12L2.33 9.38c-.78-.57-.38-1.81.59-1.81h4.15a1 1 0 00.95-.69l1.28-3.95z" />
         </svg>
       ))}
@@ -1187,53 +1187,168 @@ function Stars({ value, className = 'w-4 h-4' }) {
   )
 }
 
-function Testimonials({ items, reviewsUrl }) {
+// Placeholder cards shown only in the approval-preview build (no backend there).
+// Never rendered in production: the real site shows admin-managed testimonials.
+const SAMPLE_TESTIMONIALS = [
+  { id: 'x1', rating: 5, name: 'Client name', role: 'Operations Head', company: 'Manufacturing company', quote: 'Datatrop mapped how our plant actually runs before proposing anything. The system they built replaced four spreadsheets and a lot of phone calls.' },
+  { id: 'x2', rating: 5, name: 'Client name', role: 'Managing Director', company: 'Distribution business', quote: 'They listened, challenged our assumptions and then shipped exactly what we needed. Our team now spends its time on customers instead of data entry.' },
+  { id: 'x3', rating: 5, name: 'Client name', role: 'Founder', company: 'Services firm', quote: 'Clear communication, fast iterations and real engineering depth. It felt like having our own systems team without having to build one.' },
+  { id: 'x4', rating: 5, name: 'Client name', role: 'Finance Lead', company: 'Trading company', quote: 'Month-end used to take a week. With the reconciliation agents it takes an afternoon, and every exception is traceable.' },
+]
+const SHOW_SAMPLE_TESTIMONIALS = import.meta.env.VITE_SAMPLE_TESTIMONIALS === 'true'
+
+function initials(name = '') {
+  return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('') || '•'
+}
+
+function Testimonials({ items, reviewsUrl, sample = false }) {
   const [ref, inView] = useInView()
+  const [active, setActive] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const touchX = useRef(null)
+  const n = items.length
   const rated = items.filter((t) => Number(t.rating) > 0)
-  const avg = rated.length ? (rated.reduce((a, t) => a + Number(t.rating), 0) / rated.length).toFixed(1) : null
+  const avg = !sample && rated.length ? (rated.reduce((a, t) => a + Number(t.rating), 0) / rated.length).toFixed(1) : null
+
+  const go = (d) => setActive((i) => (i + d + n) % n)
+
+  // Gentle autoplay; stops on hover/focus and for reduced-motion users
+  useEffect(() => {
+    if (n < 2 || paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const t = setInterval(() => setActive((i) => (i + 1) % n), 6500)
+    return () => clearInterval(t)
+  }, [n, paused])
+
+  // Position of each card relative to the active one: -1 left, 0 centre, 1 right
+  const offsetOf = (i) => {
+    let d = i - active
+    if (d > n / 2) d -= n
+    if (d < -n / 2) d += n
+    return d
+  }
 
   return (
-    <section className="glow-section py-28 sm:py-36">
+    <section id="testimonials" className="glow-section py-28 sm:py-36 overflow-hidden">
       <div className={WRAP} ref={ref}>
-        <SectionHead eyebrow="Client feedback" title="What our clients say." inView={inView} />
-        {avg && (
-            <div className={`flex items-center gap-3 -mt-6 mb-10 ${reveal(inView)}`}>
-              <GoogleG className="w-5 h-5" />
-              <span className="font-display text-white text-2xl">{avg}</span>
+        {/* Heading */}
+        <div className={`text-center max-w-3xl mx-auto mb-16 ${reveal(inView)}`}>
+          <span className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-[rgb(var(--accent)_/_0.35)] bg-[rgb(var(--maroon)_/_0.35)] text-white text-[12px] font-medium uppercase tracking-[0.24em] mb-8">
+            <svg className="w-4 h-4 text-rose-soft" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-4 4v-4z" /></svg>
+            Testimonials
+          </span>
+          <h2 className="font-display text-[38px] sm:text-6xl lg:text-[68px] font-semibold text-white tracking-[-0.035em] leading-[1.02]">
+            What our <span className="relative inline-block text-glow">clients
+              <span className="absolute left-1/2 -translate-x-1/2 -bottom-3 h-[3px] w-[140%] rounded-full bg-[radial-gradient(closest-side,rgb(var(--accent)),rgb(var(--grape-bright)/0.6),transparent)]" />
+            </span> say
+          </h2>
+          <p className="mt-8 text-white/65 text-lg font-light">In their words, from the teams we've engineered systems for.</p>
+          {avg && (
+            <div className="mt-6 inline-flex items-center gap-3 text-sm">
+              <GoogleG className="w-4 h-4" />
+              <span className="font-display text-white text-lg">{avg}</span>
               <Stars value={Math.round(avg)} />
-              <span className="text-white/45 text-sm font-light">from {rated.length} review{rated.length === 1 ? '' : 's'}</span>
+              <span className="text-white/45 font-light">from {rated.length} review{rated.length === 1 ? '' : 's'}</span>
             </div>
-        )}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {items.map((t, i) => (
-            <figure
-              key={t.id}
-              className={`card flex flex-col p-7 ${reveal(inView)}`}
-              style={{ transitionDelay: `${i * 70}ms` }}
-            >
-              {Number(t.rating) > 0 && <div className="mb-5"><Stars value={Number(t.rating)} /></div>}
-              <blockquote className="text-white/75 text-base font-light leading-relaxed flex-1">“{t.quote}”</blockquote>
-              <figcaption className="mt-6 pt-5 border-t border-white/[0.08] flex items-end justify-between gap-3">
-                <div>
-                  <div className="text-white text-sm font-medium">{t.name}</div>
-                  {(t.role || t.company) && (
-                    <div className="text-white/45 text-xs font-light mt-0.5">
-                      {[t.role, t.company].filter(Boolean).join(' · ')}
-                    </div>
-                  )}
-                </div>
-                {t.source === 'Google' && (
-                  <span className="flex items-center gap-1.5 text-white/45 text-[11px] font-light flex-shrink-0" title="Review from Google">
-                    <GoogleG />
-                    Google
-                  </span>
-                )}
-              </figcaption>
-            </figure>
-          ))}
+          )}
+          {sample && (
+            <p className="mt-6 inline-block font-mono text-[10px] uppercase tracking-[0.2em] text-white/45 border border-white/10 rounded-full px-3 py-1.5">Sample testimonials · real reviews are added in Admin</p>
+          )}
         </div>
 
-        {reviewsUrl && (
+        {/* Carousel */}
+        <div
+          className={`relative ${reveal(inView)}`}
+          style={{ transitionDelay: '120ms' }}
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onFocus={() => setPaused(true)}
+          onBlur={() => setPaused(false)}
+          onTouchStart={(e) => { touchX.current = e.touches[0].clientX }}
+          onTouchEnd={(e) => {
+            if (touchX.current == null) return
+            const dx = e.changedTouches[0].clientX - touchX.current
+            if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1)
+            touchX.current = null
+          }}
+          aria-roledescription="carousel"
+          aria-label="Client testimonials"
+        >
+          <div className="grid [perspective:1600px] py-6" style={{ gridTemplateAreas: '"stack"', gridTemplateColumns: 'minmax(0, 1fr)' }}>
+            {items.map((t, i) => {
+              const d = offsetOf(i)
+              const isCenter = d === 0
+              const side = Math.abs(d) === 1
+              const transform = isCenter
+                ? 'translateX(0) rotateY(0deg) scale(1)'
+                : side
+                  ? `translateX(${d * 86}%) rotateY(${-d * 14}deg) scale(0.86)`
+                  : `translateX(${Math.sign(d) * 160}%) rotateY(${-Math.sign(d) * 20}deg) scale(0.7)`
+              return (
+                <figure
+                  key={t.id}
+                  style={{ gridArea: 'stack', transform, zIndex: isCenter ? 3 : side ? 2 : 1 }}
+                  aria-hidden={!isCenter}
+                  onClick={() => !isCenter && setActive(i)}
+                  className={`justify-self-center w-[min(520px,88%)] sm:w-[min(520px,62%)] lg:w-[min(520px,42%)] flex flex-col rounded-[1.75rem] p-8 sm:p-10 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                    isCenter
+                      ? 'opacity-100 border-[1.5px] border-[rgb(var(--accent)_/_0.75)] bg-[linear-gradient(165deg,rgb(var(--grape-bright)/0.28),rgb(var(--maroon)/0.55)_55%,rgb(var(--ink)/0.9))] shadow-[0_0_0_1px_rgb(var(--accent)/0.15),0_0_70px_-10px_rgb(var(--accent)/0.45),0_40px_80px_-40px_rgb(0_0_0/0.9)]'
+                      : side
+                        ? 'opacity-55 hidden sm:flex cursor-pointer border border-white/10 bg-[linear-gradient(165deg,rgb(var(--deep-grape)/0.45),rgb(var(--dark-maroon)/0.85))] hover:opacity-80'
+                        : 'opacity-0 pointer-events-none border border-white/10'
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-7">
+                    <span className="font-display text-6xl leading-[0.6] text-rose select-none" aria-hidden="true">”</span>
+                    {Number(t.rating) > 0 && <Stars value={Number(t.rating)} className="w-5 h-5" />}
+                  </div>
+                  <blockquote className={`flex-1 font-light leading-relaxed ${isCenter ? 'text-white text-lg sm:text-xl' : 'text-white/80 text-base sm:text-lg'}`}>
+                    {t.quote}
+                  </blockquote>
+                  <figcaption className="mt-9 pt-6 border-t border-white/10 flex items-center gap-4">
+                    <span className="flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-[linear-gradient(135deg,rgb(var(--accent)),rgb(var(--grape-bright)))]">
+                      <span className="w-full h-full rounded-full bg-[#1B050D] flex items-center justify-center font-display text-white text-sm font-semibold">{initials(t.name)}</span>
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-display text-white text-lg font-medium truncate">{t.name}</div>
+                      {(t.role || t.company) && (
+                        <div className="text-white/50 text-sm font-light leading-snug">{[t.role, t.company].filter(Boolean).join(' · ')}</div>
+                      )}
+                    </div>
+                    {t.source === 'Google' && (
+                      <span className="flex items-center gap-1.5 text-white/45 text-[11px] flex-shrink-0" title="Review from Google"><GoogleG /> Google</span>
+                    )}
+                  </figcaption>
+                </figure>
+              )
+            })}
+          </div>
+
+          {n > 1 && (
+            <>
+              <div className="mt-8 flex items-center justify-center gap-6">
+                <button onClick={() => go(-1)} aria-label="Previous testimonial" className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[rgb(var(--accent)_/_0.45)] bg-[rgb(var(--ink)_/_0.6)] text-white flex items-center justify-center hover:border-rose hover:bg-[rgb(var(--maroon)_/_0.6)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-rose">
+                  <Arrow className="w-5 h-5 rotate-180" />
+                </button>
+                <div className="flex gap-2">
+                {items.map((t, i) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setActive(i)}
+                    aria-label={`Show testimonial ${i + 1}`}
+                    aria-current={i === active}
+                    className={`h-1.5 rounded-full transition-all duration-500 ${i === active ? 'w-8 bg-rose' : 'w-1.5 bg-white/25 hover:bg-white/50'}`}
+                  />
+                ))}
+                </div>
+                <button onClick={() => go(1)} aria-label="Next testimonial" className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[rgb(var(--accent)_/_0.45)] bg-[rgb(var(--ink)_/_0.6)] text-white flex items-center justify-center hover:border-rose hover:bg-[rgb(var(--maroon)_/_0.6)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-rose">
+                  <Arrow className="w-5 h-5" />
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+
+        {reviewsUrl && !sample && (
           <div className="text-center mt-12">
             <a href={reviewsUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary px-6 py-3.5">
               <GoogleG className="w-4 h-4" />
@@ -1516,7 +1631,9 @@ export default function App() {
       <WhatWeSolve problems={problems} />
       <Industries />
       {showcases.length > 0 && <Showcase items={showcases} />}
-      {testimonials.length > 0 && <Testimonials items={testimonials} reviewsUrl={settings.google_reviews_url} />}
+      {testimonials.length > 0
+        ? <Testimonials items={testimonials} reviewsUrl={settings.google_reviews_url} />
+        : SHOW_SAMPLE_TESTIMONIALS && <Testimonials items={SAMPLE_TESTIMONIALS} sample />}
       {customers.length > 0 && <Clients customers={customers} />}
       <WhyDatatrop />
       <FinalCta />
