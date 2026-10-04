@@ -56,7 +56,7 @@ function useScrollProgress() {
 
 const bookProps = BOOKING_URL
   ? { href: BOOKING_URL, target: '_blank', rel: 'noopener noreferrer' }
-  : { href: '#book' }
+  : { href: '/contact#book' }
 
 const reveal = (inView) => `transition-all duration-700 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`
 
@@ -312,32 +312,32 @@ function Arcs({ className = '', variant = 'hero' }) {
 const MEGA_MENU = [
   {
     label: 'About',
-    href: '#about',
+    href: '/#about',
     panel: [
-      { title: 'Who We Are', desc: 'Our engineering philosophy and approach.', href: '#about' },
-      { title: 'How We Engage', desc: 'Build, solve and innovate.', href: '#engage' },
-      { title: 'The Complexity Scale', desc: 'From automation to new products.', href: '#approach' },
-      { title: 'Why Datatrop', desc: 'What sets our systems apart.', href: '#why' },
+      { title: 'Who We Are', desc: 'Our engineering philosophy and approach.', href: '/#about' },
+      { title: 'How We Engage', desc: 'Build, solve and innovate.', href: '/#engage' },
+      { title: 'The Complexity Scale', desc: 'From automation to new products.', href: '/#approach' },
+      { title: 'Why Datatrop', desc: 'What sets our systems apart.', href: '/#why' },
     ],
   },
   {
     label: 'What We Do',
-    href: '#capabilities',
+    href: '/#capabilities',
     panel: [
-      { title: 'Enterprise AI Systems', desc: 'Unified operating platforms across every department.', href: '#capabilities' },
-      { title: 'AI Workforce Platforms', desc: 'Multi-agent teams that execute operational work.', href: '#workforce' },
-      { title: 'Revenue Intelligence', desc: 'Lead intelligence and sales automation.', href: '#capabilities' },
-      { title: 'Communication Intelligence', desc: 'Omnichannel, call and conversation intelligence.', href: '#capabilities' },
+      { title: 'Enterprise AI Systems', desc: 'Unified operating platforms across every department.', href: '/#capabilities' },
+      { title: 'AI Workforce Platforms', desc: 'Multi-agent teams that execute operational work.', href: '/#workforce' },
+      { title: 'Revenue Intelligence', desc: 'Lead intelligence and sales automation.', href: '/#capabilities' },
+      { title: 'Communication Intelligence', desc: 'Omnichannel, call and conversation intelligence.', href: '/#capabilities' },
     ],
   },
   {
     label: 'Industries',
-    href: '#industries',
+    href: '/#industries',
     panel: [
-      { title: 'Manufacturing', desc: 'Operational systems for production complexity.', href: '#industries' },
-      { title: 'Distribution & Trading', desc: 'Systems that keep fast-moving supply chains in sync.', href: '#industries' },
-      { title: 'Healthcare', desc: 'Intelligent systems for regulated, data-heavy environments.', href: '#industries' },
-      { title: 'Financial Services', desc: 'Decision intelligence for complex, high-stakes operations.', href: '#industries' },
+      { title: 'Manufacturing', desc: 'Operational systems for production complexity.', href: '/#industries' },
+      { title: 'Distribution & Trading', desc: 'Systems that keep fast-moving supply chains in sync.', href: '/#industries' },
+      { title: 'Healthcare', desc: 'Intelligent systems for regulated, data-heavy environments.', href: '/#industries' },
+      { title: 'Financial Services', desc: 'Decision intelligence for complex, high-stakes operations.', href: '/#industries' },
     ],
   },
 ]
@@ -370,7 +370,7 @@ function Navbar() {
       >
         <div className={WRAP}>
           <div className="flex items-center justify-between h-[72px]">
-            <a href="#home" aria-label="Datatrop home"><LogoMark /></a>
+            <a href="/" aria-label="Datatrop home"><LogoMark /></a>
 
             <div className="hidden lg:flex items-center gap-1">
               {MEGA_MENU.map((m) => (
@@ -386,11 +386,11 @@ function Navbar() {
                   </a>
                 </div>
               ))}
-              <a href="#contact" onMouseEnter={() => setOpenPanel(null)} className="px-4 py-2.5 text-[14px] text-white/65 hover:text-white transition-colors duration-200">Contact</a>
+              <a href="/contact" onMouseEnter={() => setOpenPanel(null)} className="px-4 py-2.5 text-[14px] text-white/65 hover:text-white transition-colors duration-200">Contact</a>
             </div>
 
             <div className="hidden lg:flex items-center gap-3">
-              <a href="#contact" className="btn-secondary px-5 py-3 text-[13px]">Send a message</a>
+              <a href="/contact#message" className="btn-secondary px-5 py-3 text-[13px]">Send a message</a>
               <a {...bookProps} className="btn-primary px-5 py-3 text-[13px]">Book a call <Arrow className="w-3.5 h-3.5" /></a>
             </div>
 
@@ -447,10 +447,10 @@ function Navbar() {
                 )}
               </div>
             ))}
-            <a href="#contact" onClick={() => setMenuOpen(false)} className="px-1 py-4 font-display text-lg text-white border-b border-white/[0.08]">Contact</a>
+            <a href="/contact" onClick={() => setMenuOpen(false)} className="px-1 py-4 font-display text-lg text-white border-b border-white/[0.08]">Contact</a>
             <div className="pt-6 flex flex-col gap-3" onClick={() => setMenuOpen(false)}>
               <BookButton className="w-full" />
-              <GhostButton href="#contact" className="w-full">Send a message</GhostButton>
+              <GhostButton href="/contact#message" className="w-full">Send a message</GhostButton>
             </div>
           </div>
         </div>
@@ -504,7 +504,7 @@ function Hero({ headline, subtext }) {
 
         <div className="flex flex-col sm:flex-row gap-3.5 anim-rise" style={{ animationDelay: '0.22s' }}>
           <BookButton />
-          <GhostButton href="#capabilities">Explore our systems</GhostButton>
+          <GhostButton href="/#capabilities">Explore our systems</GhostButton>
         </div>
       </div>
 
@@ -1385,9 +1385,55 @@ function FinalCta() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3.5">
               <BookButton />
-              <GhostButton href="#contact">Send a message</GhostButton>
+              <GhostButton href="/contact#message">Send a message</GhostButton>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── Contact page header ──────────────────────────────────────────────────────
+const CONTACT_STEPS = [
+  { title: 'Tell us about the problem', desc: 'Book a time or send a message. A few lines on what is getting in the way is enough.' },
+  { title: 'Talk to an engineer', desc: 'A 30-minute call with someone who builds systems, not a sales script.' },
+  { title: 'Get a clear next step', desc: 'Whether that is a scoped engagement, a quick fix or an honest “not us”.' },
+]
+
+function ContactHero({ settings }) {
+  const email = settings.contact_email || 'sales@datatrop.in'
+  const phone = settings.contact_phone || '+91 79029 17795'
+  return (
+    <section className="relative overflow-hidden bg-brand-gradient">
+      <Arcs className="opacity-70" />
+      <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#070305] to-transparent pointer-events-none" />
+      <div className={`relative z-10 ${WRAP} pt-36 sm:pt-44 pb-20 sm:pb-24`}>
+        <Eyebrow className="mb-6 anim-fade">Contact</Eyebrow>
+        <h1 className="font-display max-w-4xl text-[40px] leading-[1.04] sm:text-6xl lg:text-[76px] font-medium text-white tracking-[-0.04em] mb-7 anim-rise text-balance">
+          Let's talk about the problem <span className="text-glow">you're solving.</span>
+        </h1>
+        <p className="max-w-2xl text-base sm:text-lg text-white/65 font-light leading-relaxed mb-10 anim-rise" style={{ animationDelay: '0.1s' }}>
+          Book a strategy call straight into our calendar, or send us a message and we'll get back to you within 24 hours.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3.5 mb-16 anim-rise" style={{ animationDelay: '0.18s' }}>
+          <a href="/contact#book" className="btn-primary px-7 py-4">Book a strategy call <Arrow /></a>
+          <a href="/contact#message" className="btn-secondary px-7 py-4">Send a message <Arrow /></a>
+        </div>
+
+        <div className="grid sm:grid-cols-3 gap-4 anim-fade" style={{ animationDelay: '0.3s' }}>
+          {CONTACT_STEPS.map((st, i) => (
+            <div key={st.title} className="card p-6 bg-black/20">
+              <p className="font-mono text-[11px] text-rose-soft mb-3">Step {i + 1}</p>
+              <h3 className="font-display text-white text-lg font-medium tracking-tight mb-2">{st.title}</h3>
+              <p className="text-white/55 text-sm font-light leading-relaxed">{st.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-10 flex flex-wrap gap-x-10 gap-y-3 text-sm">
+          <span className="text-white/45">Prefer email? <a href={`mailto:${email}`} className="text-white hover:text-rose-soft select-all">{email}</a></span>
+          <span className="text-white/45">Or call <a href={`tel:${phone.replace(/[^0-9+]/g, '')}`} className="text-white hover:text-rose-soft">{phone}</a></span>
         </div>
       </div>
     </section>
@@ -1444,10 +1490,10 @@ function Contact({ settings }) {
   ]
 
   return (
-    <section id="contact" className="glow-section py-24 sm:py-32">
+    <section className="glow-section pt-8 pb-24 sm:pb-32">
       <div className={WRAP}>
         {/* Native scheduler — writes straight into our Outlook calendar */}
-        <div id="book" className="scroll-mt-24 grid lg:grid-cols-12 gap-10 mb-24">
+        <div id="book" className="scroll-mt-28 grid lg:grid-cols-12 gap-10 mb-24 sm:mb-32">
           <div className="lg:col-span-4">
             <Eyebrow className="mb-5">Book a strategy call</Eyebrow>
             <h2 className="font-display text-3xl sm:text-4xl font-medium text-white tracking-[-0.03em] leading-[1.08] mb-4">Pick a time that works for you.</h2>
@@ -1458,7 +1504,7 @@ function Contact({ settings }) {
           </div>
         </div>
 
-        <div ref={ref} className="grid lg:grid-cols-12 gap-10 items-start">
+        <div ref={ref} id="message" className="scroll-mt-28 grid lg:grid-cols-12 gap-10 items-start">
           {/* Contact details */}
           <div className={`lg:col-span-4 ${reveal(inView)}`}>
             <Eyebrow className="mb-5">Or send a message</Eyebrow>
@@ -1524,9 +1570,9 @@ function Contact({ settings }) {
 // FOOTER
 // ═══════════════════════════════════════════════════════════════════════════════
 const FOOTER_COLUMNS = [
-  { title: 'Company', links: [['Who We Are', '#about'], ['How We Engage', '#engage'], ['Why Datatrop', '#why']] },
-  { title: 'Capabilities', links: [['What We Build', '#capabilities'], ['AI Workforce', '#workforce'], ['What We Solve', '#solve'], ['Industries', '#industries']] },
-  { title: 'Connect', links: [['Contact Us', '#contact'], ['Book a Call', '#book']] },
+  { title: 'Company', links: [['Who We Are', '/#about'], ['How We Engage', '/#engage'], ['Why Datatrop', '/#why']] },
+  { title: 'Capabilities', links: [['What We Build', '/#capabilities'], ['AI Workforce', '/#workforce'], ['What We Solve', '/#solve'], ['Industries', '/#industries']] },
+  { title: 'Connect', links: [['Contact Us', '/contact'], ['Book a Call', '/contact#book'], ['Send a Message', '/contact#message']] },
   { title: 'Legal', links: [['Privacy Policy', '/privacy'], ['Terms of Service', '/terms']] },
 ]
 
@@ -1594,7 +1640,20 @@ function hexToChannels(hex) {
   return `${parseInt(m.slice(0, 2), 16)} ${parseInt(m.slice(2, 4), 16)} ${parseInt(m.slice(4, 6), 16)}`
 }
 
-export default function App() {
+const STATIC_PREVIEW = import.meta.env.VITE_STATIC_PREVIEW === 'true'
+
+const pageFromPath = (path) => (path.replace(/\/+$/, '') === '/contact' ? 'contact' : 'home')
+
+function scrollToHash(hash) {
+  const id = (hash || '').replace('#', '')
+  const el = id && document.getElementById(id)
+  if (el) el.scrollIntoView({ behavior: 'instant', block: 'start' })
+  else window.scrollTo({ top: 0, behavior: 'instant' })
+}
+
+export default function App({ page: initialPage = 'home' }) {
+  const [page, setPage] = useState(initialPage)
+  const pendingHash = useRef(typeof window !== 'undefined' ? window.location.hash : '')
   const [settings, setSettings] = useState({})
   const [customers, setCustomers] = useState([])
   const [showcases, setShowcases] = useState([])
@@ -1619,9 +1678,59 @@ export default function App() {
     api.getPublic('service_lines').then((d) => { if (Array.isArray(d) && d.length) setServiceLines(d) }).catch(() => {})
   }, [])
 
+  // Page title + land on any #section in the URL once the page has rendered
+  useEffect(() => {
+    document.title = page === 'contact'
+      ? 'Contact Datatrop: Book a Strategy Call'
+      : 'Datatrop: Engineering Certainty in a Complex World'
+    const hash = pendingHash.current
+    pendingHash.current = ''
+    const t = setTimeout(() => scrollToHash(hash), 60)
+    return () => clearTimeout(t)
+  }, [page])
+
+  // Browser back/forward between the two pages
+  useEffect(() => {
+    const onPop = () => {
+      pendingHash.current = window.location.hash
+      setPage(pageFromPath(window.location.pathname))
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
+  // Handle links between home and contact without a full reload. Same-page
+  // section links just scroll; anything else (admin, legal, external) is left alone.
+  const onLinkClick = (e) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+    const a = e.target.closest('a')
+    const href = a?.getAttribute('href')
+    if (!href || !href.startsWith('/') || a.target === '_blank') return
+    const [path, hash = ''] = href.split('#')
+    if (!['/', '/contact'].includes(path)) return
+    const target = pageFromPath(path)
+    e.preventDefault()
+    // The static approval preview is a single file, so it switches pages without touching the URL
+    if (!STATIC_PREVIEW) {
+      try { window.history.pushState({}, '', href) } catch { /* sandboxed frame: keep going */ }
+    }
+    if (target === page) scrollToHash(hash ? `#${hash}` : '')
+    else {
+      pendingHash.current = hash ? `#${hash}` : ''
+      setPage(target)
+    }
+  }
+
   return (
-    <div className="site min-h-screen overflow-x-hidden">
+    <div className="site min-h-screen overflow-x-hidden" onClick={onLinkClick}>
       <Navbar />
+      {page === 'contact' ? (
+        <>
+          <ContactHero settings={settings} />
+          <Contact settings={settings} />
+        </>
+      ) : (
+        <>
       <Hero headline={settings.hero_headline} subtext={settings.hero_subtext} />
       <Statement about={settings.about_bio} />
       <ThreePillars />
@@ -1637,7 +1746,8 @@ export default function App() {
       {customers.length > 0 && <Clients customers={customers} />}
       <WhyDatatrop />
       <FinalCta />
-      <Contact settings={settings} />
+        </>
+      )}
       <Footer settings={settings} />
     </div>
   )

@@ -35,6 +35,15 @@ createRoot(document.getElementById('root')).render(
           }
         />
 
+        <Route
+          path="/contact"
+          element={
+            <SiteThemeProvider>
+              <App page="contact" />
+            </SiteThemeProvider>
+          }
+        />
+
         {/* Legal pages */}
         <Route
           path="/privacy"
