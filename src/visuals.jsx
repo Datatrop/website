@@ -5,7 +5,7 @@
 // complete still frame for the pre-built HTML and for reduced-motion users,
 // and only animate while on screen.
 import { useState, useEffect } from 'react'
-import { useInView, useOnScreen, prefersReducedMotion } from './hooks'
+import { useInView, prefersReducedMotion } from './hooks'
 
 const ROSE = '#E0457B'
 const SOFT = '#F08DB0'
@@ -18,113 +18,160 @@ const FAINT = 'rgba(255,255,255,0.05)'
 const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// HERO — scattered departments → one connected system (loops)
+// HOW IT WORKS — scroll-driven: chaos → mapped → connected → running
+// `p` is 0..1 scroll progress through the pinned section.
 // ═══════════════════════════════════════════════════════════════════════════════
 const DEPTS = ['Sales', 'Finance', 'Inventory', 'Procurement', 'Dispatch', 'HR', 'Support', 'Reports']
 const CHAOS = [[104, 74, -9], [390, 60, 7], [452, 210, -6], [78, 238, 8], [350, 448, -7], [124, 430, 5], [262, 134, 11], [440, 372, -10]]
+const GRID = DEPTS.map((_, i) => [80 + (i % 4) * 120, i < 4 ? 214 : 306])
 const CX = 260
 const CY = 260
 const RADIUS = 186
-const ORDER = DEPTS.map((_, i) => {
+const RING = DEPTS.map((_, i) => {
   const a = ((i * 45 - 90) * Math.PI) / 180
   return [CX + RADIUS * Math.cos(a), CY + RADIUS * Math.sin(a)]
 })
 const TANGLE = [[0, 4], [1, 5], [2, 6], [3, 7], [0, 2], [5, 7], [1, 3], [4, 6]]
-const CYCLE = 10000
+const ALERTS = [[0, 'Data copied 3×'], [7, 'Report late'], [2, 'Stock mismatch'], [5, 'Missed hand-off']]
+const METRICS = [['Manual work', '↓'], ['Visibility', '↑'], ['Response time', '↓']]
 
-function cycleValue(ms) {
-  const e = ms % CYCLE
-  if (e < 2400) return 0
-  if (e < 3800) return easeInOut((e - 2400) / 1400)
-  if (e < 8600) return 1
-  return 1 - easeInOut((e - 8600) / 1400)
-}
+// local 0..1 for p within [a, b], eased
+const seg = (p, a, b) => easeInOut(Math.min(1, Math.max(0, (p - a) / (b - a))))
+const mix = (a, b, t) => a + (b - a) * t
 
-export function SystemsDiagram({ className = '' }) {
-  const [ref, onScreen] = useOnScreen(0.15)
-  const [t, setT] = useState(() => (prefersReducedMotion() ? 1 : 0))
-
-  useEffect(() => {
-    if (!onScreen || prefersReducedMotion()) return
-    let raf
-    const start = performance.now()
-    const loop = (now) => {
-      setT(Math.round(cycleValue(now - start) * 1000) / 1000)
-      raf = requestAnimationFrame(loop)
-    }
-    raf = requestAnimationFrame(loop)
-    return () => cancelAnimationFrame(raf)
-  }, [onScreen])
-
+export function StoryDiagram({ p }) {
+  const toGrid = seg(p, 0.2, 0.36)
+  const toRing = seg(p, 0.5, 0.66)
   const pos = DEPTS.map((_, i) => {
-    const [ax, ay, ar] = CHAOS[i]
-    const [bx, by] = ORDER[i]
-    return [ax + (bx - ax) * t, ay + (by - ay) * t, ar * (1 - t)]
+    const [cx, cy, cr] = CHAOS[i]; const [gx, gy] = GRID[i]; const [rx, ry] = RING[i]
+    const x = mix(mix(cx, gx, toGrid), rx, toRing)
+    const y = mix(mix(cy, gy, toGrid), ry, toRing)
+    return [x, y, cr * (1 - toGrid)]
   })
-  const after = t > 0.5
+  const alerts = 1 - seg(p, 0.12, 0.24)
+  const scanT = seg(p, 0.3, 0.5)
+  const scanning = p > 0.28 && p < 0.54
+  const scanX = mix(20, 500, scanT)
+  const core = seg(p, 0.56, 0.7)
+  const flows = seg(p, 0.62, 0.74)
+  const agents = seg(p, 0.8, 0.9)
+  const metrics = seg(p, 0.86, 0.96)
+  const stage = p < 0.28 ? 0 : p < 0.56 ? 1 : 2
 
   return (
-    <div ref={ref} className={`relative ${className}`}>
-      <div className="absolute inset-[12%] rounded-full bg-[radial-gradient(circle,rgb(var(--grape-bright)/0.35),transparent_65%)] blur-2xl pointer-events-none" />
-      <svg viewBox="0 0 520 520" className="relative w-full h-auto" role="img"
-        aria-label="Animation: eight disconnected departments (sales, finance, inventory, procurement, dispatch, HR, support, reports) come together around one connected Datatrop system.">
-        <defs>
-          <radialGradient id="sd-core">
-            <stop offset="0" stopColor={SOFT} />
-            <stop offset="0.45" stopColor={ROSE} stopOpacity="0.85" />
-            <stop offset="1" stopColor="#6B1E72" stopOpacity="0.9" />
-          </radialGradient>
-        </defs>
+    <svg viewBox="0 0 520 580" className="w-full h-full" role="img"
+      aria-label="Eight disconnected departments are mapped, then connected to one Datatrop platform, with AI agents running routine work.">
+      <defs>
+        <radialGradient id="st-core">
+          <stop offset="0" stopColor={SOFT} />
+          <stop offset="0.45" stopColor={ROSE} stopOpacity="0.85" />
+          <stop offset="1" stopColor="#6B1E72" stopOpacity="0.95" />
+        </radialGradient>
+        <linearGradient id="st-scan" x1="0" x2="1">
+          <stop offset="0" stopColor={SOFT} stopOpacity="0" />
+          <stop offset="0.5" stopColor={SOFT} stopOpacity="0.9" />
+          <stop offset="1" stopColor={SOFT} stopOpacity="0" />
+        </linearGradient>
+      </defs>
 
-        <circle cx={CX} cy={CY} r={RADIUS} fill="none" stroke="rgba(255,255,255,0.08)" strokeDasharray="2 9" opacity={t} />
+      {/* 1 · tangled links */}
+      <g opacity={(1 - toGrid) * 0.9}>
+        {TANGLE.map(([a, b], i) => (
+          <line key={i} x1={pos[a][0]} y1={pos[a][1]} x2={pos[b][0]} y2={pos[b][1]} stroke={AMBER} strokeOpacity="0.45" strokeDasharray="5 7" strokeWidth="1.3" />
+        ))}
+      </g>
 
-        {/* Before: tangled, broken links */}
-        <g opacity={(1 - t) * 0.9}>
-          {TANGLE.map(([a, b], i) => (
-            <line key={i} x1={pos[a][0]} y1={pos[a][1]} x2={pos[b][0]} y2={pos[b][1]} stroke={AMBER} strokeOpacity="0.45" strokeDasharray="5 7" strokeWidth="1.3" />
-          ))}
+      {/* 2 · mapping: grid guides + sweeping scan line */}
+      <g opacity={toGrid * (1 - toRing)}>
+        <rect x="14" y="176" width="492" height="168" rx="18" fill="none" stroke="rgba(255,255,255,0.1)" strokeDasharray="3 7" />
+        {[0, 1, 2].map((i) => <line key={i} x1={80 + i * 120} y1="214" x2={200 + i * 120} y2="214" stroke="rgba(255,255,255,0.18)" strokeDasharray="2 6" />)}
+        {[0, 1, 2].map((i) => <line key={i} x1={80 + i * 120} y1="306" x2={200 + i * 120} y2="306" stroke="rgba(255,255,255,0.18)" strokeDasharray="2 6" />)}
+        <text x="260" y="160" textAnchor="middle" fill="rgba(255,255,255,0.55)" fontFamily="JetBrains Mono, monospace" fontSize="11" letterSpacing="2">MAPPING WORKFLOWS · {Math.round(scanT * 100)}%</text>
+      </g>
+      {scanning && (
+        <g opacity={Math.sin(scanT * Math.PI)}>
+          <rect x={scanX - 40} y="170" width="80" height="180" fill="url(#st-scan)" opacity="0.18" />
+          <line x1={scanX} y1="170" x2={scanX} y2="350" stroke={SOFT} strokeWidth="1.5" />
         </g>
+      )}
 
-        {/* After: every department wired to the core, with data flowing in */}
-        <g opacity={t}>
-          {pos.map(([x, y], i) => (
-            <g key={i}>
-              <line x1={x} y1={y} x2={CX} y2={CY} stroke="rgba(240,141,176,0.22)" strokeWidth="1.2" />
-              <line x1={x} y1={y} x2={CX} y2={CY} stroke={SOFT} strokeWidth="2.2" strokeLinecap="round" className="viz-flow" style={{ animationDelay: `${i * -0.2}s` }} />
-            </g>
-          ))}
-        </g>
-
-        {/* Core */}
-        <g transform={`translate(${CX} ${CY}) scale(${0.5 + 0.5 * t})`} opacity={0.25 + 0.75 * t}>
-          <circle r="66" fill="url(#sd-core)" />
-          <circle r="66" fill="none" stroke="rgba(255,255,255,0.35)" />
-          <circle r="80" fill="none" stroke={SOFT} strokeOpacity="0.35" className="viz-ping" />
-          <text y="-2" textAnchor="middle" fill="#fff" fontFamily="Sora, Inter, sans-serif" fontSize="17" fontWeight="600" letterSpacing="1.5">DATATROP</text>
-          <text y="18" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontFamily="Inter, sans-serif" fontSize="11.5">one system</text>
-        </g>
-
-        {/* Departments */}
-        {pos.map(([x, y, r], i) => (
-          <g key={DEPTS[i]} transform={`translate(${x} ${y}) rotate(${r})`}>
-            <rect x="-58" y="-19" width="116" height="38" rx="12" fill={INK} stroke={after ? 'rgba(240,141,176,0.55)' : 'rgba(255,255,255,0.18)'} />
-            <circle cx="-40" cy="0" r="4" fill={after ? SOFT : AMBER} />
-            <text x="-29" y="4.5" fill="rgba(255,255,255,0.88)" fontFamily="Inter, sans-serif" fontSize="13">{DEPTS[i]}</text>
+      {/* 3 · core + spokes */}
+      <circle cx={CX} cy={CY} r={RADIUS} fill="none" stroke="rgba(255,255,255,0.08)" strokeDasharray="2 9" opacity={toRing} />
+      <g opacity={flows}>
+        {pos.map(([x, y], i) => (
+          <g key={i}>
+            <line x1={x} y1={y} x2={CX} y2={CY} stroke="rgba(240,141,176,0.22)" strokeWidth="1.2" />
+            <line x1={x} y1={y} x2={CX} y2={CY} stroke={SOFT} strokeWidth="2.2" strokeLinecap="round" className="viz-flow" style={{ animationDelay: `${i * -0.2}s` }} />
           </g>
         ))}
-      </svg>
+      </g>
+      <g transform={`translate(${CX} ${CY}) scale(${0.3 + 0.7 * core})`} opacity={core}>
+        <circle r="66" fill="url(#st-core)" />
+        <circle r="66" fill="none" stroke="rgba(255,255,255,0.35)" />
+        <circle r="80" fill="none" stroke={SOFT} strokeOpacity="0.35" className="viz-ping" />
+        <text y="-2" textAnchor="middle" fill="#fff" fontFamily="Sora, Inter, sans-serif" fontSize="17" fontWeight="600" letterSpacing="1.5">DATATROP</text>
+        <text y="18" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontFamily="Inter, sans-serif" fontSize="11.5">one platform</text>
+      </g>
 
-      <div className="relative -mt-2 flex justify-center">
-        <span className="grid items-center rounded-full border border-white/12 bg-black/40 backdrop-blur px-4 py-2 text-[12px] text-white/75 text-center">
-          <span className={`[grid-area:1/1] flex items-center justify-center gap-2 transition-opacity duration-500 ${after ? 'opacity-0' : 'opacity-100'}`}>
-            <span className="w-1.5 h-1.5 rounded-full" style={{ background: AMBER }} /> Before: eight tools that don't talk
-          </span>
-          <span className={`[grid-area:1/1] flex items-center justify-center gap-2 transition-opacity duration-500 ${after ? 'opacity-100' : 'opacity-0'}`}>
-            <span className="w-1.5 h-1.5 rounded-full bg-rose" /> After: one connected operating system
-          </span>
-        </span>
-      </div>
-    </div>
+      {/* 4 · AI agents orbiting the core */}
+      <g opacity={agents}>
+        <circle cx={CX} cy={CY} r="112" fill="none" stroke={SOFT} strokeOpacity="0.25" strokeDasharray="3 6" />
+        <g className="viz-orbit">
+          {[0, 120, 240].map((a) => {
+            const rad = (a * Math.PI) / 180
+            return (
+              <g key={a} transform={`translate(${CX + 112 * Math.cos(rad)} ${CY + 112 * Math.sin(rad)})`}>
+                <circle r="15" fill={INK} stroke={SOFT} />
+                <circle r="15" fill="rgba(224,69,123,0.35)" />
+                <circle r="4" fill="#fff" className="viz-blink" />
+              </g>
+            )
+          })}
+        </g>
+      </g>
+
+      {/* departments */}
+      {pos.map(([x, y, r], i) => {
+        const mapped = scanning ? scanX > GRID[i][0] : p >= 0.54
+        const stroke = stage === 2 ? 'rgba(240,141,176,0.6)' : stage === 1 ? (mapped ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.18)') : 'rgba(246,196,83,0.35)'
+        const dot = stage === 2 ? SOFT : stage === 1 ? (mapped ? '#fff' : 'rgba(255,255,255,0.35)') : AMBER
+        return (
+          <g key={DEPTS[i]} transform={`translate(${x} ${y}) rotate(${r})`}>
+            <rect x="-58" y="-19" width="116" height="38" rx="12" fill={INK} stroke={stroke} />
+            <circle cx="-40" cy="0" r="4" fill={dot} />
+            <text x="-29" y="4.5" fill="rgba(255,255,255,0.88)" fontFamily="Inter, sans-serif" fontSize="13">{DEPTS[i]}</text>
+          </g>
+        )
+      })}
+
+      {/* 1 · alerts */}
+      <g opacity={alerts}>
+        {ALERTS.map(([i, t], k) => {
+          const [x, y] = pos[i]
+          const w = t.length * 6.6 + 30
+          return (
+            <g key={t} transform={`translate(${Math.min(500 - w, Math.max(10, x - w / 2))} ${y - 50})`}>
+              <g className="viz-bob" style={{ animationDelay: `${k * 0.4}s` }}>
+                <rect width={w} height="24" rx="12" fill="rgba(246,196,83,0.16)" stroke={AMBER} strokeOpacity="0.7" />
+                <circle cx="13" cy="12" r="4" fill={AMBER} />
+                <text x="23" y="16" fill={AMBER} fontFamily="Inter, sans-serif" fontSize="11.5">{t}</text>
+              </g>
+            </g>
+          )
+        })}
+      </g>
+
+      {/* 4 · outcomes */}
+      <g opacity={metrics} transform={`translate(0 ${(1 - metrics) * 10})`}>
+        {METRICS.map(([t, arrow], i) => (
+          <g key={t} transform={`translate(${20 + i * 166} 528)`}>
+            <rect width="148" height="36" rx="18" fill="rgba(224,69,123,0.16)" stroke="rgba(240,141,176,0.55)" />
+            <text x="18" y="23" fill="#fff" fontFamily="Inter, sans-serif" fontSize="13">{t}</text>
+            <text x="130" y="24" textAnchor="end" fill={SOFT} fontFamily="Sora, sans-serif" fontSize="16" fontWeight="600">{arrow}</text>
+          </g>
+        ))}
+      </g>
+    </svg>
   )
 }
 

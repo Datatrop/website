@@ -297,6 +297,10 @@ body {
 }
 
 /* ── Visualisations (src/visuals.jsx) ─────────────────────────────────── */
+/* Scroll-story diagram: sized to the viewport height so the pinned frame never clips */
+.story-diagram { max-width: min(380px, calc((100svh - 340px) * 0.9)); }
+@media (min-width: 640px) { .story-diagram { max-width: min(500px, calc((100svh - 340px) * 0.9)); } }
+@media (min-width: 1024px) { .story-diagram { max-width: min(580px, calc((100svh - 110px) * 0.9)); } }
 .viz-layer { transition: opacity 0.7s ease; }
 
 .viz-flow { stroke-dasharray: 3 14; animation: viz-flow 1.4s linear infinite; }
@@ -346,12 +350,15 @@ body {
   100% { opacity: 0; transform: translateY(0); }
 }
 
+.viz-orbit { transform-box: view-box; transform-origin: 260px 260px; animation: viz-sweep 14s linear infinite; }
+.viz-bob { animation: viz-bob 2.4s ease-in-out infinite; }
+@keyframes viz-bob { 50% { transform: translateY(-4px); } }
 .viz-sweep { transform-box: view-box; transform-origin: 48px 48px; animation: viz-sweep 6s linear infinite; }
 @keyframes viz-sweep { to { transform: rotate(360deg); } }
 
 @media (prefers-reduced-motion: reduce) {
   .viz-flow, .viz-ping, .viz-draw, .viz-pulse-dot, .viz-blink, .viz-leak, .viz-pour,
-  .viz-grow-x, .viz-fill, .viz-check, .viz-wave, .viz-chip, .viz-stack, .viz-sweep { animation: none !important; }
+  .viz-grow-x, .viz-fill, .viz-check, .viz-wave, .viz-chip, .viz-stack, .viz-sweep, .viz-orbit, .viz-bob { animation: none !important; }
   .viz-leak, .viz-pour, .viz-ping { display: none; }
   .viz-layer { transition: none; }
 }

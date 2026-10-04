@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import { api } from './lib/api'
 import { PAGE_META, pageKeyFromPath, applyPageMeta } from './seo'
-import { useInView } from './hooks'
-import { SystemsDiagram, ProblemScene, CapabilityViz, StatTiles } from './visuals'
+import { useInView, useStickyProgress } from './hooks'
+import { StoryDiagram, ProblemScene, CapabilityViz, StatTiles } from './visuals'
+import ParticleHero from './ParticleHero.jsx'
 import { problemKind, capabilityKind } from './vizKinds'
 import { initAnalytics, trackPageView, track, analyticsAvailable, getConsent, setConsent } from './analytics'
 
@@ -482,7 +483,7 @@ function Hero({ headline, subtext }) {
 
   return (
     <section id="home" className="relative min-h-[100svh] flex flex-col overflow-hidden bg-brand-gradient">
-      <Arcs />
+      <Arcs className="opacity-40" />
       {/* Fade into the page */}
       <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-[#070305] to-transparent pointer-events-none" />
 
@@ -506,7 +507,7 @@ function Hero({ headline, subtext }) {
         </div>
         </div>
         <div className="lg:col-span-5 w-full max-w-[460px] lg:max-w-none mx-auto anim-fade" style={{ animationDelay: '0.3s' }}>
-          <SystemsDiagram />
+          <ParticleHero />
         </div>
       </div>
 
@@ -594,6 +595,57 @@ function AboutIntro({ about }) {
             {PRINCIPLES.map((p) => (
               <span key={p} className="text-[13px] px-4 py-2 rounded-full border border-white/10 bg-white/[0.03] text-white/70">{p}</span>
             ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HOW IT WORKS — pinned while you scroll; the diagram tells the story
+// ═══════════════════════════════════════════════════════════════════════════════
+const STORY = [
+  { at: 0, n: '01', title: 'Your business today', body: 'Eight tools, copied data, reports that arrive late. Everyone works hard, and nothing connects.' },
+  { at: 0.28, n: '02', title: 'We map how it really works', body: 'Before writing code, we trace every workflow, hand-off and data source with your team.' },
+  { at: 0.56, n: '03', title: 'We engineer one system', body: 'Every department connects to a single platform, so data is entered once and seen everywhere.' },
+  { at: 0.8, n: '04', title: 'It runs alongside your team', body: 'AI agents take on the routine work. Your people get live visibility and make the calls.' },
+]
+
+function HowItWorks() {
+  const [ref, p] = useStickyProgress()
+  const active = STORY.reduce((acc, s, i) => (p >= s.at ? i : acc), 0)
+  return (
+    <section id="how-it-works" ref={ref} className="relative h-[420vh]">
+      <div className="sticky top-0 h-[100svh] overflow-hidden flex items-center">
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_55%_60%_at_70%_50%,rgb(var(--maroon)/0.75),transparent_70%)]" />
+        <div className={`relative ${WRAP} w-full grid lg:grid-cols-12 gap-6 lg:gap-12 items-center pt-20 lg:pt-16`}>
+          <div className="lg:col-span-5 order-2 lg:order-1">
+            <Eyebrow className="mb-4 hidden sm:inline-flex">How it works</Eyebrow>
+            <h2 className="hidden lg:block font-display text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05] mb-10">
+              From chaos to a system that <span className="text-glow">runs itself.</span>
+            </h2>
+            {/* Desktop: all steps, active one lit. Mobile: just the active step. */}
+            <ol className="hidden lg:flex flex-col gap-1">
+              {STORY.map((s, i) => (
+                <li key={s.n} className={`relative pl-14 py-4 transition-all duration-500 ${i === active ? 'opacity-100' : 'opacity-35'}`}>
+                  <span className={`absolute left-0 top-4 w-9 h-9 rounded-full border flex items-center justify-center font-mono text-[11px] transition-colors duration-500 ${i === active ? 'border-rose bg-[rgb(var(--accent)_/_0.2)] text-white' : i < active ? 'border-rose/40 text-rose-soft' : 'border-white/15 text-white/50'}`}>{s.n}</span>
+                  <h3 className="font-display text-white text-xl font-medium tracking-tight">{s.title}</h3>
+                  <p className={`text-white/60 font-light leading-relaxed overflow-hidden transition-all duration-500 ${i === active ? 'max-h-24 mt-2' : 'max-h-0'}`}>{s.body}</p>
+                </li>
+              ))}
+            </ol>
+            <div className="lg:hidden min-h-[132px]">
+              <p className="font-mono text-[11px] text-rose-soft mb-2">Step {STORY[active].n} / 04</p>
+              <h3 key={active} className="font-display text-white text-2xl font-medium tracking-tight mb-2 anim-fade">{STORY[active].title}</h3>
+              <p key={`b${active}`} className="text-white/65 font-light leading-relaxed anim-fade">{STORY[active].body}</p>
+            </div>
+            <div className="mt-6 lg:mt-8 h-1 rounded-full bg-white/10 overflow-hidden">
+              <div className="h-full rounded-full bg-[linear-gradient(90deg,#8A2A91,#E0457B)]" style={{ width: `${Math.round(p * 100)}%` }} />
+            </div>
+          </div>
+          <div className="lg:col-span-7 order-1 lg:order-2 w-full mx-auto story-diagram">
+            <StoryDiagram p={p} />
           </div>
         </div>
       </div>
@@ -2023,7 +2075,7 @@ export default function App({ page: initialPage = 'home' }) {
     : SHOW_PREVIEW_TESTIMONIALS && <Testimonials items={PREVIEW_TESTIMONIALS} />
 
   return (
-    <div className="site min-h-screen overflow-x-hidden" onClick={onLinkClick}>
+    <div className="site min-h-screen overflow-x-clip" onClick={onLinkClick}>
       <Navbar page={page} />
       {page === 'about' && (
         <>
@@ -2081,6 +2133,7 @@ export default function App({ page: initialPage = 'home' }) {
         <>
           <Hero headline={settings.hero_headline} subtext={settings.hero_subtext} />
           <Statement />
+          <HowItWorks />
           <ExplorePages />
           {testimonialsSection}
           {customers.length > 0 && <Clients customers={customers} />}
