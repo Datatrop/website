@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import { api } from './lib/api'
+import { PAGE_META, pageKeyFromPath, applyPageMeta } from './seo'
+import { initAnalytics, trackPageView, track } from './analytics'
 
 // ── Booking: handled natively by <BookingWidget/>, which reads real availability
 //    from the connected Outlook calendar and books the meeting on it.
@@ -118,6 +120,7 @@ function BookingWidget() {
     setBusy(true); setErr('')
     try {
       const r = await api.createBooking({ ...form, start: slot.start })
+      track('book_call', { method: 'calendar' })
       setDone(r)
     } catch (e2) {
       setErr(e2.message || 'Could not complete the booking.')
@@ -1659,6 +1662,7 @@ function Contact({ settings }) {
         company_size: form.size,
         challenge: form.challenge,
       })
+      track('generate_lead', { method: 'contact_form', industry: form.industry || undefined, company_size: form.size || undefined })
       setSubmitted(true)
       setForm(emptyForm)
     } catch (e2) {
@@ -1833,16 +1837,7 @@ function hexToChannels(hex) {
 
 const STATIC_PREVIEW = import.meta.env.VITE_STATIC_PREVIEW === 'true'
 
-const PAGES = {
-  '/': { key: 'home', title: 'Datatrop: Engineering Certainty in a Complex World' },
-  '/about': { key: 'about', title: 'About Datatrop: Intelligent Systems Engineering' },
-  '/what-we-do': { key: 'what-we-do', title: 'What We Do: AI Systems, Workforces and Platforms | Datatrop' },
-  '/industries': { key: 'industries', title: 'Industries | Datatrop' },
-  '/contact': { key: 'contact', title: 'Contact Datatrop: Book a Strategy Call' },
-}
-const normalizePath = (path) => (path.replace(/\/+$/, '') || '/')
-const pageFromPath = (path) => PAGES[normalizePath(path)]?.key || 'home'
-const titleFor = (key) => Object.values(PAGES).find((p) => p.key === key)?.title || PAGES['/'].title
+const pageFromPath = (path) => pageKeyFromPath(path) || 'home'
 
 function scrollToHash(hash) {
   const id = (hash || '').replace('#', '')
@@ -1862,6 +1857,7 @@ export default function App({ page: initialPage = 'home' }) {
   const [serviceLines, setServiceLines] = useState(DEFAULT_SERVICE_LINES)
 
   useEffect(() => {
+    initAnalytics()
     api.getContent().then((row) => {
       if (!row) return
       setSettings(row)
@@ -1880,7 +1876,8 @@ export default function App({ page: initialPage = 'home' }) {
 
   // Page title + land on any #section in the URL once the page has rendered
   useEffect(() => {
-    document.title = titleFor(page)
+    applyPageMeta(page)
+    trackPageView(PAGE_META[page].path, PAGE_META[page].title)
     const hash = pendingHash.current
     pendingHash.current = ''
     const t = setTimeout(() => scrollToHash(hash), 60)
@@ -1903,9 +1900,15 @@ export default function App({ page: initialPage = 'home' }) {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
     const a = e.target.closest('a')
     const href = a?.getAttribute('href')
-    if (!href || !href.startsWith('/') || a.target === '_blank') return
+    if (!href) return
+    const where = a.closest('nav') ? 'nav' : a.closest('footer') ? 'footer' : (a.closest('section')?.id || 'page')
+    if (href.startsWith('mailto:')) track('contact_click', { method: 'email' })
+    else if (href.startsWith('tel:')) track('contact_click', { method: 'phone' })
+    else if (href.endsWith('#book')) track('book_call_click', { location: where, page })
+    else if (href.endsWith('#message')) track('message_click', { location: where, page })
+    if (!href.startsWith('/') || a.target === '_blank') return
     const [path, hash = ''] = href.split('#')
-    if (!PAGES[normalizePath(path)]) return
+    if (!pageKeyFromPath(path)) return
     const target = pageFromPath(path)
     e.preventDefault()
     // The static approval preview is a single file, so it switches pages without touching the URL

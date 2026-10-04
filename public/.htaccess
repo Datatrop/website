@@ -8,6 +8,11 @@ RewriteBase /
 # QSA keeps Microsoft's ?code=…&state=… query string intact.
 RewriteRule ^auth/microsoft/callback/?$ api/ms_callback.php [L,QSA]
 
+# Pre-rendered pages: /about → about.html, /what-we-do → what-we-do.html, …
+# (built by scripts/prerender.mjs) so crawlers get each page's real HTML.
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+?)/?$ $1.html [L]
+
 # Single-page app: send everything that isn't a real file/folder to index.html
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
