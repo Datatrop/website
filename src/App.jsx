@@ -2,27 +2,15 @@ import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import { api } from './lib/api'
 import { PAGE_META, pageKeyFromPath, applyPageMeta } from './seo'
+import { useInView } from './hooks'
+import { SystemsDiagram, ProblemScene, CapabilityViz, StatTiles } from './visuals'
+import { problemKind, capabilityKind } from './vizKinds'
 import { initAnalytics, trackPageView, track, analyticsAvailable, getConsent, setConsent } from './analytics'
 
 // ── Booking: handled natively by <BookingWidget/>, which reads real availability
 //    from the connected Outlook calendar and books the meeting on it.
 //    "Book Strategy Call" buttons scroll straight to the scheduler.
 const BOOKING_URL = ''
-
-// ── Scroll-reveal hook ────────────────────────────────────────────────────────
-function useInView(threshold = 0.14) {
-  const ref = useRef(null)
-  const [inView, setInView] = useState(false)
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect() } },
-      { threshold }
-    )
-    if (ref.current) obs.observe(ref.current)
-    return () => obs.disconnect()
-  }, [threshold])
-  return [ref, inView]
-}
 
 // ── Scroll progress through an element (0 → 1), used by the statement reveal ──
 function useScrollProgress() {
@@ -498,12 +486,13 @@ function Hero({ headline, subtext }) {
       {/* Fade into the page */}
       <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-[#070305] to-transparent pointer-events-none" />
 
-      <div className={`relative z-10 ${WRAP} w-full flex-1 flex flex-col justify-center pt-36 pb-16`}>
+      <div className={`relative z-10 ${WRAP} w-full flex-1 grid lg:grid-cols-12 gap-x-10 gap-y-12 items-center pt-32 sm:pt-36 pb-16`}>
+        <div className="lg:col-span-7">
         <p className="font-display text-[11px] sm:text-[13px] tracking-[0.42em] text-white/70 uppercase mb-8 anim-fade">
           Engineering impossibilities<br className="sm:hidden" /> to reality
         </p>
 
-        <h1 className="font-display max-w-5xl text-[44px] leading-[1.02] sm:text-7xl lg:text-[96px] font-medium text-white tracking-[-0.045em] mb-8 anim-rise text-balance">
+        <h1 className="font-display max-w-5xl text-[44px] leading-[1.02] sm:text-7xl lg:text-[76px] xl:text-[84px] font-medium text-white tracking-[-0.045em] mb-8 anim-rise text-balance">
           {head} {tail && <span className="text-glow">{tail}</span>}
         </h1>
 
@@ -514,6 +503,10 @@ function Hero({ headline, subtext }) {
         <div className="flex flex-col sm:flex-row gap-3.5 anim-rise" style={{ animationDelay: '0.22s' }}>
           <BookButton />
           <GhostButton href="/what-we-do">Explore what we do</GhostButton>
+        </div>
+        </div>
+        <div className="lg:col-span-5 w-full max-w-[460px] lg:max-w-none mx-auto anim-fade" style={{ animationDelay: '0.3s' }}>
+          <SystemsDiagram />
         </div>
       </div>
 
@@ -899,7 +892,7 @@ function WhatWeBuild({ serviceLines }) {
   const lead = serviceLines[0]
   const rest = serviceLines.slice(1)
   return (
-    <section id="capabilities" className="glow-section alt py-28 sm:py-36">
+    <section id="capabilities" className="glow-section alt scroll-mt-20 py-28 sm:py-36">
       <div className={WRAP} ref={ref}>
         <SectionHead
           eyebrow="Capabilities"
@@ -907,31 +900,41 @@ function WhatWeBuild({ serviceLines }) {
           intro="Five system categories, each engineered around how your organization actually operates."
           inView={inView}
         />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {lead && (
-            <div
-              className={`md:col-span-2 lg:row-span-2 relative overflow-hidden rounded-[1.25rem] border border-white/10 min-h-[340px] flex flex-col justify-end p-8 sm:p-10 bg-brand-gradient ${reveal(inView)}`}
-            >
-              <Arcs variant="card" className="opacity-80" />
-              <div className="relative">
-                <div className="icon-tile w-12 h-12 mb-6"><CapIcon i={0} /></div>
-                <h3 className="font-display text-white text-2xl sm:text-3xl font-medium tracking-tight mb-3">{lead.name}</h3>
+            <div className={`md:col-span-2 relative overflow-hidden rounded-[1.25rem] border border-white/10 bg-brand-gradient grid lg:grid-cols-2 items-center gap-6 p-8 sm:p-10 ${reveal(inView)}`}>
+              <Arcs variant="card" className="opacity-60" />
+              <div className="relative order-2 lg:order-1">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft">Flagship</span>
+                <h3 className="font-display text-white text-2xl sm:text-3xl font-medium tracking-tight mt-3 mb-3">{lead.name}</h3>
                 <p className="text-white/70 text-base font-light leading-relaxed max-w-md mb-7">{lead.examples}</p>
                 <a {...bookProps} className="btn-secondary px-6 py-3.5">Talk to an engineer <Arrow /></a>
               </div>
+              <div className="relative order-1 lg:order-2 aspect-[440/232] w-full">
+                {capabilityKind(lead.name)
+                  ? <CapabilityViz kind={capabilityKind(lead.name)} />
+                  : <div className="icon-tile w-14 h-14"><CapIcon i={0} /></div>}
+              </div>
             </div>
           )}
-          {rest.map((s, i) => (
-            <div
-              key={s.id}
-              className={`card card-hover p-7 ${reveal(inView)}`}
-              style={{ transitionDelay: `${(i + 1) * 80}ms` }}
-            >
-              <div className="icon-tile w-11 h-11 mb-6"><CapIcon i={i + 1} /></div>
-              <h3 className="font-display text-white text-lg font-medium tracking-tight mb-2.5">{s.name}</h3>
-              <p className="text-white/55 text-sm font-light leading-relaxed">{s.examples}</p>
-            </div>
-          ))}
+          {rest.map((s, i) => {
+            const kind = capabilityKind(s.name)
+            return (
+              <div
+                key={s.id}
+                className={`card card-hover overflow-hidden flex flex-col ${reveal(inView)}`}
+                style={{ transitionDelay: `${(i + 1) * 80}ms` }}
+              >
+                <div className="h-44 px-6 pt-6 pb-3 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.7),transparent_70%)] flex items-center">
+                  {kind ? <CapabilityViz kind={kind} /> : <div className="icon-tile w-12 h-12 mx-auto"><CapIcon i={i + 1} /></div>}
+                </div>
+                <div className="p-7">
+                  <h3 className="font-display text-white text-lg font-medium tracking-tight mb-2">{s.name}</h3>
+                  <p className="text-white/55 text-sm font-light leading-relaxed">{s.examples}</p>
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
     </section>
@@ -1007,41 +1010,89 @@ function Approach() {
 // WHAT WE SOLVE  (DB-backed problems, row list)
 // ═══════════════════════════════════════════════════════════════════════════════
 const DEFAULT_PROBLEMS = [
-  { id: 'p1', title: 'Fragmented Operations', description: 'Disconnected systems become one intelligent operating platform.' },
-  { id: 'p2', title: 'Revenue Leakage', description: 'Capture every opportunity with AI-driven sales intelligence.' },
-  { id: 'p3', title: 'Communication Chaos', description: 'Unify calls, messages, and customer interactions into one intelligent communication layer.' },
-  { id: 'p4', title: 'Organizational Intelligence', description: 'Turn scattered knowledge into permanent institutional memory.' },
-  { id: 'p5', title: 'Human Dependency', description: 'Deploy AI workforces that execute repetitive work while humans focus on strategy.' },
-  { id: 'p6', title: 'Decision Delay', description: 'Give leadership real-time visibility instead of week-old reports.' },
+  { id: 'p1', title: 'Fragmented Operations', symptoms: 'Excel everywhere, data duplication, manual handoffs, no visibility.', solution: 'Disconnected systems become one intelligent operating platform.', reference_case: 'Sufi Group Unified Operations System, covering sales, procurement, inventory, dispatch, finance, accounting and HR in one platform.' },
+  { id: 'p2', title: 'Revenue Leakage', symptoms: 'Missed leads, poor follow-up, lost opportunities, low conversion.', solution: 'Capture every opportunity with AI-driven sales intelligence.' },
+  { id: 'p3', title: 'Communication Chaos', symptoms: 'Calls on personal phones, no visibility, lost customers, no accountability.', solution: 'Unify calls, messages, and customer interactions into one intelligent communication layer.', reference_case: 'Automotive communication system with centralized IVR, CRM tracking, dashboards and AI call intelligence.' },
+  { id: 'p4', title: 'Organizational Intelligence', symptoms: 'Knowledge trapped in employees, decisions depend on individuals, no institutional memory.', solution: 'Turn scattered knowledge into permanent institutional memory.' },
+  { id: 'p5', title: 'Human Dependency', symptoms: 'Repetitive work, hiring challenges, process bottlenecks.', solution: 'Deploy AI workforces that execute repetitive work while humans focus on strategy.', reference_case: 'AI Voice Ecosystems capable of autonomous customer interactions with memory and specialized capabilities.' },
 ]
 
 function WhatWeSolve({ problems }) {
   const [ref, inView] = useInView()
+  const [active, setActive] = useState(0)
+  const [after, setAfter] = useState(false)
+  const [auto, setAuto] = useState(true)
+  const p = problems[Math.min(active, problems.length - 1)]
+
+  // Flip between before and after on its own until the visitor takes over
+  useEffect(() => {
+    if (!inView || !auto || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const t = setInterval(() => setAfter((v) => !v), 3600)
+    return () => clearInterval(t)
+  }, [inView, auto, active])
+
+  const pick = (i) => { setActive(i); setAfter(false) }
+  const before = p.symptoms || ''
+  const afterText = p.solution || p.description || ''
+
   return (
-    <section id="solve" className="glow-section alt py-28 sm:py-36">
-      <div className={`${WRAP} grid lg:grid-cols-12 gap-12`} ref={ref}>
-        <div className="lg:col-span-4">
-          <div className="lg:sticky lg:top-32">
-            <SectionHead eyebrow="Track record" title="Problems we've solved." inView={inView} />
+    <section id="solve" className="glow-section scroll-mt-20 py-28 sm:py-36">
+      <div className={WRAP} ref={ref}>
+        <SectionHead
+          eyebrow="Problems we solve"
+          title="See the difference, not just the description."
+          intro="Pick a problem, then flip between how it looks today and how it looks once the system is in place."
+          inView={inView}
+        />
+        <div className={`grid lg:grid-cols-12 gap-6 lg:gap-10 ${reveal(inView)}`}>
+          {/* Problem picker */}
+          <div className="lg:col-span-4 flex lg:flex-col gap-2 overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0 pb-2 lg:pb-0" role="tablist" aria-label="Problems">
+            {problems.map((q, i) => (
+              <button
+                key={q.id}
+                role="tab"
+                aria-selected={i === active}
+                onClick={() => pick(i)}
+                className={`flex-shrink-0 text-left flex items-center gap-4 rounded-2xl border px-5 py-4 transition-all ${
+                  i === active ? 'border-[rgb(var(--accent)_/_0.55)] bg-[rgb(var(--maroon)_/_0.55)] text-white' : 'border-white/[0.08] bg-white/[0.02] text-white/60 hover:text-white hover:border-white/20'
+                }`}
+              >
+                <span className={`font-mono text-xs tabular-nums ${i === active ? 'text-rose-soft' : 'text-white/35'}`}>{String(i + 1).padStart(2, '0')}</span>
+                <span className="font-display text-[15px] sm:text-base font-medium whitespace-nowrap lg:whitespace-normal">{q.title}</span>
+              </button>
+            ))}
           </div>
-        </div>
-        <div className="lg:col-span-8 border-t border-white/[0.08]">
-          {problems.map((p, i) => (
-            <div
-              key={p.id}
-              className={`group grid grid-cols-[3rem_1fr] sm:grid-cols-[4rem_1fr_auto] gap-x-4 items-start py-7 border-b border-white/[0.08] transition-all duration-500 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-              style={{ transitionDelay: `${i * 70}ms` }}
-            >
-              <span className="font-mono text-sm text-rose-soft/80 tabular-nums pt-1">{String(i + 1).padStart(2, '0')}</span>
-              <div>
-                <h3 className="font-display text-white text-xl sm:text-2xl font-medium tracking-tight mb-2 transition-colors group-hover:text-rose-soft">{p.title}</h3>
-                <p className="text-white/55 text-sm sm:text-base font-light leading-relaxed max-w-xl">{p.description || p.solution}</p>
+
+          {/* Scene */}
+          <div className="lg:col-span-8 card overflow-hidden" role="tabpanel" aria-label={p.title}>
+            <div className="flex flex-wrap items-center justify-between gap-3 px-6 pt-6">
+              <h3 className="font-display text-white text-xl sm:text-2xl font-medium tracking-tight">{p.title}</h3>
+              <div className="relative inline-flex rounded-full border border-white/10 bg-black/30 p-1 text-[13px]" role="group" aria-label="Before or after">
+                <span className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full transition-all duration-500 ${after ? 'left-[calc(50%+0px)] bg-[linear-gradient(90deg,#8A2A91,#E0457B)]' : 'left-1 bg-[rgba(246,196,83,0.22)]'}`} />
+                <button type="button" onClick={() => { setAuto(false); setAfter(false) }} aria-pressed={!after} className={`relative px-4 py-1.5 rounded-full transition-colors ${!after ? 'text-white' : 'text-white/55'}`}>Before</button>
+                <button type="button" onClick={() => { setAuto(false); setAfter(true) }} aria-pressed={after} className={`relative px-4 py-1.5 rounded-full transition-colors ${after ? 'text-white' : 'text-white/55'}`}>After</button>
               </div>
-              <span className="hidden sm:flex w-10 h-10 rounded-full border border-white/10 items-center justify-center text-white/40 transition-all group-hover:border-rose/50 group-hover:text-white group-hover:-rotate-45">
-                <Arrow />
-              </span>
             </div>
-          ))}
+            <div className="px-4 sm:px-8 pt-4">
+              <ProblemScene kind={problemKind(p.title)} after={after} label={`${p.title}: ${after ? afterText : before}`} />
+            </div>
+            <div className="grid sm:grid-cols-2 gap-px bg-white/[0.06] border-t border-white/[0.07]">
+              <div className={`bg-[#0B0407] p-5 transition-opacity duration-500 ${after ? 'opacity-50' : 'opacity-100'}`}>
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#F6C453] mb-2">Today</p>
+                <p className="text-white/70 text-sm font-light leading-relaxed">{before}</p>
+              </div>
+              <div className={`bg-[#0B0407] p-5 transition-opacity duration-500 ${after ? 'opacity-100' : 'opacity-50'}`}>
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft mb-2">With Datatrop</p>
+                <p className="text-white/80 text-sm font-light leading-relaxed">{afterText}</p>
+              </div>
+            </div>
+            {p.reference_case && (
+              <div className="flex items-start gap-3 px-5 py-4 border-t border-white/[0.07] bg-[rgb(var(--maroon)_/_0.35)]">
+                <span className="mt-0.5 flex-shrink-0 font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft">Built</span>
+                <p className="text-white/75 text-sm leading-relaxed">{p.reference_case}</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </section>
@@ -1089,10 +1140,10 @@ function Industries() {
 // BY THE NUMBERS + PHILOSOPHY
 // ═══════════════════════════════════════════════════════════════════════════════
 const STATS = [
-  { value: '5+', label: 'System categories engineered' },
-  { value: '8', label: 'Industries served' },
-  { value: '24/7', label: 'Autonomous execution' },
-  { value: '100%', label: 'Built around the problem' },
+  { num: 5, max: 5, suffix: '+', kind: 'segments', label: 'System categories engineered' },
+  { num: 8, max: 8, kind: 'dots', label: 'Industries served' },
+  { num: 24, max: 24, display: '24/7', kind: 'clock', label: 'Autonomous execution' },
+  { num: 100, max: 100, suffix: '%', kind: 'ring', label: 'Built around the problem' },
 ]
 
 function WhyDatatrop() {
@@ -1113,18 +1164,7 @@ function WhyDatatrop() {
             society, whatever technology that requires.
           </p>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {STATS.map((s, i) => (
-            <div
-              key={s.label}
-              className={`card p-7 ${reveal(inView)}`}
-              style={{ transitionDelay: `${150 + i * 90}ms` }}
-            >
-              <div className="font-display text-4xl sm:text-5xl font-medium tracking-tight text-glow mb-3">{s.value}</div>
-              <div className="text-white/55 text-sm font-light leading-snug">{s.label}</div>
-            </div>
-          ))}
-        </div>
+        <StatTiles stats={STATS} />
       </div>
     </section>
   )
