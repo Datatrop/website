@@ -1296,37 +1296,45 @@ function initials(name = '') {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('') || '•'
 }
 
+const AUTOPLAY_MS = 5500
+
 function Testimonials({ items, reviewsUrl }) {
   const [ref, inView] = useInView()
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
   const touchX = useRef(null)
   const n = items.length
+  // The coverflow needs a card on each side of the centre one, so with only
+  // two reviews the ring cycles through them twice.
+  const ring = n === 2 ? [...items, ...items] : items
+  const m = ring.length
   const rated = items.filter((t) => Number(t.rating) > 0)
   const avg = rated.length ? (rated.reduce((a, t) => a + Number(t.rating), 0) / rated.length).toFixed(1) : null
 
-  const go = (d) => setActive((i) => (i + d + n) % n)
+  const go = (d) => setActive((i) => (i + d + m) % m)
 
-  // Gentle autoplay; stops on hover/focus and for reduced-motion users
+  // Autoplay; stops on hover/focus and for reduced-motion users
   useEffect(() => {
     if (n < 2 || paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const t = setInterval(() => setActive((i) => (i + 1) % n), 6500)
-    return () => clearInterval(t)
-  }, [n, paused])
+    const t = setTimeout(() => setActive((i) => (i + 1) % m), AUTOPLAY_MS)
+    return () => clearTimeout(t)
+  }, [n, m, paused, active])
 
   // Position of each card relative to the active one: -1 left, 0 centre, 1 right
   const offsetOf = (i) => {
     let d = i - active
-    if (d > n / 2) d -= n
-    if (d < -n / 2) d += n
+    if (d > m / 2) d -= m
+    if (d < -m / 2) d += m
     return d
   }
+
+  const arrowClass = 'w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[rgb(var(--accent)_/_0.45)] bg-[rgb(var(--ink)_/_0.6)] backdrop-blur text-white flex items-center justify-center hover:border-rose hover:bg-[rgb(var(--maroon)_/_0.6)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-rose'
 
   return (
     <section id="testimonials" className="glow-section py-28 sm:py-36 overflow-hidden">
       <div className={WRAP} ref={ref}>
         {/* Heading */}
-        <div className={`text-center max-w-3xl mx-auto mb-16 ${reveal(inView)}`}>
+        <div className={`text-center max-w-3xl mx-auto mb-14 ${reveal(inView)}`}>
           <span className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-[rgb(var(--accent)_/_0.35)] bg-[rgb(var(--maroon)_/_0.35)] text-white text-[12px] font-medium uppercase tracking-[0.24em] mb-8">
             <svg className="w-4 h-4 text-rose-soft" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-4 4v-4z" /></svg>
             Testimonials
@@ -1336,7 +1344,7 @@ function Testimonials({ items, reviewsUrl }) {
               <span className="absolute left-1/2 -translate-x-1/2 -bottom-3 h-[3px] w-[140%] rounded-full bg-[radial-gradient(closest-side,rgb(var(--accent)),rgb(var(--grape-bright)/0.6),transparent)]" />
             </span> say
           </h2>
-          <p className="mt-8 text-white/65 text-lg font-light">In their words, from the teams we've engineered systems for.</p>
+          <p className="mt-8 text-white/65 text-lg font-light">In their words, from the teams we've solved problems for.</p>
           {avg && (
             <div className="mt-6 inline-flex items-center gap-3 text-sm">
               <GoogleG className="w-4 h-4" />
@@ -1359,57 +1367,64 @@ function Testimonials({ items, reviewsUrl }) {
           onTouchEnd={(e) => {
             if (touchX.current == null) return
             const dx = e.changedTouches[0].clientX - touchX.current
-            if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1)
+            if (n > 1 && Math.abs(dx) > 40) go(dx < 0 ? 1 : -1)
             touchX.current = null
           }}
           aria-roledescription="carousel"
           aria-label="Client testimonials"
         >
-          <div className="grid [perspective:1600px] py-6" style={{ gridTemplateAreas: '"stack"', gridTemplateColumns: 'minmax(0, 1fr)' }}>
-            {items.map((t, i) => {
+          <div className="grid [perspective:1800px] py-8" style={{ gridTemplateAreas: '"stack"', gridTemplateColumns: 'minmax(0, 1fr)' }}>
+            {ring.map((t, i) => {
               const d = offsetOf(i)
               const isCenter = d === 0
               const side = Math.abs(d) === 1
+              // Side cards swing in towards the centre, like pages of a book
               const transform = isCenter
-                ? 'translateX(0) rotateY(0deg) scale(1)'
+                ? 'translateX(0) translateZ(0) rotateY(0deg) scale(1)'
                 : side
-                  ? `translateX(${d * 86}%) rotateY(${-d * 14}deg) scale(0.86)`
-                  : `translateX(${Math.sign(d) * 160}%) rotateY(${-Math.sign(d) * 20}deg) scale(0.7)`
+                  ? `translateX(${d * 80}%) translateZ(-120px) rotateY(${-d * 22}deg) scale(0.86)`
+                  : `translateX(${Math.sign(d) * 170}%) translateZ(-260px) rotateY(${-Math.sign(d) * 30}deg) scale(0.7)`
               return (
                 <figure
-                  key={t.id}
+                  key={i}
                   style={{ gridArea: 'stack', transform, zIndex: isCenter ? 3 : side ? 2 : 1 }}
                   aria-hidden={!isCenter}
                   onClick={() => !isCenter && setActive(i)}
-                  className={`justify-self-center ${n === 1 ? 'w-full sm:w-[min(760px,86%)]' : 'w-[min(520px,88%)] sm:w-[min(520px,62%)] lg:w-[min(520px,42%)]'} flex flex-col rounded-[1.75rem] p-8 sm:p-10 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                    isCenter
-                      ? 'opacity-100 border-[1.5px] border-[rgb(var(--accent)_/_0.75)] bg-[linear-gradient(165deg,rgb(var(--grape-bright)/0.28),rgb(var(--maroon)/0.55)_55%,rgb(var(--ink)/0.9))] shadow-[0_0_0_1px_rgb(var(--accent)/0.15),0_0_70px_-10px_rgb(var(--accent)/0.45),0_40px_80px_-40px_rgb(0_0_0/0.9)]'
-                      : side
-                        ? 'opacity-55 hidden sm:flex cursor-pointer border border-white/10 bg-[linear-gradient(165deg,rgb(var(--deep-grape)/0.45),rgb(var(--dark-maroon)/0.85))] hover:opacity-80'
-                        : 'opacity-0 pointer-events-none border border-white/10'
+                  className={`justify-self-center ${n === 1 ? 'w-full sm:w-[min(760px,86%)]' : 'w-[min(520px,92%)] sm:w-[min(520px,58%)] lg:w-[min(520px,38%)]'} transition-[transform,opacity] duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                    isCenter ? 'opacity-100' : side ? 'opacity-70 hidden sm:block cursor-pointer hover:opacity-90' : 'opacity-0 pointer-events-none'
                   }`}
                 >
-                  <div className="flex items-start justify-between mb-7">
-                    <span className="font-display text-6xl leading-[0.6] text-rose select-none" aria-hidden="true">”</span>
-                    {Number(t.rating) > 0 && <Stars value={Number(t.rating)} className="w-5 h-5" />}
-                  </div>
-                  <blockquote className={`flex-1 font-light leading-relaxed ${isCenter ? 'text-white text-lg sm:text-xl' : 'text-white/80 text-base sm:text-lg'}`}>
-                    {t.quote}
-                  </blockquote>
-                  <figcaption className="mt-9 pt-6 border-t border-white/10 flex items-center gap-4">
-                    <span className="flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-[linear-gradient(135deg,rgb(var(--accent)),rgb(var(--grape-bright)))]">
-                      <span className="w-full h-full rounded-full bg-[#1B050D] flex items-center justify-center font-display text-white text-sm font-semibold">{initials(t.name)}</span>
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="font-display text-white text-lg font-medium truncate">{t.name}</div>
-                      {(t.role || t.company) && (
-                        <div className="text-white/50 text-sm font-light leading-snug">{[t.role, t.company].filter(Boolean).join(' · ')}</div>
-                      )}
+                  {/* Gentle float so the stack never sits completely still */}
+                  <div
+                    className={`testimonial-float h-full flex flex-col rounded-[1.75rem] p-8 sm:p-10 transition-[box-shadow,border-color,background] duration-700 ${
+                      isCenter
+                        ? 'border-[1.5px] border-[rgb(var(--accent)_/_0.8)] bg-[#13060f] bg-[linear-gradient(165deg,rgb(var(--grape-bright)/0.3),rgb(var(--maroon)/0.55)_55%,rgb(var(--ink)/0.92))] shadow-[0_0_0_1px_rgb(var(--accent)/0.15),0_0_80px_-8px_rgb(var(--accent)/0.5),0_40px_80px_-40px_rgb(0_0_0/0.9)]'
+                        : 'border border-white/10 bg-[linear-gradient(165deg,rgb(var(--deep-grape)/0.5),rgb(var(--dark-maroon)/0.88))] shadow-[0_30px_60px_-30px_rgb(0_0_0/0.9)]'
+                    }`}
+                    style={{ animationDelay: `${(i % 3) * -2.3}s` }}
+                  >
+                    <div className="flex items-start justify-between mb-7">
+                      <span className="font-display text-6xl leading-[0.6] text-rose select-none" aria-hidden="true">”</span>
+                      {Number(t.rating) > 0 && <Stars value={Number(t.rating)} className="w-5 h-5" />}
                     </div>
-                    {t.source === 'Google' && (
-                      <span className="flex items-center gap-1.5 text-white/45 text-[11px] flex-shrink-0" title="Review from Google"><GoogleG /> Google</span>
-                    )}
-                  </figcaption>
+                    <blockquote className={`flex-1 font-light leading-relaxed ${isCenter ? 'text-white text-lg sm:text-xl' : 'text-white/80 text-base sm:text-lg line-clamp-[9]'}`}>
+                      {t.quote}
+                    </blockquote>
+                    <figcaption className="mt-9 pt-6 border-t border-white/10 flex items-center gap-4">
+                      <span className="flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-[linear-gradient(135deg,rgb(var(--accent)),rgb(var(--grape-bright)))]">
+                        <span className="w-full h-full rounded-full bg-[#1B050D] flex items-center justify-center font-display text-white text-sm font-semibold">{initials(t.name)}</span>
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-display text-white text-lg font-medium truncate">{t.name}</div>
+                        {(t.role || t.company) && (
+                          <div className="text-white/50 text-sm font-light leading-snug">{[t.role, t.company].filter(Boolean).join(' · ')}</div>
+                        )}
+                      </div>
+                      {t.source === 'Google' && (
+                        <span className="flex items-center gap-1.5 text-white/45 text-[11px] flex-shrink-0" title="Review from Google"><GoogleG /> Google</span>
+                      )}
+                    </figcaption>
+                  </div>
                 </figure>
               )
             })}
@@ -1417,22 +1432,42 @@ function Testimonials({ items, reviewsUrl }) {
 
           {n > 1 && (
             <>
+              {/* Side arrows on larger screens */}
+              <button onClick={() => go(-1)} aria-label="Previous testimonial" className={`${arrowClass} hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-10`}>
+                <Arrow className="w-5 h-5 rotate-180" />
+              </button>
+              <button onClick={() => go(1)} aria-label="Next testimonial" className={`${arrowClass} hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-10`}>
+                <Arrow className="w-5 h-5" />
+              </button>
+
               <div className="mt-8 flex items-center justify-center gap-6">
-                <button onClick={() => go(-1)} aria-label="Previous testimonial" className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[rgb(var(--accent)_/_0.45)] bg-[rgb(var(--ink)_/_0.6)] text-white flex items-center justify-center hover:border-rose hover:bg-[rgb(var(--maroon)_/_0.6)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-rose">
+                <button onClick={() => go(-1)} aria-label="Previous testimonial" className={`${arrowClass} lg:hidden`}>
                   <Arrow className="w-5 h-5 rotate-180" />
                 </button>
-                <div className="flex gap-2">
-                {items.map((t, i) => (
-                  <button
-                    key={t.id}
-                    onClick={() => setActive(i)}
-                    aria-label={`Show testimonial ${i + 1}`}
-                    aria-current={i === active}
-                    className={`h-1.5 rounded-full transition-all duration-500 ${i === active ? 'w-8 bg-rose' : 'w-1.5 bg-white/25 hover:bg-white/50'}`}
-                  />
-                ))}
+                <div className="flex items-center gap-2">
+                  {items.map((t, i) => {
+                    const current = active % n === i
+                    return (
+                      <button
+                        key={t.id}
+                        onClick={() => setActive(i)}
+                        aria-label={`Show testimonial ${i + 1}`}
+                        aria-current={current}
+                        className={`relative h-1.5 rounded-full overflow-hidden transition-all duration-500 ${current ? 'w-10 bg-white/20' : 'w-1.5 bg-white/25 hover:bg-white/50'}`}
+                      >
+                        {/* The active dot fills up until the next card turns in */}
+                        {current && (
+                          <span
+                            key={active}
+                            className={`absolute inset-y-0 left-0 bg-rose rounded-full ${paused ? 'w-full' : 'testimonial-timer'}`}
+                            style={{ animationDuration: `${AUTOPLAY_MS}ms` }}
+                          />
+                        )}
+                      </button>
+                    )
+                  })}
                 </div>
-                <button onClick={() => go(1)} aria-label="Next testimonial" className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[rgb(var(--accent)_/_0.45)] bg-[rgb(var(--ink)_/_0.6)] text-white flex items-center justify-center hover:border-rose hover:bg-[rgb(var(--maroon)_/_0.6)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-rose">
+                <button onClick={() => go(1)} aria-label="Next testimonial" className={`${arrowClass} lg:hidden`}>
                   <Arrow className="w-5 h-5" />
                 </button>
               </div>

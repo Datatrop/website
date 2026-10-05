@@ -281,6 +281,16 @@ body {
   .surface:hover, .card-hover:hover, .btn-primary:hover, .btn-secondary:hover { transform: none; }
 }
 
+/* ── Testimonials coverflow ───────────────────────────────────────────── */
+.testimonial-float { animation: testimonial-float 7s ease-in-out infinite; }
+@keyframes testimonial-float { 50% { transform: translateY(-8px); } }
+.testimonial-timer { animation: testimonial-timer linear forwards; }
+@keyframes testimonial-timer { from { width: 0; } to { width: 100%; } }
+@media (prefers-reduced-motion: reduce) {
+  .testimonial-float { animation: none; }
+  .testimonial-timer { animation: none; width: 100%; }
+}
+
 /* ── Inner-page header: identical height on every page ────────────────── */
 /* Same 640px on every page and screen; only grows if a very narrow phone forces it */
 .page-hero { min-height: 640px; }
