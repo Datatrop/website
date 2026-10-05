@@ -29,6 +29,44 @@
     linear-gradient(120deg, #3A0B20 0%, #1B050D 50%, #050204 100%);
 }
 
+/* Public-site theme surfaces. Dark is the default; html.site-light (set by
+   SiteThemeContext, and before paint by the inline script in index.html)
+   flips them. `.keep-dark` keeps a band dark in light mode: the WebGL hero,
+   page headers, the CTA panel, the footer and the illustrations. */
+:root {
+  --fg: 255 255 255;          /* text, and every white/x Tailwind class */
+  --page: 7 3 5;              /* page background */
+  --surface: 11 4 7;          /* solid panels, nav */
+  --text-glow: linear-gradient(90deg, #F08DB0 0%, #E0457B 45%, #B048BA 100%);
+}
+html.site-light {
+  color-scheme: light;
+  --fg: 34 8 24;
+  --page: 251 247 250;
+  --surface: 255 255 255;
+  --ink: 251 247 250;
+  --dark-maroon: 255 255 255;
+  --maroon: 246 226 238;
+  --deep-grape: 243 230 243;
+  --glow-strength: 1;
+  --text-glow: linear-gradient(90deg, #C42D68 0%, #A3226B 45%, #7A2283 100%);
+}
+html.site-light .keep-dark,
+html.site-light .bg-brand-gradient {
+  color-scheme: dark;
+  --fg: 255 255 255;
+  --page: 7 3 5;
+  --surface: 11 4 7;
+  --ink: 7 3 5;
+  --dark-maroon: 27 5 13;
+  --maroon: 58 11 32;
+  --deep-grape: 84 19 63;
+  --glow-strength: 1.6;
+  --text-glow: linear-gradient(90deg, #F08DB0 0%, #E0457B 45%, #B048BA 100%);
+  color: rgb(var(--fg));
+}
+html.site-light body { background: rgb(var(--page)); color: rgb(var(--fg)); }
+
 .dark {
   --glow-brand: 138 42 145;
   --glow-accent: 224 69 123;
@@ -73,8 +111,9 @@ body {
    ═══════════════════════════════════════════════════════════════════════ */
 
 .site {
-  background: #070305;
-  color: #fff;
+  background: rgb(var(--page));
+  color: rgb(var(--fg));
+  transition: background-color 0.3s ease;
 }
 
 .bg-brand-gradient { background: var(--brand-gradient); }
@@ -107,7 +146,7 @@ body {
 /* Hairline divider that fades at both ends */
 .hairline {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.10) 20%, rgb(255 255 255 / 0.10) 80%, transparent);
+  background: linear-gradient(90deg, transparent, rgb(var(--fg) / 0.10) 20%, rgb(var(--fg) / 0.10) 80%, transparent);
 }
 
 @layer components {
@@ -137,13 +176,13 @@ body {
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 18px 44px -12px rgb(224 69 123 / 0.55);
 }
 .btn-secondary {
-  color: #fff !important;
-  background: rgb(27 5 13 / 0.35);
+  color: rgb(var(--fg)) !important;
+  background: rgb(var(--dark-maroon) / 0.35);
   border: 1px solid rgb(var(--accent) / 0.35);
 }
 .btn-secondary:hover {
   transform: translateY(-2px);
-  background: rgb(58 11 32 / 0.55);
+  background: rgb(var(--maroon) / 0.55);
   border-color: rgb(var(--accent) / 0.7);
 }
 .btn-primary svg,
@@ -155,15 +194,15 @@ body {
 .card {
   position: relative;
   border-radius: 1.25rem;
-  border: 1px solid rgb(255 255 255 / 0.08);
-  background: linear-gradient(180deg, rgb(255 255 255 / 0.045) 0%, rgb(255 255 255 / 0.012) 100%);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 24px 48px -32px rgb(0 0 0 / 0.9);
+  border: 1px solid rgb(var(--fg) / 0.08);
+  background: linear-gradient(180deg, rgb(var(--fg) / 0.045) 0%, rgb(var(--fg) / 0.012) 100%);
+  box-shadow: inset 0 1px 0 rgb(var(--fg) / 0.05), 0 24px 48px -32px rgb(0 0 0 / 0.9);
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease, background 0.35s ease;
 }
 .card-hover:hover {
   transform: translateY(-4px);
   border-color: rgb(var(--accent) / 0.35);
-  background: linear-gradient(180deg, rgb(255 255 255 / 0.06) 0%, rgb(var(--maroon) / 0.25) 100%);
+  background: linear-gradient(180deg, rgb(var(--fg) / 0.06) 0%, rgb(var(--maroon) / 0.25) 100%);
 }
 
 /* Square icon tile with a maroon fill, as on the brand board */
@@ -172,7 +211,7 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 0.85rem;
-  color: #fff;
+  color: rgb(var(--fg));
   background: linear-gradient(145deg, rgb(var(--accent) / 0.35), rgb(var(--maroon) / 0.9));
   border: 1px solid rgb(var(--accent) / 0.3);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
@@ -180,13 +219,23 @@ body {
 
 /* Gradient text for emphasis inside headlines */
 .text-glow {
-  background: linear-gradient(90deg, #F08DB0 0%, #E0457B 45%, #B048BA 100%);
+  background: var(--text-glow);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 }
+
+html.site-light .card { box-shadow: 0 1px 2px rgb(58 11 32 / 0.05), 0 24px 48px -32px rgb(58 11 32 / 0.25); background: rgb(255 255 255 / 0.7); }
+html.site-light .card-hover:hover { background: linear-gradient(180deg, #fff 0%, rgb(var(--maroon) / 0.5) 100%); }
+html.site-light .keep-dark .card { background: linear-gradient(180deg, rgb(255 255 255 / 0.045) 0%, rgb(255 255 255 / 0.012) 100%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 24px 48px -32px rgb(0 0 0 / 0.9); }
+
+/* Illustrations are drawn for a dark ground; in light mode they sit on a
+   dark panel, like a product screenshot. */
+.viz-panel { --fg: 255 255 255; --ink: 7 3 5; --dark-maroon: 27 5 13; --maroon: 58 11 32; --deep-grape: 84 19 63; --surface: 11 4 7; --page: 7 3 5; color: rgb(var(--fg)); }
+html.site-light .viz-panel { background-color: #12050D; }
+html.site-light .viz-panel-pad { border-radius: 1.5rem; padding: clamp(12px, 2.5vw, 28px); box-shadow: 0 30px 60px -30px rgb(58 11 32 / 0.45); }
 
 /* ── Glowing arcs (brand-board hero variations) ─────────────────────── */
 .arc-draw path {

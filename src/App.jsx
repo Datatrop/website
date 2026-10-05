@@ -7,6 +7,7 @@ import { StoryDiagram, ProblemScene, CapabilityViz, StatTiles } from './visuals'
 import ParticleHero from './ParticleHero.jsx'
 import IntroOverlay from './IntroOverlay.jsx'
 import Logo from './Logo.jsx'
+import { ThemeToggle } from './SiteThemeContext.jsx'
 import { problemKind, capabilityKind } from './vizKinds'
 import { initAnalytics, trackPageView, track, analyticsAvailable, getConsent, setConsent } from './analytics'
 
@@ -211,7 +212,7 @@ function BookingWidget() {
   )
 }
 
-const INPUT = 'w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-white/35 text-sm font-light focus:outline-none focus:border-[rgb(var(--accent)_/_0.6)] focus:bg-white/[0.06] transition-colors [&>option]:bg-[#1B050D]'
+const INPUT = 'w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-white/35 text-sm font-light focus:outline-none focus:border-[rgb(var(--accent)_/_0.6)] focus:bg-white/[0.06] transition-colors [&>option]:bg-[rgb(var(--surface))]'
 
 // ── Buttons ───────────────────────────────────────────────────────────────────
 function BookButton({ children = 'Book Strategy Call', className = '' }) {
@@ -356,7 +357,7 @@ function Navbar({ page }) {
   return (
     <>
       <nav
-        className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${solid ? 'bg-[#0B0407]/85 backdrop-blur-xl border-b border-white/[0.07]' : 'bg-transparent border-b border-transparent'}`}
+        className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${solid ? 'bg-[rgb(var(--surface)/0.85)] backdrop-blur-xl border-b border-white/[0.07]' : 'keep-dark bg-transparent border-b border-transparent'}`}
         onMouseLeave={() => setOpenPanel(null)}
       >
         <div className={WRAP}>
@@ -383,10 +384,12 @@ function Navbar({ page }) {
             </div>
 
             <div className="hidden lg:flex items-center gap-3">
+              <ThemeToggle />
               <a href="/contact#message" className="btn-secondary px-5 py-3 text-[13px]">Send a message</a>
               <a {...bookProps} className="btn-primary px-5 py-3 text-[13px]">Book a call <Arrow className="w-3.5 h-3.5" /></a>
             </div>
 
+            <ThemeToggle className="lg:hidden ml-auto mr-2" />
             <button onClick={() => setMenuOpen((o) => !o)} className="lg:hidden p-2 -mr-2 text-white" aria-label="Menu" aria-expanded={menuOpen}>
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {menuOpen
@@ -416,7 +419,7 @@ function Navbar({ page }) {
       </nav>
 
       {menuOpen && (
-        <div className="lg:hidden fixed inset-x-0 top-[72px] bottom-0 z-40 bg-[#0B0407]/95 backdrop-blur-xl overflow-y-auto">
+        <div className="lg:hidden fixed inset-x-0 top-[72px] bottom-0 z-40 bg-[rgb(var(--surface)/0.95)] backdrop-blur-xl overflow-y-auto">
           <div className="flex flex-col px-5 pt-3 pb-10">
             {MEGA_MENU.map((m) => (
               <div key={m.label} className="border-b border-white/[0.08] py-1">
@@ -473,10 +476,10 @@ function Hero({ headline, subtext }) {
   const s = subtext || DEFAULT_SUBTEXT
 
   return (
-    <section id="home" className="relative min-h-[100svh] flex flex-col overflow-hidden bg-brand-gradient">
+    <section id="home" className="keep-dark relative min-h-[100svh] flex flex-col overflow-hidden bg-brand-gradient">
       <Arcs className="opacity-40" />
       {/* Fade into the page */}
-      <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-[#070305] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-[rgb(var(--page))] to-transparent pointer-events-none" />
 
       <div className={`relative z-10 ${WRAP} w-full flex-1 grid lg:grid-cols-12 gap-x-10 gap-y-12 items-center pt-32 sm:pt-36 pb-16`}>
         <div className="lg:col-span-7">
@@ -620,7 +623,7 @@ function HowItWorks() {
               <div className="h-full rounded-full bg-[linear-gradient(90deg,#8A2A91,#E0457B)]" style={{ width: `${Math.round(p * 100)}%` }} />
             </div>
           </div>
-          <div className="lg:col-span-7 order-1 lg:order-2 w-full mx-auto story-diagram">
+          <div className="viz-panel viz-panel-pad lg:col-span-7 order-1 lg:order-2 w-full mx-auto story-diagram">
             <StoryDiagram p={p} />
           </div>
         </div>
@@ -740,7 +743,7 @@ function ThreePillars() {
               className={`card card-hover overflow-hidden flex flex-col ${reveal(inView)}`}
               style={{ transitionDelay: `${i * 110}ms` }}
             >
-              <div className="relative h-52 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.8),transparent_70%)]">
+              <div className="viz-panel relative h-52 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.8),transparent_70%)]">
                 <span className="absolute top-4 left-5 font-mono text-[10px] tracking-[0.2em] text-white/40">{fig}</span>
                 <span className="absolute top-4 right-5 font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft">{tag}</span>
                 <div className="absolute inset-0 px-6 pt-8 pb-2"><Figure /></div>
@@ -880,7 +883,7 @@ function Workforce() {
         </div>
         <div className={`relative ${reveal(inView)}`} style={{ transitionDelay: '120ms' }}>
           <div className="absolute -inset-10 bg-[radial-gradient(circle_at_60%_40%,rgb(var(--grape-bright)/0.35),transparent_60%)] pointer-events-none" />
-          <div className="relative"><Console /></div>
+          <div className="relative keep-dark viz-panel rounded-[1.25rem]"><Console /></div>
           <p className="relative mt-4 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">Illustrative interface</p>
         </div>
       </div>
@@ -938,7 +941,7 @@ function WhatWeBuild({ serviceLines }) {
                 <p className="text-white/70 text-base font-light leading-relaxed max-w-md mb-7">{lead.examples}</p>
                 <a {...bookProps} className="btn-secondary px-6 py-3.5">Talk to an engineer <Arrow /></a>
               </div>
-              <div className="relative order-1 lg:order-2 aspect-[440/232] w-full">
+              <div className="viz-panel viz-panel-pad relative order-1 lg:order-2 aspect-[440/232] w-full">
                 {capabilityKind(lead.name)
                   ? <CapabilityViz kind={capabilityKind(lead.name)} />
                   : <div className="icon-tile w-14 h-14"><CapIcon i={0} /></div>}
@@ -953,7 +956,7 @@ function WhatWeBuild({ serviceLines }) {
                 className={`card card-hover overflow-hidden flex flex-col ${reveal(inView)}`}
                 style={{ transitionDelay: `${(i + 1) * 80}ms` }}
               >
-                <div className="h-44 px-6 pt-6 pb-3 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.7),transparent_70%)] flex items-center">
+                <div className="viz-panel h-44 px-6 pt-6 pb-3 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.7),transparent_70%)] flex items-center">
                   {kind ? <CapabilityViz kind={kind} /> : <div className="icon-tile w-12 h-12 mx-auto"><CapIcon i={i + 1} /></div>}
                 </div>
                 <div className="p-7">
@@ -1101,15 +1104,15 @@ function WhatWeSolve({ problems }) {
                 <button type="button" onClick={() => { setAuto(false); setAfter(true) }} aria-pressed={after} className={`relative px-4 py-1.5 rounded-full transition-colors ${after ? 'text-white' : 'text-white/55'}`}>After</button>
               </div>
             </div>
-            <div className="px-4 sm:px-8 pt-4">
+            <div className="viz-panel px-4 sm:px-8 pt-4">
               <ProblemScene kind={problemKind(p.title)} after={after} label={`${p.title}: ${after ? afterText : before}`} />
             </div>
             <div className="grid sm:grid-cols-2 gap-px bg-white/[0.06] border-t border-white/[0.07]">
-              <div className={`bg-[#0B0407] p-5 transition-opacity duration-500 ${after ? 'opacity-50' : 'opacity-100'}`}>
+              <div className={`bg-[rgb(var(--surface))] p-5 transition-opacity duration-500 ${after ? 'opacity-50' : 'opacity-100'}`}>
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#F6C453] mb-2">Today</p>
                 <p className="text-white/70 text-sm font-light leading-relaxed">{before}</p>
               </div>
-              <div className={`bg-[#0B0407] p-5 transition-opacity duration-500 ${after ? 'opacity-100' : 'opacity-50'}`}>
+              <div className={`bg-[rgb(var(--surface))] p-5 transition-opacity duration-500 ${after ? 'opacity-100' : 'opacity-50'}`}>
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft mb-2">With Datatrop</p>
                 <p className="text-white/80 text-sm font-light leading-relaxed">{afterText}</p>
               </div>
@@ -1192,7 +1195,7 @@ function WhyDatatrop() {
             society, whatever technology that requires.
           </p>
         </div>
-        <StatTiles stats={STATS} />
+        <div className="keep-dark viz-panel viz-panel-pad"><StatTiles stats={STATS} /></div>
       </div>
     </section>
   )
@@ -1239,7 +1242,7 @@ function Clients({ customers }) {
         <SectionHead eyebrow="Clients" title="Who we work with." inView={inView} />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-px rounded-[1.25rem] overflow-hidden border border-white/[0.08] bg-white/[0.08]">
           {customers.map((c, i) => (
-            <div key={c.id} className={`bg-[#0B0407] p-6 transition-all duration-500 ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: `${i * 50}ms` }}>
+            <div key={c.id} className={`bg-[rgb(var(--surface))] p-6 transition-all duration-500 ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: `${i * 50}ms` }}>
               <p className="font-display text-white text-sm font-medium">{c.name}</p>
               {c.company && <p className="text-white/45 text-xs mt-1 font-light">{c.company}</p>}
             </div>
@@ -1398,7 +1401,7 @@ function Testimonials({ items, reviewsUrl }) {
                   <div
                     className={`testimonial-float h-full flex flex-col rounded-[1.75rem] p-8 sm:p-10 transition-[box-shadow,border-color,background] duration-700 ${
                       isCenter
-                        ? 'border-[1.5px] border-[rgb(var(--accent)_/_0.8)] bg-[#13060f] bg-[linear-gradient(165deg,rgb(var(--grape-bright)/0.3),rgb(var(--maroon)/0.55)_55%,rgb(var(--ink)/0.92))] shadow-[0_0_0_1px_rgb(var(--accent)/0.15),0_0_80px_-8px_rgb(var(--accent)/0.5),0_40px_80px_-40px_rgb(0_0_0/0.9)]'
+                        ? 'border-[1.5px] border-[rgb(var(--accent)_/_0.8)] bg-[rgb(var(--surface))] bg-[linear-gradient(165deg,rgb(var(--grape-bright)/0.3),rgb(var(--maroon)/0.55)_55%,rgb(var(--ink)/0.92))] shadow-[0_0_0_1px_rgb(var(--accent)/0.15),0_0_80px_-8px_rgb(var(--accent)/0.5),0_40px_80px_-40px_rgb(0_0_0/0.9)]'
                         : 'border border-white/10 bg-[linear-gradient(165deg,rgb(var(--deep-grape)/0.5),rgb(var(--dark-maroon)/0.88))] shadow-[0_30px_60px_-30px_rgb(0_0_0/0.9)]'
                     }`}
                     style={{ animationDelay: `${(i % 3) * -2.3}s` }}
@@ -1412,7 +1415,7 @@ function Testimonials({ items, reviewsUrl }) {
                     </blockquote>
                     <figcaption className="mt-9 pt-6 border-t border-white/10 flex items-center gap-4">
                       <span className="flex-shrink-0 w-14 h-14 rounded-full p-[2px] bg-[linear-gradient(135deg,rgb(var(--accent)),rgb(var(--grape-bright)))]">
-                        <span className="w-full h-full rounded-full bg-[#1B050D] flex items-center justify-center font-display text-white text-sm font-semibold">{initials(t.name)}</span>
+                        <span className="w-full h-full rounded-full bg-[rgb(var(--dark-maroon))] flex items-center justify-center font-display text-white text-sm font-semibold">{initials(t.name)}</span>
                       </span>
                       <div className="min-w-0 flex-1">
                         <div className="font-display text-white text-lg font-medium truncate">{t.name}</div>
@@ -1496,7 +1499,7 @@ function FinalCta({ vision = false }) {
   return (
     <section className="py-12 sm:py-20">
       <div className={WRAP} ref={ref}>
-        <div className={`relative overflow-hidden rounded-[2rem] border border-white/10 bg-brand-gradient px-6 py-20 sm:px-16 sm:py-28 ${reveal(inView)}`}>
+        <div className={`keep-dark relative overflow-hidden rounded-[2rem] border border-white/10 bg-brand-gradient px-6 py-20 sm:px-16 sm:py-28 ${reveal(inView)}`}>
           <Arcs />
           <div className="relative max-w-3xl">
             {vision && (
@@ -1533,9 +1536,9 @@ function FinalCta({ vision = false }) {
 // each page whatever the copy length.
 function PageHero({ eyebrow, title, glow, intro, links = [], linksLabel = 'On this page' }) {
   return (
-    <section className="page-hero relative overflow-hidden bg-brand-gradient flex flex-col">
+    <section className="keep-dark page-hero relative overflow-hidden bg-brand-gradient flex flex-col">
       <Arcs className="opacity-70" />
-      <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#070305] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[rgb(var(--page))] to-transparent pointer-events-none" />
       <div className={`relative z-10 ${WRAP} w-full pt-32 lg:pt-44 pb-14 sm:pb-16`}>
         <Eyebrow className="mb-6 anim-fade">{eyebrow}</Eyebrow>
         <h1 className="font-display max-w-4xl text-[40px] leading-[1.04] sm:text-6xl lg:text-[76px] font-medium text-white tracking-[-0.04em] mb-7 anim-rise text-balance">
@@ -1603,7 +1606,7 @@ function ExplorePages() {
               className={`group card card-hover overflow-hidden flex flex-col ${reveal(inView)}`}
               style={{ transitionDelay: `${i * 110}ms` }}
             >
-              <div className="relative h-48 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.8),transparent_70%)]">
+              <div className="viz-panel relative h-48 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.8),transparent_70%)]">
                 <span className="absolute top-4 left-5 font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft">{label}</span>
                 <div className="absolute inset-0 px-8 pt-8 pb-2"><Figure /></div>
               </div>
@@ -1880,7 +1883,7 @@ function Footer({ settings }) {
   const linkedin = settings.linkedin_url || ''
 
   return (
-    <footer className="relative overflow-hidden border-t border-white/[0.07] pt-20 pb-10">
+    <footer className="keep-dark bg-[rgb(var(--page))] relative overflow-hidden border-t border-white/[0.07] pt-20 pb-10">
       <div className="absolute inset-x-0 bottom-0 h-[60%] bg-[radial-gradient(ellipse_70%_100%_at_20%_100%,rgb(var(--maroon)/0.9),transparent_70%)] pointer-events-none" />
       <div className={`relative ${WRAP}`}>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-10 pb-16">
@@ -1965,7 +1968,7 @@ function ConsentBanner({ onAccept }) {
     >
       <div
         className="rounded-[1.25rem] p-6 border border-[rgb(var(--accent)_/_0.25)] shadow-[0_30px_80px_-20px_rgb(0_0_0/0.9),0_0_40px_-12px_rgb(var(--accent)/0.35)]"
-        style={{ background: 'linear-gradient(165deg, #2A0A22 0%, #14050C 60%, #0B0407 100%)' }}
+        style={{ background: 'linear-gradient(165deg, rgb(var(--maroon)) 0%, rgb(var(--dark-maroon)) 60%, rgb(var(--surface)) 100%)' }}
       >
         <p className="font-display text-white text-base font-medium mb-2">Cookies, briefly</p>
         <p className="text-white/60 text-sm font-light leading-relaxed mb-5">
