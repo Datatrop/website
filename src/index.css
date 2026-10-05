@@ -202,21 +202,6 @@ body {
   50%      { transform: translate3d(-14px, 10px, 0); }
 }
 
-/* ── Marquee (technology strip) ──────────────────────────────────────── */
-.marquee {
-  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-}
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marquee 38s linear infinite;
-}
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
 /* ── FIG illustrations ──────────────────────────────────────────────── */
 .fig-pulse { animation: fig-pulse 3.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 @keyframes fig-pulse {
@@ -289,7 +274,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .anim-rise, .anim-fade, .arc-float, .marquee-track,
+  .anim-rise, .anim-fade, .arc-float,
   .fig-pulse, .fig-dash, .fig-spin, .fig-rise, .live-dot, .typing span { animation: none !important; }
   .arc-draw path { animation: none; stroke-dashoffset: 0; }
   .surface, .card, .btn-primary, .btn-secondary { transition: none; }

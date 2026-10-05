@@ -460,11 +460,6 @@ const DEFAULT_HEADLINE = 'Engineering certainty in a complex world.'
 const DEFAULT_SUBTEXT =
   'Datatrop is an intelligent systems engineering company. We design, build, and operate the systems that restore order wherever complexity prevents progress, whether the solution is known, unknown, or yet to be invented.'
 
-const TECHNOLOGIES = [
-  'Artificial Intelligence', 'Multi-agent Systems', 'Data Engineering', 'Enterprise Software',
-  'Cloud Infrastructure', 'System Integrations', 'Advanced Analytics', 'Process Automation',
-]
-
 // Split the headline so its closing words carry the brand glow
 function splitHeadline(text) {
   const words = text.trim().split(/\s+/)
@@ -507,22 +502,6 @@ function Hero({ headline, subtext }) {
         </div>
       </div>
 
-      {/* Technology strip */}
-      <div className="relative z-10 border-t border-white/[0.07] bg-black/20 backdrop-blur-sm anim-fade" style={{ animationDelay: '0.4s' }}>
-        <div className={`${WRAP} flex items-center gap-6 py-5`}>
-          <span className="hidden sm:block flex-shrink-0 font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">Engineered with</span>
-          <div className="marquee flex-1 overflow-hidden">
-            <div className="marquee-track">
-              {[...TECHNOLOGIES, ...TECHNOLOGIES].map((t, i) => (
-                <span key={i} className="flex items-center gap-6 pr-6 text-sm text-white/60 whitespace-nowrap">
-                  {t}
-                  <span className="w-1 h-1 rounded-full bg-rose/60" />
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
     </section>
   )
 }
