@@ -5,6 +5,7 @@ import { PAGE_META, pageKeyFromPath, applyPageMeta } from './seo'
 import { useInView, useStickyProgress } from './hooks'
 import { StoryDiagram, ProblemScene, CapabilityViz, StatTiles } from './visuals'
 import ParticleHero from './ParticleHero.jsx'
+import IntroOverlay from './IntroOverlay.jsx'
 import { problemKind, capabilityKind } from './vizKinds'
 import { initAnalytics, trackPageView, track, analyticsAvailable, getConsent, setConsent } from './analytics'
 
@@ -2075,6 +2076,8 @@ export default function App({ page: initialPage = 'home' }) {
     : SHOW_PREVIEW_TESTIMONIALS && <Testimonials items={PREVIEW_TESTIMONIALS} />
 
   return (
+    <>
+    <IntroOverlay />
     <div className="site min-h-screen overflow-x-clip" onClick={onLinkClick}>
       <Navbar page={page} />
       {page === 'about' && (
@@ -2143,5 +2146,6 @@ export default function App({ page: initialPage = 'home' }) {
       <Footer settings={settings} />
       <ConsentBanner onAccept={() => trackPageView(PAGE_META[page].path, PAGE_META[page].title)} />
     </div>
+    </>
   )
 }
