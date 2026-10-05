@@ -23,7 +23,7 @@ const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) 
 // ═══════════════════════════════════════════════════════════════════════════════
 const CX = 260
 const CY = 260
-const SYMPTOMS = [[118, 118, 'Costs rising'], [402, 126, 'Growth stalled'], [112, 392, 'Teams overloaded'], [408, 386, 'No clear data']]
+const SYMPTOMS = [[118, 118, 'Costs rising'], [402, 126, 'Growth stalled'], [112, 392, 'Teams overloaded'], [408, 386, 'A new idea']]
 const SCALE_RINGS = [[96, '1×'], [146, '10×'], [196, '100×']]
 const TOOLS = [['Automation', true], ['ERP', true], ['Custom software', false], ['AI agents', true], ['Data & BI', false], ['Process redesign', true]]
 const toolPos = (i) => [20 + (i % 3) * 166, i < 3 ? 470 : 516]
@@ -50,7 +50,7 @@ export function StoryDiagram({ p }) {
 
   return (
     <svg viewBox="0 0 520 580" className="w-full h-full" role="img"
-      aria-label="A problem and its symptoms are traced to the root cause, planned for scale, solved with the right mix of tools, and delivered as one working solution.">
+      aria-label="A problem or idea is traced to its core need, planned for scale, solved with the right mix of tools, and delivered as one working solution.">
       <defs>
         <radialGradient id="st-core">
           <stop offset="0" stopColor={SOFT} />
@@ -64,7 +64,7 @@ export function StoryDiagram({ p }) {
       </defs>
 
       {/* 1 · whose problem: any company, sector or region */}
-      <text x={CX} y="34" textAnchor="middle" fill="rgba(255,255,255,0.55)" fontSize="11" opacity={context} {...mono}>A COMPANY · A SECTOR · A REGION</text>
+      <text x={CX} y="34" textAnchor="middle" fill="rgba(255,255,255,0.55)" fontSize="11" opacity={context} {...mono}>A COMPANY · A SECTOR · A REGION · AN IDEA</text>
 
       {/* 3 · scale rings */}
       <g opacity={rings * ringsDim}>
@@ -108,7 +108,7 @@ export function StoryDiagram({ p }) {
           ))}
         </g>
         <circle r="5" fill={AMBER} />
-        <text y="86" textAnchor="middle" fill="rgba(255,255,255,0.75)" fontSize="11" opacity={(1 - rootCause) * (1 - seg(p, 0.42, 0.48))} {...mono}>THE PROBLEM</text>
+        <text y="86" textAnchor="middle" fill="rgba(255,255,255,0.75)" fontSize="11" opacity={1 - seg(p, 0.22, 0.27)} {...mono}>PROBLEM OR IDEA</text>
       </g>
 
       {/* 2 · diagnosis: scanner around the knot */}
@@ -121,7 +121,7 @@ export function StoryDiagram({ p }) {
       )}
       <g opacity={rootCause} transform={`translate(${CX} ${CY + 92})`}>
         <rect x="-74" y="-14" width="148" height="28" rx="14" fill="rgba(224,69,123,0.2)" stroke={SOFT} />
-        <text y="4.5" textAnchor="middle" fill="#fff" fontSize="11.5" {...mono}>ROOT CAUSE FOUND</text>
+        <text y="4.5" textAnchor="middle" fill="#fff" fontSize="11.5" {...mono}>CORE NEED FOUND</text>
       </g>
 
       {/* 4 · system design blueprint */}

@@ -602,11 +602,11 @@ function AboutIntro({ about }) {
 // HOW IT WORKS — pinned while you scroll; the diagram tells the story
 // ═══════════════════════════════════════════════════════════════════════════════
 const STORY = [
-  { at: 0, n: '01', title: 'Bring us the problem', body: 'A company, a sector or a region. Costs leaking, growth stalled, people stretched. We start from the problem, not from a product.' },
-  { at: 0.2, n: '02', title: 'We find the root cause', body: 'We study the operation, the data and the people until we know what is really causing it, not just the symptoms.' },
+  { at: 0, n: '01', title: 'Bring us a problem or an idea', body: 'A company, a sector or a region that is stuck, or an idea you want to make real. Whatever it is, we start there, not from a product.' },
+  { at: 0.2, n: '02', title: 'We get to the core', body: 'We study the operation, the data and the people until we know what is really causing the problem, or what the idea truly needs to work.' },
   { at: 0.4, n: '03', title: 'We plan for scale', body: 'We size the problem today and where it is heading, so the answer still holds at ten or a hundred times the load.' },
-  { at: 0.6, n: '04', title: 'We choose the right tools', body: 'Automation, an ERP, custom software, AI or a redesigned process. We pick whatever solves it best and design the system around it.' },
-  { at: 0.8, n: '05', title: 'We deliver the solution', body: 'We build it, roll it out with your team and measure the result, so the problem stays solved as you grow.' },
+  { at: 0.6, n: '04', title: 'We choose the right tools', body: 'Automation, an ERP, custom software, AI or a redesigned process. We find the best techniques and tools for the job and design the system around them.' },
+  { at: 0.8, n: '05', title: 'We deliver the solution', body: 'We build it, roll it out with your team and measure the result, so it keeps working as you grow.' },
 ]
 
 function HowItWorks() {
@@ -620,7 +620,7 @@ function HowItWorks() {
           <div className="lg:col-span-5 order-2 lg:order-1">
             <Eyebrow className="mb-4 hidden sm:inline-flex">How we work</Eyebrow>
             <h2 className="hidden lg:block font-display text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05] mb-10">
-              We start with the problem, <span className="text-glow">not the technology.</span>
+              We start with your challenge, <span className="text-glow">not the technology.</span>
             </h2>
             {/* Desktop: all steps, active one lit. Mobile: just the active step. */}
             <ol className="hidden lg:flex flex-col gap-1">
