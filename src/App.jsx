@@ -591,6 +591,50 @@ const STORY = [
   { at: 0.8, n: '05', title: 'We deliver the solution', body: 'We build it, roll it out with your team and measure the result, so it keeps working as you grow.' },
 ]
 
+// Optional film for "How we work": drop step-1.mp4 … step-5.mp4 (one short
+// clip per STORY step) into src/assets/story/ and each plays as its step
+// scrolls into view. Until all five exist, the drawn StoryDiagram is shown.
+const STORY_CLIP_FILES = import.meta.glob('./assets/story/step-*.mp4', { eager: true, import: 'default' })
+const STORY_CLIPS = STORY.map((_, i) => STORY_CLIP_FILES[`./assets/story/step-${i + 1}.mp4`])
+const HAS_STORY_FILM = STORY_CLIPS.every(Boolean)
+
+function StoryFilm({ active }) {
+  const videos = useRef([])
+
+  // Play the active step's clip from the start; pause the rest. A clip holds
+  // its last frame when it ends, so slow scrollers aren't left with a loop.
+  useEffect(() => {
+    videos.current.forEach((v, i) => {
+      if (!v) return
+      if (i === active) {
+        v.currentTime = 0
+        const pr = v.play()
+        if (pr && pr.catch) pr.catch(() => {})
+      } else {
+        v.pause()
+      }
+    })
+  }, [active])
+
+  return (
+    <div className="relative aspect-video w-full overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#07020A] shadow-[0_0_80px_-20px_rgb(var(--accent)/0.35),0_40px_80px_-40px_rgb(0_0_0/0.9)]">
+      {STORY_CLIPS.map((src, i) => (
+        <video
+          key={src}
+          ref={(el) => { videos.current[i] = el }}
+          src={src}
+          muted
+          playsInline
+          preload={Math.abs(i - active) <= 1 ? 'auto' : 'metadata'}
+          aria-hidden="true"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${i === active ? 'opacity-100' : 'opacity-0'}`}
+        />
+      ))}
+      <span className="absolute left-4 bottom-3 font-mono text-[10px] uppercase tracking-[0.2em] text-white/55">Step {STORY[active].n}</span>
+    </div>
+  )
+}
+
 function HowItWorks() {
   const [ref, p] = useStickyProgress()
   const active = STORY.reduce((acc, s, i) => (p >= s.at ? i : acc), 0)
@@ -623,9 +667,15 @@ function HowItWorks() {
               <div className="h-full rounded-full bg-[linear-gradient(90deg,#8A2A91,#E0457B)]" style={{ width: `${Math.round(p * 100)}%` }} />
             </div>
           </div>
-          <div className="viz-panel viz-panel-pad lg:col-span-7 order-1 lg:order-2 w-full mx-auto story-diagram">
-            <StoryDiagram p={p} />
-          </div>
+          {HAS_STORY_FILM ? (
+            <div className="keep-dark lg:col-span-7 order-1 lg:order-2 w-full">
+              <StoryFilm active={active} />
+            </div>
+          ) : (
+            <div className="viz-panel viz-panel-pad lg:col-span-7 order-1 lg:order-2 w-full mx-auto story-diagram">
+              <StoryDiagram p={p} />
+            </div>
+          )}
         </div>
       </div>
     </section>
