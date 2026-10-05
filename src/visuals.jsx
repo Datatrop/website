@@ -18,156 +18,167 @@ const FAINT = 'rgba(255,255,255,0.05)'
 const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// HOW IT WORKS — scroll-driven: chaos → mapped → connected → running
+// HOW WE WORK — scroll-driven: problem → root cause → scale → tools → solution
 // `p` is 0..1 scroll progress through the pinned section.
 // ═══════════════════════════════════════════════════════════════════════════════
-const DEPTS = ['Sales', 'Finance', 'Inventory', 'Procurement', 'Dispatch', 'HR', 'Support', 'Reports']
-const CHAOS = [[104, 74, -9], [390, 60, 7], [452, 210, -6], [78, 238, 8], [350, 448, -7], [124, 430, 5], [262, 134, 11], [440, 372, -10]]
-const GRID = DEPTS.map((_, i) => [80 + (i % 4) * 120, i < 4 ? 214 : 306])
 const CX = 260
 const CY = 260
-const RADIUS = 186
-const RING = DEPTS.map((_, i) => {
-  const a = ((i * 45 - 90) * Math.PI) / 180
-  return [CX + RADIUS * Math.cos(a), CY + RADIUS * Math.sin(a)]
-})
-const TANGLE = [[0, 4], [1, 5], [2, 6], [3, 7], [0, 2], [5, 7], [1, 3], [4, 6]]
-const ALERTS = [[0, 'Data copied 3×'], [7, 'Report late'], [2, 'Stock mismatch'], [5, 'Missed hand-off']]
-const METRICS = [['Manual work', '↓'], ['Visibility', '↑'], ['Response time', '↓']]
+const SYMPTOMS = [[118, 118, 'Costs rising'], [402, 126, 'Growth stalled'], [112, 392, 'Teams overloaded'], [408, 386, 'No clear data']]
+const SCALE_RINGS = [[96, '1×'], [146, '10×'], [196, '100×']]
+const TOOLS = [['Automation', true], ['ERP', true], ['Custom software', false], ['AI agents', true], ['Data & BI', false], ['Process redesign', true]]
+const toolPos = (i) => [20 + (i % 3) * 166, i < 3 ? 470 : 516]
+const OUTCOMES = [['Cost', '↓'], ['Capacity', '↑'], ['Ready to scale', '✓']]
 
 // local 0..1 for p within [a, b], eased
 const seg = (p, a, b) => easeInOut(Math.min(1, Math.max(0, (p - a) / (b - a))))
-const mix = (a, b, t) => a + (b - a) * t
+const mono = { fontFamily: 'JetBrains Mono, monospace', letterSpacing: 2 }
 
 export function StoryDiagram({ p }) {
-  const toGrid = seg(p, 0.2, 0.36)
-  const toRing = seg(p, 0.5, 0.66)
-  const pos = DEPTS.map((_, i) => {
-    const [cx, cy, cr] = CHAOS[i]; const [gx, gy] = GRID[i]; const [rx, ry] = RING[i]
-    const x = mix(mix(cx, gx, toGrid), rx, toRing)
-    const y = mix(mix(cy, gy, toGrid), ry, toRing)
-    return [x, y, cr * (1 - toGrid)]
-  })
-  const alerts = 1 - seg(p, 0.12, 0.24)
-  const scanT = seg(p, 0.3, 0.5)
-  const scanning = p > 0.28 && p < 0.54
-  const scanX = mix(20, 500, scanT)
-  const core = seg(p, 0.56, 0.7)
-  const flows = seg(p, 0.62, 0.74)
-  const agents = seg(p, 0.8, 0.9)
-  const metrics = seg(p, 0.86, 0.96)
-  const stage = p < 0.28 ? 0 : p < 0.56 ? 1 : 2
+  const context = 1 - seg(p, 0.14, 0.22)
+  const trace = seg(p, 0.2, 0.32) // symptoms traced back to the knot
+  const symptoms = 1 - seg(p, 0.34, 0.42)
+  const rootCause = seg(p, 0.28, 0.34) * (1 - seg(p, 0.42, 0.48))
+  const scanning = p > 0.18 && p < 0.44
+  const rings = seg(p, 0.4, 0.56)
+  const ringsDim = 1 - 0.65 * seg(p, 0.6, 0.7)
+  const tools = seg(p, 0.56, 0.64)
+  const pick = seg(p, 0.66, 0.74)
+  const knot = 1 - seg(p, 0.64, 0.74)
+  const blueprint = seg(p, 0.64, 0.74) * (1 - seg(p, 0.8, 0.88))
+  const solution = seg(p, 0.8, 0.9)
+  const outcomes = seg(p, 0.88, 0.97)
 
   return (
     <svg viewBox="0 0 520 580" className="w-full h-full" role="img"
-      aria-label="Eight disconnected departments are mapped, then connected to one Datatrop platform, with AI agents running routine work.">
+      aria-label="A problem and its symptoms are traced to the root cause, planned for scale, solved with the right mix of tools, and delivered as one working solution.">
       <defs>
         <radialGradient id="st-core">
           <stop offset="0" stopColor={SOFT} />
           <stop offset="0.45" stopColor={ROSE} stopOpacity="0.85" />
           <stop offset="1" stopColor="#6B1E72" stopOpacity="0.95" />
         </radialGradient>
-        <linearGradient id="st-scan" x1="0" x2="1">
-          <stop offset="0" stopColor={SOFT} stopOpacity="0" />
-          <stop offset="0.5" stopColor={SOFT} stopOpacity="0.9" />
-          <stop offset="1" stopColor={SOFT} stopOpacity="0" />
-        </linearGradient>
+        <radialGradient id="st-knot">
+          <stop offset="0" stopColor={AMBER} stopOpacity="0.28" />
+          <stop offset="1" stopColor={AMBER} stopOpacity="0" />
+        </radialGradient>
       </defs>
 
-      {/* 1 · tangled links */}
-      <g opacity={(1 - toGrid) * 0.9}>
-        {TANGLE.map(([a, b], i) => (
-          <line key={i} x1={pos[a][0]} y1={pos[a][1]} x2={pos[b][0]} y2={pos[b][1]} stroke={AMBER} strokeOpacity="0.45" strokeDasharray="5 7" strokeWidth="1.3" />
+      {/* 1 · whose problem: any company, sector or region */}
+      <text x={CX} y="34" textAnchor="middle" fill="rgba(255,255,255,0.55)" fontSize="11" opacity={context} {...mono}>A COMPANY · A SECTOR · A REGION</text>
+
+      {/* 3 · scale rings */}
+      <g opacity={rings * ringsDim}>
+        {SCALE_RINGS.map(([r, label], i) => {
+          const rr = r * (0.6 + 0.4 * seg(p, 0.4 + i * 0.04, 0.5 + i * 0.04))
+          return (
+            <g key={label}>
+              <circle cx={CX} cy={CY} r={rr} fill="none" stroke={SOFT} strokeOpacity={0.5 - i * 0.12} strokeDasharray="3 7" />
+              <g transform={`translate(${CX + rr * 0.72} ${CY - rr * 0.72})`}>
+                <rect x="-22" y="-12" width="44" height="22" rx="11" fill={INK} stroke="rgba(240,141,176,0.5)" />
+                <text y="4" textAnchor="middle" fill={SOFT} fontFamily="Sora, sans-serif" fontSize="11.5" fontWeight="600">{label}</text>
+              </g>
+            </g>
+          )
+        })}
+        <text x={CX} y={CY + 230} textAnchor="middle" fill="rgba(255,255,255,0.55)" fontSize="11" opacity={1 - tools} {...mono}>PLANNED FOR 100× THE LOAD</text>
+      </g>
+
+      {/* 2 · symptoms traced back to one cause */}
+      <g opacity={symptoms}>
+        {SYMPTOMS.map(([x, y, t], i) => (
+          <g key={t}>
+            <line x1={x} y1={y} x2={x + (CX - x) * trace} y2={y + (CY - y) * trace} stroke={SOFT} strokeOpacity="0.6" strokeWidth="1.3" strokeDasharray="4 5" />
+            <g transform={`translate(${x} ${y})`}>
+              <g className="viz-bob" style={{ animationDelay: `${i * 0.4}s` }}>
+                <rect x={-(t.length * 3.3 + 18)} y="-12" width={t.length * 6.6 + 36} height="24" rx="12" fill="rgba(246,196,83,0.14)" stroke={AMBER} strokeOpacity="0.7" />
+                <circle cx={-(t.length * 3.3 + 5)} cy="0" r="4" fill={AMBER} />
+                <text x="6" y="4" textAnchor="middle" fill={AMBER} fontFamily="Inter, sans-serif" fontSize="11.5">{t}</text>
+              </g>
+            </g>
+          </g>
         ))}
       </g>
 
-      {/* 2 · mapping: grid guides + sweeping scan line */}
-      <g opacity={toGrid * (1 - toRing)}>
-        <rect x="14" y="176" width="492" height="168" rx="18" fill="none" stroke="rgba(255,255,255,0.1)" strokeDasharray="3 7" />
-        {[0, 1, 2].map((i) => <line key={i} x1={80 + i * 120} y1="214" x2={200 + i * 120} y2="214" stroke="rgba(255,255,255,0.18)" strokeDasharray="2 6" />)}
-        {[0, 1, 2].map((i) => <line key={i} x1={80 + i * 120} y1="306" x2={200 + i * 120} y2="306" stroke="rgba(255,255,255,0.18)" strokeDasharray="2 6" />)}
-        <text x="260" y="160" textAnchor="middle" fill="rgba(255,255,255,0.55)" fontFamily="JetBrains Mono, monospace" fontSize="11" letterSpacing="2">MAPPING WORKFLOWS · {Math.round(scanT * 100)}%</text>
+      {/* the problem itself: a tangled knot */}
+      <g transform={`translate(${CX} ${CY}) scale(${0.85 + 0.15 * knot})`} opacity={knot}>
+        <circle r="78" fill="url(#st-knot)" />
+        <g className="viz-knot">
+          {[0, 36, 72, 108, 144].map((a, i) => (
+            <ellipse key={a} rx={50 - i * 3} ry={16 + i * 2} transform={`rotate(${a})`} fill="none" stroke={AMBER} strokeOpacity="0.75" strokeWidth="1.6" />
+          ))}
+        </g>
+        <circle r="5" fill={AMBER} />
+        <text y="86" textAnchor="middle" fill="rgba(255,255,255,0.75)" fontSize="11" opacity={(1 - rootCause) * (1 - seg(p, 0.42, 0.48))} {...mono}>THE PROBLEM</text>
       </g>
+
+      {/* 2 · diagnosis: scanner around the knot */}
       {scanning && (
-        <g opacity={Math.sin(scanT * Math.PI)}>
-          <rect x={scanX - 40} y="170" width="80" height="180" fill="url(#st-scan)" opacity="0.18" />
-          <line x1={scanX} y1="170" x2={scanX} y2="350" stroke={SOFT} strokeWidth="1.5" />
+        <g transform={`translate(${CX} ${CY}) rotate(${seg(p, 0.18, 0.44) * 540})`} opacity={Math.sin(seg(p, 0.18, 0.44) * Math.PI)}>
+          <circle r="66" fill="none" stroke={SOFT} strokeOpacity="0.3" />
+          <path d="M0 0 L66 0 A66 66 0 0 1 46.7 46.7 Z" fill={SOFT} fillOpacity="0.16" />
+          <line x2="66" stroke={SOFT} strokeWidth="1.5" />
         </g>
       )}
+      <g opacity={rootCause} transform={`translate(${CX} ${CY + 92})`}>
+        <rect x="-74" y="-14" width="148" height="28" rx="14" fill="rgba(224,69,123,0.2)" stroke={SOFT} />
+        <text y="4.5" textAnchor="middle" fill="#fff" fontSize="11.5" {...mono}>ROOT CAUSE FOUND</text>
+      </g>
 
-      {/* 3 · core + spokes */}
-      <circle cx={CX} cy={CY} r={RADIUS} fill="none" stroke="rgba(255,255,255,0.08)" strokeDasharray="2 9" opacity={toRing} />
-      <g opacity={flows}>
-        {pos.map(([x, y], i) => (
-          <g key={i}>
-            <line x1={x} y1={y} x2={CX} y2={CY} stroke="rgba(240,141,176,0.22)" strokeWidth="1.2" />
-            <line x1={x} y1={y} x2={CX} y2={CY} stroke={SOFT} strokeWidth="2.2" strokeLinecap="round" className="viz-flow" style={{ animationDelay: `${i * -0.2}s` }} />
-          </g>
+      {/* 4 · system design blueprint */}
+      <g opacity={blueprint} transform={`translate(${CX} ${CY})`}>
+        <rect x="-70" y="-70" width="140" height="140" rx="20" fill="rgba(255,255,255,0.03)" stroke={SOFT} strokeOpacity="0.7" strokeDasharray="5 5" />
+        {[-35, 0, 35].map((v) => (
+          <g key={v} stroke="rgba(255,255,255,0.12)"><line x1={v} y1="-62" x2={v} y2="62" /><line x1="-62" y1={v} x2="62" y2={v} /></g>
         ))}
-      </g>
-      <g transform={`translate(${CX} ${CY}) scale(${0.3 + 0.7 * core})`} opacity={core}>
-        <circle r="66" fill="url(#st-core)" />
-        <circle r="66" fill="none" stroke="rgba(255,255,255,0.35)" />
-        <circle r="80" fill="none" stroke={SOFT} strokeOpacity="0.35" className="viz-ping" />
-        <text y="-2" textAnchor="middle" fill="#fff" fontFamily="Sora, Inter, sans-serif" fontSize="17" fontWeight="600" letterSpacing="1.5">DATATROP</text>
-        <text y="18" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontFamily="Inter, sans-serif" fontSize="11.5">one platform</text>
+        <text y="4" textAnchor="middle" fill="#fff" fontSize="11" {...mono}>SYSTEM DESIGN</text>
       </g>
 
-      {/* 4 · AI agents orbiting the core */}
-      <g opacity={agents}>
-        <circle cx={CX} cy={CY} r="112" fill="none" stroke={SOFT} strokeOpacity="0.25" strokeDasharray="3 6" />
-        <g className="viz-orbit">
-          {[0, 120, 240].map((a) => {
-            const rad = (a * Math.PI) / 180
-            return (
-              <g key={a} transform={`translate(${CX + 112 * Math.cos(rad)} ${CY + 112 * Math.sin(rad)})`}>
-                <circle r="15" fill={INK} stroke={SOFT} />
-                <circle r="15" fill="rgba(224,69,123,0.35)" />
-                <circle r="4" fill="#fff" className="viz-blink" />
-              </g>
-            )
-          })}
-        </g>
-      </g>
-
-      {/* departments */}
-      {pos.map(([x, y, r], i) => {
-        const mapped = scanning ? scanX > GRID[i][0] : p >= 0.54
-        const stroke = stage === 2 ? 'rgba(240,141,176,0.6)' : stage === 1 ? (mapped ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.18)') : 'rgba(246,196,83,0.35)'
-        const dot = stage === 2 ? SOFT : stage === 1 ? (mapped ? '#fff' : 'rgba(255,255,255,0.35)') : AMBER
-        return (
-          <g key={DEPTS[i]} transform={`translate(${x} ${y}) rotate(${r})`}>
-            <rect x="-58" y="-19" width="116" height="38" rx="12" fill={INK} stroke={stroke} />
-            <circle cx="-40" cy="0" r="4" fill={dot} />
-            <text x="-29" y="4.5" fill="rgba(255,255,255,0.88)" fontFamily="Inter, sans-serif" fontSize="13">{DEPTS[i]}</text>
-          </g>
-        )
-      })}
-
-      {/* 1 · alerts */}
-      <g opacity={alerts}>
-        {ALERTS.map(([i, t], k) => {
-          const [x, y] = pos[i]
-          const w = t.length * 6.6 + 30
+      {/* 4–5 · picked tools feed the solution */}
+      <g opacity={solution}>
+        {TOOLS.map(([, picked], i) => {
+          if (!picked) return null
+          const [x, y] = toolPos(i)
           return (
-            <g key={t} transform={`translate(${Math.min(500 - w, Math.max(10, x - w / 2))} ${y - 50})`}>
-              <g className="viz-bob" style={{ animationDelay: `${k * 0.4}s` }}>
-                <rect width={w} height="24" rx="12" fill="rgba(246,196,83,0.16)" stroke={AMBER} strokeOpacity="0.7" />
-                <circle cx="13" cy="12" r="4" fill={AMBER} />
-                <text x="23" y="16" fill={AMBER} fontFamily="Inter, sans-serif" fontSize="11.5">{t}</text>
-              </g>
+            <g key={i}>
+              <line x1={x + 74} y1={y - 18} x2={CX} y2={CY} stroke="rgba(240,141,176,0.22)" strokeWidth="1.2" />
+              <line x1={x + 74} y1={y - 18} x2={CX} y2={CY} stroke={SOFT} strokeWidth="2.2" strokeLinecap="round" className="viz-flow" style={{ animationDelay: `${i * -0.25}s` }} />
             </g>
           )
         })}
       </g>
 
-      {/* 4 · outcomes */}
-      <g opacity={metrics} transform={`translate(0 ${(1 - metrics) * 10})`}>
-        {METRICS.map(([t, arrow], i) => (
-          <g key={t} transform={`translate(${20 + i * 166} 528)`}>
+      {/* 4 · the toolbox: we pick what fits, not one fixed product */}
+      <g opacity={tools} transform={`translate(0 ${(1 - tools) * 14})`}>
+        {TOOLS.map(([t, picked], i) => {
+          const [x, y] = toolPos(i)
+          const on = picked ? pick : 0
+          const dim = picked ? 1 : 1 - 0.55 * pick
+          return (
+            <g key={t} transform={`translate(${x} ${y - 18})`} opacity={dim}>
+              <rect width="148" height="36" rx="18" fill={on ? `rgba(224,69,123,${0.08 + 0.16 * on})` : INK} stroke={on ? `rgba(240,141,176,${0.3 + 0.4 * on})` : 'rgba(255,255,255,0.18)'} />
+              <text x="18" y="22.5" fill="rgba(255,255,255,0.88)" fontFamily="Inter, sans-serif" fontSize="12.5">{t}</text>
+              {picked && <g opacity={on}><Check x={134} y={18} r={7} /></g>}
+            </g>
+          )
+        })}
+      </g>
+
+      {/* 5 · the delivered solution */}
+      <g transform={`translate(${CX} ${CY}) scale(${0.3 + 0.7 * solution})`} opacity={solution}>
+        <circle r="70" fill="url(#st-core)" />
+        <circle r="70" fill="none" stroke="rgba(255,255,255,0.35)" />
+        <circle r="84" fill="none" stroke={SOFT} strokeOpacity="0.35" className="viz-ping" />
+        <text y="-2" textAnchor="middle" fill="#fff" fontFamily="Sora, Inter, sans-serif" fontSize="17" fontWeight="600" letterSpacing="1.5">SOLVED</text>
+        <text y="18" textAnchor="middle" fill="rgba(255,255,255,0.85)" fontFamily="Inter, sans-serif" fontSize="11.5">live &amp; measured</text>
+      </g>
+
+      {/* 5 · outcomes */}
+      <g opacity={outcomes} transform={`translate(0 ${(1 - outcomes) * -10})`}>
+        {OUTCOMES.map(([t, mark], i) => (
+          <g key={t} transform={`translate(${20 + i * 166} 16)`}>
             <rect width="148" height="36" rx="18" fill="rgba(224,69,123,0.16)" stroke="rgba(240,141,176,0.55)" />
             <text x="18" y="23" fill="#fff" fontFamily="Inter, sans-serif" fontSize="13">{t}</text>
-            <text x="130" y="24" textAnchor="end" fill={SOFT} fontFamily="Sora, sans-serif" fontSize="16" fontWeight="600">{arrow}</text>
+            <text x="130" y="24" textAnchor="end" fill={SOFT} fontFamily="Sora, sans-serif" fontSize="16" fontWeight="600">{mark}</text>
           </g>
         ))}
       </g>

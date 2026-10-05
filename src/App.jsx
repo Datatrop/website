@@ -602,24 +602,25 @@ function AboutIntro({ about }) {
 // HOW IT WORKS — pinned while you scroll; the diagram tells the story
 // ═══════════════════════════════════════════════════════════════════════════════
 const STORY = [
-  { at: 0, n: '01', title: 'Your business today', body: 'Eight tools, copied data, reports that arrive late. Everyone works hard, and nothing connects.' },
-  { at: 0.28, n: '02', title: 'We map how it really works', body: 'Before writing code, we trace every workflow, hand-off and data source with your team.' },
-  { at: 0.56, n: '03', title: 'We engineer one system', body: 'Every department connects to a single platform, so data is entered once and seen everywhere.' },
-  { at: 0.8, n: '04', title: 'It runs alongside your team', body: 'AI agents take on the routine work. Your people get live visibility and make the calls.' },
+  { at: 0, n: '01', title: 'Bring us the problem', body: 'A company, a sector or a region. Costs leaking, growth stalled, people stretched. We start from the problem, not from a product.' },
+  { at: 0.2, n: '02', title: 'We find the root cause', body: 'We study the operation, the data and the people until we know what is really causing it, not just the symptoms.' },
+  { at: 0.4, n: '03', title: 'We plan for scale', body: 'We size the problem today and where it is heading, so the answer still holds at ten or a hundred times the load.' },
+  { at: 0.6, n: '04', title: 'We choose the right tools', body: 'Automation, an ERP, custom software, AI or a redesigned process. We pick whatever solves it best and design the system around it.' },
+  { at: 0.8, n: '05', title: 'We deliver the solution', body: 'We build it, roll it out with your team and measure the result, so the problem stays solved as you grow.' },
 ]
 
 function HowItWorks() {
   const [ref, p] = useStickyProgress()
   const active = STORY.reduce((acc, s, i) => (p >= s.at ? i : acc), 0)
   return (
-    <section id="how-it-works" ref={ref} className="relative h-[420vh]">
+    <section id="how-it-works" ref={ref} className="relative h-[500vh]">
       <div className="sticky top-0 h-[100svh] overflow-hidden flex items-center">
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_55%_60%_at_70%_50%,rgb(var(--maroon)/0.75),transparent_70%)]" />
         <div className={`relative ${WRAP} w-full grid lg:grid-cols-12 gap-6 lg:gap-12 items-center pt-20 lg:pt-16`}>
           <div className="lg:col-span-5 order-2 lg:order-1">
-            <Eyebrow className="mb-4 hidden sm:inline-flex">How it works</Eyebrow>
+            <Eyebrow className="mb-4 hidden sm:inline-flex">How we work</Eyebrow>
             <h2 className="hidden lg:block font-display text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05] mb-10">
-              From chaos to a system that <span className="text-glow">runs itself.</span>
+              We start with the problem, <span className="text-glow">not the technology.</span>
             </h2>
             {/* Desktop: all steps, active one lit. Mobile: just the active step. */}
             <ol className="hidden lg:flex flex-col gap-1">
@@ -632,7 +633,7 @@ function HowItWorks() {
               ))}
             </ol>
             <div className="lg:hidden min-h-[132px]">
-              <p className="font-mono text-[11px] text-rose-soft mb-2">Step {STORY[active].n} / 04</p>
+              <p className="font-mono text-[11px] text-rose-soft mb-2">Step {STORY[active].n} / {String(STORY.length).padStart(2, '0')}</p>
               <h3 key={active} className="font-display text-white text-2xl font-medium tracking-tight mb-2 anim-fade">{STORY[active].title}</h3>
               <p key={`b${active}`} className="text-white/65 font-light leading-relaxed anim-fade">{STORY[active].body}</p>
             </div>

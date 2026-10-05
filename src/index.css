@@ -304,6 +304,16 @@ body {
 .intro-playing body { background: #050204; }
 .intro-playing .site { visibility: hidden; }
 .intro-playing .anim-rise, .intro-playing .anim-fade { animation-play-state: paused; }
+.intro-video { object-fit: cover; }
+@media (orientation: portrait) {
+  /* Keep the centred wordmark on screen: fit the 16:9 film, enlarge a little, fade its edges */
+  .intro-video {
+    object-fit: contain;
+    transform: scale(1.32);
+    -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+    mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+  }
+}
 
 /* ── Visualisations (src/visuals.jsx) ─────────────────────────────────── */
 /* Scroll-story diagram: sized to the viewport height so the pinned frame never clips */
@@ -361,13 +371,14 @@ body {
 
 .viz-orbit { transform-box: view-box; transform-origin: 260px 260px; animation: viz-sweep 14s linear infinite; }
 .viz-bob { animation: viz-bob 2.4s ease-in-out infinite; }
+.viz-knot { transform-box: view-box; transform-origin: 0 0; animation: viz-sweep 22s linear infinite; }
 @keyframes viz-bob { 50% { transform: translateY(-4px); } }
 .viz-sweep { transform-box: view-box; transform-origin: 48px 48px; animation: viz-sweep 6s linear infinite; }
 @keyframes viz-sweep { to { transform: rotate(360deg); } }
 
 @media (prefers-reduced-motion: reduce) {
   .viz-flow, .viz-ping, .viz-draw, .viz-pulse-dot, .viz-blink, .viz-leak, .viz-pour,
-  .viz-grow-x, .viz-fill, .viz-check, .viz-wave, .viz-chip, .viz-stack, .viz-sweep, .viz-orbit, .viz-bob { animation: none !important; }
+  .viz-grow-x, .viz-fill, .viz-check, .viz-wave, .viz-chip, .viz-stack, .viz-sweep, .viz-orbit, .viz-bob, .viz-knot { animation: none !important; }
   .viz-leak, .viz-pour, .viz-ping { display: none; }
   .viz-layer { transition: none; }
 }
