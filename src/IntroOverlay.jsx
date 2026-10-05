@@ -1,14 +1,15 @@
-// Full-screen brand intro shown once per visitor, on their first page load.
+// Full-screen brand intro shown each time someone comes to the site (once per
+// browser session, so refreshing during a visit doesn't replay it).
 // The decision is made before React boots by a tiny inline script in
 // index.html, which adds `intro-playing` to <html> (hiding the site and
-// pausing its entrance animations) only when the visitor hasn't seen the
-// intro and hasn't asked for reduced motion. This component plays the video
+// pausing its entrance animations) unless it already played this session or
+// the visitor asked for reduced motion. This component plays the video
 // and removes that class when it ends, is skipped, or fails to start.
 import { useEffect, useRef, useState } from 'react'
 import introVideo from './assets/intro.mp4'
 import introPoster from './assets/intro-poster.jpg'
 
-const INTRO_SEEN_KEY = 'datatrop_intro_seen'
+const INTRO_PLAYED_KEY = 'datatrop_intro_played'
 const FADE_MS = 700
 
 const introRequested = () =>
@@ -25,7 +26,7 @@ export default function IntroOverlay() {
   const finish = () => {
     if (done.current) return
     done.current = true
-    try { localStorage.setItem(INTRO_SEEN_KEY, '1') } catch { /* storage blocked: may show again next visit */ }
+    try { sessionStorage.setItem(INTRO_PLAYED_KEY, '1') } catch { /* storage blocked: may replay on refresh */ }
     setLeaving(true)
     // Reveal the site underneath while the overlay fades out
     document.documentElement.classList.remove('intro-playing')
