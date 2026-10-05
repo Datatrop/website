@@ -509,8 +509,8 @@ function Hero({ headline, subtext }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // STATEMENT — big editorial paragraph, revealed word by word as you scroll
 // ═══════════════════════════════════════════════════════════════════════════════
-const STATEMENT_A = 'We don’t start with technology. We start with the problem, then design, build and operate the intelligent system that solves it.'
-const STATEMENT_B = 'Software, AI, automation, or something that doesn’t exist yet. That decision comes after we understand the problem, never before.'
+const STATEMENT = 'Some problems don’t fit a product. Some ideas don’t have a blueprint yet.'
+const STATEMENT_PAYOFF = 'That’s where we begin.'
 
 const DEFAULT_ABOUT =
   'Datatrop AI Systems is an intelligent systems engineering company that designs, builds, and operates solutions for complex business and societal challenges. AI, automation, and software are not our identity; they are the delivery mechanisms we choose once we understand the problem.'
@@ -524,25 +524,25 @@ const PRINCIPLES = [
 
 function Statement() {
   const [ref, progress] = useScrollProgress()
-  const words = [...STATEMENT_A.split(' ').map((w) => [w, false]), ...STATEMENT_B.split(' ').map((w) => [w, true])]
-  const lit = progress * words.length * 1.08
+  const words = STATEMENT.split(' ')
+  const lit = progress * (words.length + 3) * 1.1
+  const payoff = lit > words.length + 1
 
   return (
     <section id="statement" className="glow-section py-28 sm:py-40">
-      <div className={WRAP}>
-        <Eyebrow className="mb-10">Who we are</Eyebrow>
-        <p ref={ref} className="font-display text-[28px] sm:text-[42px] lg:text-[54px] leading-[1.18] tracking-[-0.03em] font-medium max-w-6xl">
-          {words.map(([w, second], i) => (
-            <span
-              key={i}
-              className={`transition-colors duration-300 ${i < lit ? (second ? 'text-rose-soft' : 'text-white') : 'text-white/[0.14]'}`}
-            >
+      <div className={`${WRAP} text-center`}>
+        <Eyebrow className="mb-10 justify-center">Who we are</Eyebrow>
+        <p ref={ref} className="mx-auto max-w-4xl font-display text-[26px] sm:text-[36px] lg:text-[44px] leading-[1.25] tracking-[-0.025em] font-normal">
+          {words.map((w, i) => (
+            <span key={i} className={`transition-colors duration-500 ${i < lit ? 'text-white/90' : 'text-white/[0.12]'}`}>
               {w}{' '}
-              {i === STATEMENT_A.split(' ').length - 1 && <br className="hidden sm:block" />}
+              {w.endsWith('.') && i < words.length - 1 && <br className="hidden sm:block" />}
             </span>
           ))}
         </p>
-
+        <p className={`mt-8 sm:mt-10 font-display text-[26px] sm:text-[36px] lg:text-[44px] leading-tight tracking-[-0.025em] font-medium transition-all duration-700 ${payoff ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
+          <span className="text-glow">{STATEMENT_PAYOFF}</span>
+        </p>
       </div>
     </section>
   )
