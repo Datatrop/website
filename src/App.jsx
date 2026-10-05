@@ -1518,24 +1518,27 @@ function FinalCta({ vision = false }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // INNER PAGE HEADER — shared by About / What We Do / Industries
 // ═══════════════════════════════════════════════════════════════════════════════
-function PageHero({ eyebrow, title, glow, intro, links = [] }) {
+// Every inner page (About, What We Do, Industries, Contact) uses this header at
+// the same fixed height and padding, so the title lands in the same place on
+// each page whatever the copy length.
+function PageHero({ eyebrow, title, glow, intro, links = [], linksLabel = 'On this page' }) {
   return (
-    <section className="relative overflow-hidden bg-brand-gradient">
+    <section className="page-hero relative overflow-hidden bg-brand-gradient flex flex-col">
       <Arcs className="opacity-70" />
       <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#070305] to-transparent pointer-events-none" />
-      <div className={`relative z-10 ${WRAP} pt-36 sm:pt-44 pb-16 sm:pb-20`}>
+      <div className={`relative z-10 ${WRAP} w-full pt-32 lg:pt-44 pb-14 sm:pb-16`}>
         <Eyebrow className="mb-6 anim-fade">{eyebrow}</Eyebrow>
         <h1 className="font-display max-w-4xl text-[40px] leading-[1.04] sm:text-6xl lg:text-[76px] font-medium text-white tracking-[-0.04em] mb-7 anim-rise text-balance">
           {title} {glow && <span className="text-glow">{glow}</span>}
         </h1>
         {intro && (
-          <p className="max-w-2xl text-base sm:text-lg text-white/65 font-light leading-relaxed anim-rise" style={{ animationDelay: '0.1s' }}>
+          <p className="max-w-2xl text-base sm:text-lg text-white/65 font-light leading-relaxed line-clamp-3 anim-rise" style={{ animationDelay: '0.1s' }}>
             {intro}
           </p>
         )}
         {links.length > 0 && (
-          <nav aria-label="On this page" className="mt-10 flex flex-wrap items-center gap-2.5 anim-fade" style={{ animationDelay: '0.25s' }}>
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 mr-2">On this page</span>
+          <nav aria-label={linksLabel} className="mt-10 flex flex-wrap items-center gap-2.5 anim-fade" style={{ animationDelay: '0.25s' }}>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 mr-2">{linksLabel}</span>
             {links.map(([label, href]) => (
               <a key={href} href={href} className="text-[13px] px-4 py-2 rounded-full border border-white/12 bg-black/20 text-white/75 hover:text-white hover:border-rose/50 transition-colors">
                 {label}
@@ -1692,38 +1695,33 @@ function ContactHero({ settings }) {
   const email = settings.contact_email || 'sales@datatrop.in'
   const phone = settings.contact_phone || '+91 79029 17795'
   return (
-    <section className="relative overflow-hidden bg-brand-gradient">
-      <Arcs className="opacity-70" />
-      <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#070305] to-transparent pointer-events-none" />
-      <div className={`relative z-10 ${WRAP} pt-36 sm:pt-44 pb-20 sm:pb-24`}>
-        <Eyebrow className="mb-6 anim-fade">Contact</Eyebrow>
-        <h1 className="font-display max-w-4xl text-[40px] leading-[1.04] sm:text-6xl lg:text-[76px] font-medium text-white tracking-[-0.04em] mb-7 anim-rise text-balance">
-          Let's talk about the problem <span className="text-glow">you're solving.</span>
-        </h1>
-        <p className="max-w-2xl text-base sm:text-lg text-white/65 font-light leading-relaxed mb-10 anim-rise" style={{ animationDelay: '0.1s' }}>
-          Book a strategy call straight into our calendar, or send us a message and we'll get back to you within 24 hours.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3.5 mb-16 anim-rise" style={{ animationDelay: '0.18s' }}>
-          <a href="/contact#book" className="btn-primary px-7 py-4">Book a strategy call <Arrow /></a>
-          <a href="/contact#message" className="btn-secondary px-7 py-4">Send a message <Arrow /></a>
+    <>
+      <PageHero
+        eyebrow="Contact"
+        title="Let's talk about the problem"
+        glow="you're solving."
+        intro="Book a strategy call straight into our calendar, or send us a message and we'll get back to you within 24 hours."
+        linksLabel="Get in touch"
+        links={[['Book a strategy call', '/contact#book'], ['Send a message', '/contact#message']]}
+      />
+      <section className="glow-section pt-6 pb-16 sm:pb-20">
+        <div className={WRAP}>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {CONTACT_STEPS.map((st, i) => (
+              <div key={st.title} className="card p-6">
+                <p className="font-mono text-[11px] text-rose-soft mb-3">Step {i + 1}</p>
+                <h3 className="font-display text-white text-lg font-medium tracking-tight mb-2">{st.title}</h3>
+                <p className="text-white/55 text-sm font-light leading-relaxed">{st.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 flex flex-wrap gap-x-10 gap-y-3 text-sm">
+            <span className="text-white/45">Prefer email? <a href={`mailto:${email}`} className="text-white hover:text-rose-soft select-all">{email}</a></span>
+            <span className="text-white/45">Or call <a href={`tel:${phone.replace(/[^0-9+]/g, '')}`} className="text-white hover:text-rose-soft">{phone}</a></span>
+          </div>
         </div>
-
-        <div className="grid sm:grid-cols-3 gap-4 anim-fade" style={{ animationDelay: '0.3s' }}>
-          {CONTACT_STEPS.map((st, i) => (
-            <div key={st.title} className="card p-6 bg-black/20">
-              <p className="font-mono text-[11px] text-rose-soft mb-3">Step {i + 1}</p>
-              <h3 className="font-display text-white text-lg font-medium tracking-tight mb-2">{st.title}</h3>
-              <p className="text-white/55 text-sm font-light leading-relaxed">{st.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-10 flex flex-wrap gap-x-10 gap-y-3 text-sm">
-          <span className="text-white/45">Prefer email? <a href={`mailto:${email}`} className="text-white hover:text-rose-soft select-all">{email}</a></span>
-          <span className="text-white/45">Or call <a href={`tel:${phone.replace(/[^0-9+]/g, '')}`} className="text-white hover:text-rose-soft">{phone}</a></span>
-        </div>
-      </div>
-    </section>
+      </section>
+    </>
   )
 }
 
@@ -2086,7 +2084,7 @@ export default function App({ page: initialPage = 'home' }) {
             eyebrow="About"
             title="We turn complexity into"
             glow="stable systems."
-            intro={settings.hero_subtext || DEFAULT_SUBTEXT}
+            intro="We design, build and operate the intelligent systems that restore order wherever complexity slows an organization down."
             links={[['Who we are', '/about#who-we-are'], ['How we engage', '/about#engage'], ['Complexity scale', '/about#approach'], ['Why Datatrop', '/about#why']]}
           />
           <AboutIntro about={settings.about_bio} />

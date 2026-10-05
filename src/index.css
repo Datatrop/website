@@ -296,6 +296,10 @@ body {
   .surface:hover, .card-hover:hover, .btn-primary:hover, .btn-secondary:hover { transform: none; }
 }
 
+/* ── Inner-page header: identical height on every page ────────────────── */
+/* Same 640px on every page and screen; only grows if a very narrow phone forces it */
+.page-hero { min-height: 640px; }
+
 /* ── First-visit intro (src/IntroOverlay.jsx) ─────────────────────────── */
 .intro-playing body { background: #050204; }
 .intro-playing .site { visibility: hidden; }
