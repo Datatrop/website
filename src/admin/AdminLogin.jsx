@@ -5,10 +5,7 @@ import { useTheme } from './ThemeContext.jsx'
 
 const ALLOWED_EMAIL = 'support@datatrop.in'
 
-const _logoMods = import.meta.glob('../assets/datatrop-logo-transparent.png', { eager: true })
-const logoSrc = _logoMods['../assets/datatrop-logo-transparent.png']?.default ?? null
-const _logoModsWhite = import.meta.glob('../assets/logo.png', { eager: true })
-const logoSrcWhite = _logoModsWhite['../assets/logo.png']?.default ?? null
+import Logo from '../Logo.jsx'
 
 export default function AdminLogin() {
   const navigate = useNavigate()
@@ -81,25 +78,7 @@ export default function AdminLogin() {
       <div className="relative z-10 w-full max-w-sm">
         {/* Logo */}
         <div className="flex flex-col items-center mb-10">
-          {logoSrc ? (
-            <>
-              <img src={logoSrc} alt="Datatrop" className="h-10 w-auto object-contain dark:hidden" />
-              <img src={logoSrcWhite ?? logoSrc} alt="Datatrop" className="h-10 w-auto object-contain hidden dark:block" />
-            </>
-          ) : (
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-[rgb(var(--brand))] flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <span className="text-[#1B050D] dark:text-white font-bold text-xl tracking-tight">Datatrop</span>
-            </div>
-          )}
+          <Logo className="h-10 w-auto text-[#1B050D] dark:text-white" title="Datatrop" />
           <p className="text-slate-500 dark:text-gray-600 text-xs mt-3 font-medium uppercase tracking-widest">
             Admin Panel
           </p>

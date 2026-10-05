@@ -3,10 +3,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { useTheme } from './ThemeContext.jsx'
 
-const _logoMods = import.meta.glob('../assets/datatrop-logo-transparent.png', { eager: true })
-const logoSrc = _logoMods['../assets/datatrop-logo-transparent.png']?.default ?? null
-const _logoModsWhite = import.meta.glob('../assets/logo.png', { eager: true })
-const logoSrcWhite = _logoModsWhite['../assets/logo.png']?.default ?? null
+import Logo from '../Logo.jsx'
 
 const navItems = [
   {
@@ -153,14 +150,7 @@ function SidebarContent({ onClose, user, onLogout }) {
       {/* Logo */}
       <div className="px-5 py-5 border-b border-black/[0.07] dark:border-[#2A0F1D] flex items-center justify-between">
         <a href="/" className="flex items-center gap-2.5">
-          {logoSrc ? (
-            <>
-              <img src={logoSrc} alt="Datatrop" className="h-8 w-auto object-contain dark:hidden" />
-              <img src={logoSrcWhite ?? logoSrc} alt="Datatrop" className="h-8 w-auto object-contain hidden dark:block" />
-            </>
-          ) : (
-            <span className="text-[#1B050D] dark:text-white font-bold text-base tracking-tight">Datatrop</span>
-          )}
+          <Logo className="h-8 w-auto text-[#1B050D] dark:text-white" title="Datatrop" />
         </a>
         <span className="text-[9px] font-semibold uppercase tracking-widest text-slate-500 dark:text-gray-600 border border-black/10 dark:border-[#33142A] rounded-md px-2 py-0.5">
           Admin

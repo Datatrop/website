@@ -300,20 +300,10 @@ body {
 /* Same 640px on every page and screen; only grows if a very narrow phone forces it */
 .page-hero { min-height: 640px; }
 
-/* ── First-visit intro (src/IntroOverlay.jsx) ─────────────────────────── */
+/* ── Brand intro (src/IntroOverlay.jsx) ───────────────────────────────── */
 .intro-playing body { background: #050204; }
 .intro-playing .site { visibility: hidden; }
 .intro-playing .anim-rise, .intro-playing .anim-fade { animation-play-state: paused; }
-.intro-video { object-fit: cover; }
-@media (orientation: portrait) {
-  /* Keep the centred wordmark on screen: fit the 16:9 film, enlarge a little, fade its edges */
-  .intro-video {
-    object-fit: contain;
-    transform: scale(1.32);
-    -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
-    mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
-  }
-}
 
 /* ── Visualisations (src/visuals.jsx) ─────────────────────────────────── */
 /* Scroll-story diagram: sized to the viewport height so the pinned frame never clips */

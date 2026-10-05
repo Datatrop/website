@@ -6,6 +6,7 @@ import { useInView, useStickyProgress } from './hooks'
 import { StoryDiagram, ProblemScene, CapabilityViz, StatTiles } from './visuals'
 import ParticleHero from './ParticleHero.jsx'
 import IntroOverlay from './IntroOverlay.jsx'
+import Logo from './Logo.jsx'
 import { problemKind, capabilityKind } from './vizKinds'
 import { initAnalytics, trackPageView, track, analyticsAvailable, getConsent, setConsent } from './analytics'
 
@@ -255,15 +256,9 @@ function SectionHead({ eyebrow, title, intro, inView, center = false }) {
 
 const WRAP = 'max-w-[1240px] mx-auto px-5 sm:px-8 lg:px-10'
 
-// ── Logo ──────────────────────────────────────────────────────────────────────
-const _logoModsWhite = import.meta.glob('./assets/logo.png', { eager: true })
-const logoSrcWhite = _logoModsWhite['./assets/logo.png']?.default ?? null
-
+// ── Logo (vector, see src/Logo.jsx) ───────────────────────────────────────────
 function LogoMark({ footer = false }) {
-  if (logoSrcWhite) {
-    return <img src={logoSrcWhite} alt="Datatrop AI Systems" className="w-auto object-contain" style={{ height: footer ? '32px' : '28px' }} />
-  }
-  return <span className="font-display text-white font-semibold tracking-tight text-xl">Datatrop</span>
+  return <Logo className="block w-auto text-white" style={{ height: footer ? '32px' : '28px' }} />
 }
 
 // ── Glowing arcs, as on the brand board's hero variations ─────────────────────
