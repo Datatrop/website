@@ -2,9 +2,18 @@ import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import { api } from './lib/api'
 import { PAGE_META, pageKeyFromPath, applyPageMeta } from './seo'
-import { useInView, useStickyProgress } from './hooks'
-import { StoryDiagram, ProblemScene, CapabilityViz, StatTiles } from './visuals'
-import ParticleHero from './ParticleHero.jsx'
+import { useInView } from './hooks'
+import { ProblemScene, CapabilityViz, StatTiles } from './visuals'
+import PhilosophyViz from './PhilosophyViz.jsx'
+import heroEarth from './assets/home/hero-earth.jpg'
+import whoWeAreImg from './assets/home/who-we-are.jpg'
+import exploreAboutImg from './assets/home/explore-about.jpg'
+import exploreWhatImg from './assets/home/explore-what-we-do.jpg'
+import exploreIndustriesImg from './assets/home/explore-industries.jpg'
+import caseOperationsImg from './assets/home/case-operations.jpg'
+import caseAutomotiveImg from './assets/home/case-automotive.jpg'
+import caseVoiceImg from './assets/home/case-voice.jpg'
+import ctaRoadImg from './assets/home/cta-road.jpg'
 import IntroOverlay from './IntroOverlay.jsx'
 import Logo from './Logo.jsx'
 import { ThemeToggle } from './SiteThemeContext.jsx'
@@ -471,40 +480,85 @@ function splitHeadline(text) {
   return [words.slice(0, -tail).join(' '), words.slice(-tail).join(' ')]
 }
 
+// The hero's right side: Earth at night with a live network tying together
+// what every hard problem is made of. Positions are % of the panel.
+const NET_HUB = [55, 44]
+const NET_CLUSTER = [[47, 37], [60, 35], [51, 52], [64, 47], [42, 47], [57, 27], [68, 40]]
+const NET_LABELS = [
+  { text: 'People', at: [36, 18] },
+  { text: 'Processes', at: [16, 33] },
+  { text: 'Technology', at: [82, 16] },
+  { text: 'Data', at: [22, 60] },
+  { text: 'Real problems', at: [80, 70], key: true },
+]
+
+function EarthNetwork() {
+  const curve = ([x1, y1], [x2, y2], bend = 0.18) => {
+    const mx = (x1 + x2) / 2 - (y2 - y1) * bend
+    const my = (y1 + y2) / 2 + (x2 - x1) * bend
+    return `M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}`
+  }
+  return (
+    <div className="absolute inset-0" aria-hidden="true">
+      <img src={heroEarth} alt="" className="absolute inset-0 w-full h-full object-cover object-[62%_55%] earth-img" />
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full">
+        <ellipse cx="58" cy="50" rx="46" ry="16" transform="rotate(-14 58 50)" fill="none" stroke="rgb(240 141 176 / 0.35)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        {NET_CLUSTER.map((c, i) => (
+          <path key={`c${i}`} d={curve(NET_HUB, c, 0.1)} fill="none" stroke="rgb(240 141 176 / 0.7)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        ))}
+        {NET_CLUSTER.map((c, i) => (
+          <path key={`x${i}`} d={curve(c, NET_CLUSTER[(i + 2) % NET_CLUSTER.length], 0.05)} fill="none" stroke="rgb(176 72 186 / 0.55)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        ))}
+        {NET_LABELS.map((l, i) => (
+          <path key={l.text} d={curve(NET_CLUSTER[i % NET_CLUSTER.length], l.at)} fill="none" stroke={l.key ? 'rgb(240 141 176 / 0.9)' : 'rgb(240 141 176 / 0.45)'} strokeWidth="1" vectorEffect="non-scaling-stroke" className="net-flow" style={{ animationDelay: `${i * -0.7}s` }} />
+        ))}
+      </svg>
+      {[NET_HUB, ...NET_CLUSTER].map(([x, y], i) => (
+        <span key={i} className={`absolute rounded-full -translate-x-1/2 -translate-y-1/2 ${i === 0 ? 'w-3 h-3 bg-white shadow-[0_0_24px_6px_rgb(224_69_123/0.8)]' : 'w-1.5 h-1.5 bg-rose-soft shadow-[0_0_10px_2px_rgb(224_69_123/0.7)]'}`} style={{ left: `${x}%`, top: `${y}%` }} />
+      ))}
+      {NET_LABELS.map((l) => (
+        <span key={l.text} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${l.at[0]}%`, top: `${l.at[1]}%` }}>
+          <span className={`block mx-auto rounded-full ${l.key ? 'w-3 h-3 bg-white live-dot' : 'w-1.5 h-1.5 bg-rose-soft'}`} />
+          <span className={`block mt-2 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.22em] whitespace-nowrap text-center ${l.key ? 'text-white' : 'text-white/70'}`}>{l.text}</span>
+        </span>
+      ))}
+    </div>
+  )
+}
+
 function Hero({ headline, subtext }) {
   const [head, tail] = splitHeadline(headline || DEFAULT_HEADLINE)
   const s = subtext || DEFAULT_SUBTEXT
 
   return (
-    <section id="home" className="keep-dark relative min-h-[100svh] flex flex-col overflow-hidden bg-brand-gradient">
-      <Arcs className="opacity-40" />
-      {/* Fade into the page */}
-      <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-[rgb(var(--page))] to-transparent pointer-events-none" />
+    <section id="home" className="keep-dark relative lg:min-h-[100svh] flex flex-col overflow-hidden bg-[#070305]">
+      {/* Earth network: right half on desktop, a panel under the copy on phones */}
+      <div className="hidden lg:block absolute inset-y-0 right-0 w-[57%] anim-fade" style={{ animationDelay: '0.2s' }}>
+        <EarthNetwork />
+      </div>
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_45%_60%_at_8%_20%,rgb(var(--grape-bright)/0.28),transparent_70%)]" />
 
-      <div className={`relative z-10 ${WRAP} w-full flex-1 grid lg:grid-cols-12 gap-x-10 gap-y-12 items-center pt-32 sm:pt-36 pb-16`}>
-        <div className="lg:col-span-7">
-        <p className="font-display text-[11px] sm:text-[13px] tracking-[0.42em] text-white/70 uppercase mb-8 anim-fade">
-          Engineering impossibilities<br className="sm:hidden" /> to reality
-        </p>
+      <div className={`relative z-10 ${WRAP} w-full flex-1 flex items-center pt-32 sm:pt-36 pb-10 lg:pb-16`}>
+        <div className="max-w-[640px]">
+          <Eyebrow className="mb-8 anim-fade text-white/70">Engineering impossibilities to reality</Eyebrow>
 
-        <h1 className="font-display max-w-5xl text-[44px] leading-[1.02] sm:text-7xl lg:text-[76px] xl:text-[84px] font-medium text-white tracking-[-0.045em] mb-8 anim-rise text-balance">
-          {head} {tail && <span className="text-glow">{tail}</span>}
-        </h1>
+          <h1 className="font-display text-[44px] leading-[1.02] sm:text-7xl lg:text-[64px] xl:text-[72px] font-medium text-white tracking-[-0.045em] mb-8 anim-rise text-balance">
+            {head} {tail && <span className="text-glow">{tail}</span>}
+          </h1>
 
-        <p className="max-w-2xl text-base sm:text-lg text-white/65 font-light leading-relaxed mb-11 anim-rise" style={{ animationDelay: '0.12s' }}>
-          {s}
-        </p>
+          <p className="max-w-xl text-base sm:text-lg text-white/65 font-light leading-relaxed mb-11 anim-rise" style={{ animationDelay: '0.12s' }}>
+            {s}
+          </p>
 
-        <div className="flex flex-col sm:flex-row gap-3.5 anim-rise" style={{ animationDelay: '0.22s' }}>
-          <BookButton />
-          <GhostButton href="/what-we-do">Explore what we do</GhostButton>
-        </div>
-        </div>
-        <div className="lg:col-span-5 w-full max-w-[460px] lg:max-w-none mx-auto anim-fade" style={{ animationDelay: '0.3s' }}>
-          <ParticleHero />
+          <div className="flex flex-col sm:flex-row gap-3.5 anim-rise" style={{ animationDelay: '0.22s' }}>
+            <BookButton />
+            <GhostButton href="#philosophy">Explore our approach</GhostButton>
+          </div>
         </div>
       </div>
-
+      <div className="lg:hidden relative h-[340px] sm:h-[420px] mb-6">
+        <EarthNetwork />
+      </div>
     </section>
   )
 }
@@ -525,27 +579,55 @@ const PRINCIPLES = [
   'Measurable, lasting value',
 ]
 
-function Statement() {
+// The everyday shapes of complexity, pinned over a real city at night
+const WHO_LABELS = [
+  { text: 'Supply chain disruptions', x: 8, top: true, len: 44 },
+  { text: 'Manual processes', x: 36, top: true, len: 30, wide: true },
+  { text: 'Data silos', x: 63, top: true, len: 48 },
+  { text: 'Regulatory complexity', x: 14, top: false, len: 40 },
+  { text: 'Unpredictable demand', x: 46, top: false, len: 54, wide: true },
+  { text: 'Disconnected systems', x: 75, top: false, len: 36 },
+]
+
+function WhoWeAre() {
   const [ref, progress] = useScrollProgress()
+  const [imgRef, inView] = useInView()
   const words = STATEMENT.split(' ')
   const lit = progress * (words.length + 3) * 1.1
   const payoff = lit > words.length + 1
 
   return (
-    <section id="statement" className="glow-section py-28 sm:py-40">
-      <div className={`${WRAP} text-center`}>
-        <Eyebrow className="mb-10 justify-center">Who we are</Eyebrow>
-        <p ref={ref} className="mx-auto max-w-4xl font-display text-[26px] sm:text-[36px] lg:text-[44px] leading-[1.25] tracking-[-0.025em] font-normal">
-          {words.map((w, i) => (
-            <span key={i} className={`transition-colors duration-500 ${i < lit ? 'text-white/90' : 'text-white/[0.12]'}`}>
-              {w}{' '}
-              {w.endsWith('.') && i < words.length - 1 && <br className="hidden sm:block" />}
-            </span>
+    <section id="statement" className="glow-section py-24 sm:py-32">
+      <div className={`${WRAP} grid lg:grid-cols-12 gap-12 lg:gap-14 items-center`}>
+        <div ref={imgRef} className="keep-dark lg:col-span-7 relative aspect-[4/3] sm:aspect-[16/10] rounded-[1.5rem] overflow-hidden border border-white/10 shadow-[0_40px_80px_-40px_rgb(0_0_0/0.9)]">
+          <img src={whoWeAreImg} alt="A city's highway interchange at night" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.55),transparent_35%,transparent_65%,rgb(7_3_5/0.6))]" />
+          {WHO_LABELS.map((l, i) => (
+            <div
+              key={l.text}
+              className={`absolute ${l.wide ? 'hidden sm:flex' : 'flex'} flex-col ${l.top ? 'top-[6%]' : 'bottom-[6%] flex-col-reverse'} transition-all duration-700 ${inView ? 'opacity-100' : 'opacity-0'}`}
+              style={{ left: `${l.x}%`, transitionDelay: `${300 + i * 120}ms` }}
+            >
+              <span className="font-mono text-[8px] sm:text-[10px] uppercase tracking-[0.18em] text-white/85 max-w-[90px] sm:max-w-[120px] leading-snug">{l.text}</span>
+              <span
+                className={`ml-1 w-px bg-gradient-to-b ${l.top ? 'from-white/60 to-white/10 mt-2' : 'from-white/10 to-white/60 mb-2'} origin-top transition-transform duration-700 ${inView ? 'scale-y-100' : 'scale-y-0'}`}
+                style={{ height: `${l.len}%`, minHeight: `${l.len * 1.6}px`, transitionDelay: `${450 + i * 120}ms` }}
+              />
+              <span className="ml-[1px] -translate-x-[3px] w-[7px] h-[7px] rounded-full bg-rose-soft shadow-[0_0_10px_2px_rgb(224_69_123/0.8)]" />
+            </div>
           ))}
-        </p>
-        <p className={`mt-8 sm:mt-10 font-display text-[26px] sm:text-[36px] lg:text-[44px] leading-tight tracking-[-0.025em] font-medium transition-all duration-700 ${payoff ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
-          <span className="text-glow">{STATEMENT_PAYOFF}</span>
-        </p>
+        </div>
+        <div className="lg:col-span-5">
+          <Eyebrow className="mb-8">Who we are</Eyebrow>
+          <p ref={ref} className="font-display text-[26px] sm:text-[34px] lg:text-[36px] leading-[1.22] tracking-[-0.025em] font-normal">
+            {words.map((w, i) => (
+              <span key={i} className={`transition-colors duration-500 ${i < lit ? 'text-white/90' : 'text-white/[0.14]'}`}>{w} </span>
+            ))}
+          </p>
+          <p className={`mt-8 font-display text-[26px] sm:text-[34px] lg:text-[36px] leading-tight tracking-[-0.025em] font-medium transition-all duration-700 ${payoff ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
+            <span className="text-glow">{STATEMENT_PAYOFF}</span>
+          </p>
+        </div>
       </div>
     </section>
   )
@@ -583,100 +665,85 @@ function AboutIntro({ about }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // HOW IT WORKS — pinned while you scroll; the diagram tells the story
 // ═══════════════════════════════════════════════════════════════════════════════
-const STORY = [
-  { at: 0, n: '01', title: 'Bring us a problem or an idea', body: 'A company, a sector or a region that is stuck, or an idea you want to make real. Whatever it is, we start there, not from a product.' },
-  { at: 0.2, n: '02', title: 'We get to the core', body: 'We study the operation, the data and the people until we know what is really causing the problem, or what the idea truly needs to work.' },
-  { at: 0.4, n: '03', title: 'We plan for scale', body: 'We size the problem today and where it is heading, so the answer still holds at ten or a hundred times the load.' },
-  { at: 0.6, n: '04', title: 'We choose the right tools', body: 'Automation, an ERP, custom software, AI or a redesigned process. We find the best techniques and tools for the job and design the system around them.' },
-  { at: 0.8, n: '05', title: 'We deliver the solution', body: 'We build it, roll it out with your team and measure the result, so it keeps working as you grow.' },
+const PHILOSOPHY = [
+  { n: '01', name: 'Decipher', viz: 'decipher', caption: 'From noise', body: 'We investigate the real problem beneath the surface: people, processes, data and constraints.' },
+  { n: '02', name: 'Derive', viz: 'derive', caption: 'To clarity', body: 'We connect the dots, identify patterns and opportunities, and determine what should exist.' },
+  { n: '03', name: 'Datatrop', viz: 'datatrop', caption: 'To a working system', body: 'We engineer and operate the complete system, combining technology, people and processes to deliver real outcomes.' },
 ]
 
-// Optional film for "How we work": drop step-1.mp4 … step-5.mp4 (one short
-// clip per STORY step) into src/assets/story/ and each plays as its step
-// scrolls into view. Until all five exist, the drawn StoryDiagram is shown.
-const STORY_CLIP_FILES = import.meta.glob('./assets/story/step-*.mp4', { eager: true, import: 'default' })
-const STORY_CLIPS = STORY.map((_, i) => STORY_CLIP_FILES[`./assets/story/step-${i + 1}.mp4`])
-const HAS_STORY_FILM = STORY_CLIPS.every(Boolean)
-
-function StoryFilm({ active }) {
-  const videos = useRef([])
-
-  // Play the active step's clip from the start; pause the rest. A clip holds
-  // its last frame when it ends, so slow scrollers aren't left with a loop.
-  useEffect(() => {
-    videos.current.forEach((v, i) => {
-      if (!v) return
-      if (i === active) {
-        v.currentTime = 0
-        const pr = v.play()
-        if (pr && pr.catch) pr.catch(() => {})
-      } else {
-        v.pause()
-      }
-    })
-  }, [active])
-
+function Philosophy() {
+  const [ref, inView] = useInView()
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#07020A] shadow-[0_0_80px_-20px_rgb(var(--accent)/0.35),0_40px_80px_-40px_rgb(0_0_0/0.9)]">
-      {STORY_CLIPS.map((src, i) => (
-        <video
-          key={src}
-          ref={(el) => { videos.current[i] = el }}
-          src={src}
-          muted
-          playsInline
-          preload={Math.abs(i - active) <= 1 ? 'auto' : 'metadata'}
-          aria-hidden="true"
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${i === active ? 'opacity-100' : 'opacity-0'}`}
-        />
-      ))}
-      <span className="absolute left-4 bottom-3 font-mono text-[10px] uppercase tracking-[0.2em] text-white/55">Step {STORY[active].n}</span>
-    </div>
+    <section id="philosophy" className="glow-section alt scroll-mt-20 py-24 sm:py-32 border-t border-white/[0.06]">
+      <div className={WRAP} ref={ref}>
+        <div className={`grid lg:grid-cols-12 gap-8 items-end mb-16 sm:mb-20 ${reveal(inView)}`}>
+          <div className="lg:col-span-7">
+            <Eyebrow className="mb-6">The Datatrop philosophy</Eyebrow>
+            <h2 className="font-display text-[48px] sm:text-[68px] lg:text-[80px] font-medium tracking-[-0.045em] leading-[0.98]">
+              <span className="block text-white">Decipher.</span>
+              <span className="block text-white/55">Derive.</span>
+              <span className="block text-glow">Datatrop.</span>
+            </h2>
+          </div>
+          <p className="lg:col-span-5 text-white/65 text-lg sm:text-xl font-light leading-relaxed lg:pb-3">
+            A disciplined approach to turn complexity into engineered systems.
+          </p>
+        </div>
+        <ol className="grid md:grid-cols-3 gap-12 md:gap-8 lg:gap-12">
+          {PHILOSOPHY.map((st, i) => (
+            <li key={st.n} className={`relative flex flex-col ${reveal(inView)}`} style={{ transitionDelay: `${150 + i * 150}ms` }}>
+              <div className="flex items-center gap-4 mb-5">
+                <span className="w-11 h-11 rounded-full border border-[rgb(var(--accent)_/_0.6)] flex items-center justify-center font-mono text-[12px] text-white">{st.n}</span>
+                <h3 className="font-mono text-[15px] uppercase tracking-[0.24em] text-rose-soft">{st.name}</h3>
+              </div>
+              <p className="text-white/60 font-light leading-relaxed md:min-h-[78px]">{st.body}</p>
+              <div className="viz-panel relative mt-8 aspect-[4/3] rounded-[1.25rem] overflow-hidden">
+                <PhilosophyViz kind={st.viz} />
+              </div>
+              <p className="mt-5 text-center font-mono text-[11px] uppercase tracking-[0.26em] text-white/45">{st.caption}</p>
+              {i < PHILOSOPHY.length - 1 && (
+                <Arrow className="hidden md:block absolute -right-6 lg:-right-8 top-[58%] w-5 h-5 text-white/30" />
+              )}
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
   )
 }
 
-function HowItWorks() {
-  const [ref, p] = useStickyProgress()
-  const active = STORY.reduce((acc, s, i) => (p >= s.at ? i : acc), 0)
+const HOW_STEPS = ['Understand the challenge', 'Derive what matters', 'Architect the system', 'Build & deploy', 'Operate and evolve']
+
+function HowWeWork() {
+  const [ref, inView] = useInView()
   return (
-    <section id="how-it-works" ref={ref} className="relative h-[500vh]">
-      <div className="sticky top-0 h-[100svh] overflow-hidden flex items-center">
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_55%_60%_at_70%_50%,rgb(var(--maroon)/0.75),transparent_70%)]" />
-        <div className={`relative ${WRAP} w-full grid lg:grid-cols-12 gap-6 lg:gap-12 items-center pt-20 lg:pt-16`}>
-          <div className="lg:col-span-5 order-2 lg:order-1">
-            <Eyebrow className="mb-4 hidden sm:inline-flex">How we work</Eyebrow>
-            <h2 className="hidden lg:block font-display text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05] mb-10">
+    <section id="how-it-works" className="glow-section scroll-mt-20 py-20 sm:py-28 border-t border-white/[0.06]">
+      <div className={WRAP} ref={ref}>
+        <div className={`grid lg:grid-cols-12 gap-6 items-end mb-12 ${reveal(inView)}`}>
+          <div className="lg:col-span-7">
+            <Eyebrow className="mb-5">How we work</Eyebrow>
+            <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05]">
               We start with your challenge, <span className="text-glow">not the technology.</span>
             </h2>
-            {/* Desktop: all steps, active one lit. Mobile: just the active step. */}
-            <ol className="hidden lg:flex flex-col gap-1">
-              {STORY.map((s, i) => (
-                <li key={s.n} className={`relative pl-14 py-4 transition-all duration-500 ${i === active ? 'opacity-100' : 'opacity-35'}`}>
-                  <span className={`absolute left-0 top-4 w-9 h-9 rounded-full border flex items-center justify-center font-mono text-[11px] transition-colors duration-500 ${i === active ? 'border-rose bg-[rgb(var(--accent)_/_0.2)] text-white' : i < active ? 'border-rose/40 text-rose-soft' : 'border-white/15 text-white/50'}`}>{s.n}</span>
-                  <h3 className="font-display text-white text-xl font-medium tracking-tight">{s.title}</h3>
-                  <p className={`text-white/60 font-light leading-relaxed overflow-hidden transition-all duration-500 ${i === active ? 'max-h-24 mt-2' : 'max-h-0'}`}>{s.body}</p>
-                </li>
-              ))}
-            </ol>
-            <div className="lg:hidden min-h-[132px]">
-              <p className="font-mono text-[11px] text-rose-soft mb-2">Step {STORY[active].n} / {String(STORY.length).padStart(2, '0')}</p>
-              <h3 key={active} className="font-display text-white text-2xl font-medium tracking-tight mb-2 anim-fade">{STORY[active].title}</h3>
-              <p key={`b${active}`} className="text-white/65 font-light leading-relaxed anim-fade">{STORY[active].body}</p>
-            </div>
-            <div className="mt-6 lg:mt-8 h-1 rounded-full bg-white/10 overflow-hidden">
-              <div className="h-full rounded-full bg-[linear-gradient(90deg,#8A2A91,#E0457B)]" style={{ width: `${Math.round(p * 100)}%` }} />
-            </div>
           </div>
-          {HAS_STORY_FILM ? (
-            <div className="keep-dark lg:col-span-7 order-1 lg:order-2 w-full">
-              <StoryFilm active={active} />
-            </div>
-          ) : (
-            <div className="viz-panel viz-panel-pad lg:col-span-7 order-1 lg:order-2 w-full mx-auto story-diagram">
-              <StoryDiagram p={p} />
-            </div>
-          )}
+          <p className="lg:col-span-5 text-white/60 text-base sm:text-lg font-light leading-relaxed">
+            Every engagement follows the Datatrop philosophy, adapted to your problem and context.
+          </p>
         </div>
+        <ol className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-2">
+          {HOW_STEPS.map((label, i) => (
+            <li key={label} className={`contents ${reveal(inView)}`}>
+              <div
+                className={`group flex-1 flex items-center gap-3.5 rounded-full border border-white/12 bg-white/[0.03] pl-2.5 pr-5 py-2.5 hover:border-[rgb(var(--accent)_/_0.6)] hover:bg-[rgb(var(--maroon)_/_0.35)] transition-all duration-500 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+                style={{ transitionDelay: `${150 + i * 90}ms` }}
+              >
+                <span className="flex-shrink-0 w-10 h-10 rounded-full border border-[rgb(var(--accent)_/_0.55)] flex items-center justify-center font-mono text-[11px] text-white">{String(i + 1).padStart(2, '0')}</span>
+                <span className="text-white text-[14px] leading-snug">{label}</span>
+              </div>
+              {i < HOW_STEPS.length - 1 && <Arrow className="hidden lg:block flex-shrink-0 w-3.5 h-3.5 text-white/30" />}
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   )
@@ -1549,27 +1616,30 @@ function FinalCta({ vision = false }) {
   return (
     <section className="py-12 sm:py-20">
       <div className={WRAP} ref={ref}>
-        <div className={`keep-dark relative overflow-hidden rounded-[2rem] border border-white/10 bg-brand-gradient px-6 py-20 sm:px-16 sm:py-28 ${reveal(inView)}`}>
-          <Arcs />
-          <div className="relative max-w-3xl">
-            {vision && (
-              <>
-                <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-white/60 mb-8">Vision</p>
-                <p className="font-display text-2xl sm:text-3xl text-white/80 font-light leading-snug tracking-tight mb-12">
-                  To become the world's most trusted systems engineering company for solving complex challenges through
+        <div className={`keep-dark relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#070305] ${reveal(inView)}`}>
+          <img src={ctaRoadImg} alt="" loading="lazy" className="absolute inset-y-0 right-0 w-full lg:w-[62%] h-full object-cover object-[50%_62%] cta-img" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,#070305_0%,rgb(7_3_5/0.85)_40%,rgb(7_3_5/0.2)_100%)] lg:bg-[linear-gradient(90deg,#070305_30%,rgb(7_3_5/0.4)_65%,transparent)]" />
+          <div className="relative grid lg:grid-cols-12 gap-10 items-end px-6 py-16 sm:px-14 sm:py-20">
+            <div className="lg:col-span-7">
+              {vision && (
+                <p className="font-display text-xl sm:text-2xl text-white/75 font-light leading-snug tracking-tight mb-12 max-w-2xl">
+                  Our vision: to become the world's most trusted systems engineering company for solving complex challenges through
                   <span className="text-white font-normal"> intelligence, engineering, and innovation.</span>
                 </p>
-              </>
-            )}
-            <h2 className="font-display text-4xl sm:text-6xl font-medium text-white tracking-[-0.04em] leading-[1.02] mb-6">
-              Ready to engineer your next competitive advantage?
-            </h2>
-            <p className="text-white/65 text-lg font-light leading-relaxed mb-10 max-w-xl">
-              Let's discuss your business, your challenges, and the systems that will define your next decade.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3.5">
-              <BookButton />
-              <GhostButton href="/contact#message">Send a message</GhostButton>
+              )}
+              <Eyebrow className="mb-6 text-white/70">Ready to Datatrop?</Eyebrow>
+              <h2 className="font-display text-4xl sm:text-5xl lg:text-[56px] font-medium text-white tracking-[-0.04em] leading-[1.04]">
+                Have a problem that doesn't fit a product? <span className="text-glow">Let's engineer the answer.</span>
+              </h2>
+            </div>
+            <div className="lg:col-span-5">
+              <p className="text-white/70 text-base sm:text-lg font-light leading-relaxed mb-8 max-w-md">
+                Whether the solution is known, unknown, or yet to be invented, we can help you turn complexity into a working system.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3.5">
+                <BookButton />
+                <GhostButton href="/contact#message">Send a message</GhostButton>
+              </div>
             </div>
           </div>
         </div>
@@ -1619,61 +1689,124 @@ const EXPLORE = [
   {
     href: '/about',
     label: 'About',
-    Figure: FigInnovate,
-    title: 'Who we are and how we work',
-    desc: 'Our philosophy, the three ways we engage, and the complexity scale we operate across.',
-    items: ['Build · Solve · Innovate', 'The complexity scale', 'Philosophy & vision'],
+    img: exploreAboutImg,
+    title: 'Who we are and how we think',
+    desc: 'Our philosophy, the Datatrop method, and the kinds of problems we take on.',
+    tags: ['Decipher', 'Derive', 'Datatrop'],
   },
   {
     href: '/what-we-do',
     label: 'What We Do',
-    Figure: FigBuild,
+    img: exploreWhatImg,
     title: 'Intelligent systems, engineered end to end',
-    desc: 'Five system categories, AI workforces that run alongside your team, and the problems we have solved.',
-    items: ['Capabilities', 'AI workforce platforms', 'Problems we solve'],
+    desc: 'From strategic intelligence and business systems to AI agents, platforms and integrations.',
+    tags: ['Automation', 'AI agents', 'Platforms', 'Data & BI', 'Process redesign'],
   },
   {
     href: '/industries',
     label: 'Industries',
-    Figure: FigSolve,
+    img: exploreIndustriesImg,
     title: 'Defined by complexity, not by industry',
-    desc: 'Where we are most often asked to help, from manufacturing floors to financial operations.',
-    items: ['Manufacturing', 'Distribution & trading', 'Healthcare · Finance'],
+    desc: 'We work wherever complex problems exist, from manufacturing floors to financial operations.',
+    tags: ['Manufacturing', 'Supply chain', 'Healthcare', 'Finance', 'And more'],
   },
 ]
+
+function CircleArrow({ className = '' }) {
+  return (
+    <span className={`w-10 h-10 rounded-full border border-white/25 bg-black/30 backdrop-blur flex items-center justify-center text-white transition-colors group-hover:border-rose group-hover:bg-[rgb(var(--accent)_/_0.25)] ${className}`}>
+      <Arrow className="w-4 h-4" />
+    </span>
+  )
+}
 
 function ExplorePages() {
   const [ref, inView] = useInView()
   return (
-    <section id="explore" className="glow-section alt py-28 sm:py-36">
+    <section id="explore" className="glow-section alt py-24 sm:py-32 border-t border-white/[0.06]">
       <div className={WRAP} ref={ref}>
-        <SectionHead eyebrow="Explore Datatrop" title="Start where your question is." inView={inView} />
+        <div className={`grid lg:grid-cols-12 gap-6 items-end mb-12 sm:mb-14 ${reveal(inView)}`}>
+          <div className="lg:col-span-7">
+            <Eyebrow className="mb-5">Explore Datatrop</Eyebrow>
+            <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05]">
+              See how we turn complexity <span className="text-glow">into systems.</span>
+            </h2>
+          </div>
+          <p className="lg:col-span-5 text-white/60 text-base sm:text-lg font-light leading-relaxed">
+            Explore our philosophy, what we build, and the real-world problems we solve across industries.
+          </p>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          {EXPLORE.map(({ href, label, Figure, title, desc, items }, i) => (
+          {EXPLORE.map(({ href, label, img, title, desc, tags }, i) => (
             <a
               key={href}
               href={href}
               className={`group card card-hover overflow-hidden flex flex-col ${reveal(inView)}`}
               style={{ transitionDelay: `${i * 110}ms` }}
             >
-              <div className="viz-panel relative h-48 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.8),transparent_70%)]">
-                <span className="absolute top-4 left-5 font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft">{label}</span>
-                <div className="absolute inset-0 px-8 pt-8 pb-2"><Figure /></div>
+              <div className="keep-dark relative h-48 overflow-hidden">
+                <img src={img} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.55),transparent_45%)]" />
+                <span className="absolute top-5 left-5 font-mono text-[11px] uppercase tracking-[0.22em] text-white/85">{label}</span>
+                <CircleArrow className="absolute top-4 right-4" />
               </div>
               <div className="p-7 flex flex-col flex-1">
                 <h3 className="font-display text-white text-xl font-medium tracking-tight mb-3">{title}</h3>
-                <p className="text-white/55 text-sm font-light leading-relaxed mb-6">{desc}</p>
-                <ul className="flex flex-col gap-2 mb-8 flex-1">
-                  {items.map((it) => (
-                    <li key={it} className="flex items-center gap-2.5 text-sm text-white/70">
-                      <span className="w-1 h-1 rounded-full bg-rose" />{it}
-                    </li>
+                <p className="text-white/55 text-sm font-light leading-relaxed mb-6 flex-1">{desc}</p>
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((t) => (
+                    <span key={t} className="px-3 py-1.5 rounded-full border border-white/15 text-[12px] text-white/75">{t}</span>
                   ))}
-                </ul>
-                <span className="inline-flex items-center gap-2 text-sm text-white">
-                  Explore {label}
-                  <Arrow className="w-4 h-4 text-rose-soft transition-transform group-hover:translate-x-1" />
-                </span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── Home: real reference cases, taken from the problems we solve (admin) ────
+const CASE_IMAGES = [
+  [/operat|fragment|inventor|dispatch/i, caseOperationsImg],
+  [/communic|call|automotive|crm/i, caseAutomotiveImg],
+  [/voice|human|depend|workforce/i, caseVoiceImg],
+]
+const caseImage = (p, i) =>
+  (CASE_IMAGES.find(([re]) => re.test(`${p.title} ${p.reference_case}`)) || CASE_IMAGES[i % CASE_IMAGES.length])[1]
+// "Sufi Group Unified Operations System, covering sales…" → "Sufi Group Unified Operations System"
+const caseTitle = (text) => text.split(/,| with | capable | covering | that /)[0].trim()
+
+function CaseStudies({ problems }) {
+  const [ref, inView] = useInView()
+  const cases = problems.filter((p) => p.reference_case && p.reference_case.trim()).slice(0, 4)
+  if (!cases.length) return null
+  return (
+    <section id="case-studies" className="glow-section py-24 sm:py-32 border-t border-white/[0.06]">
+      <div className={WRAP} ref={ref}>
+        <div className={`flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 ${reveal(inView)}`}>
+          <div>
+            <Eyebrow className="mb-5">Real problems. Real outcomes.</Eyebrow>
+            <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05]">From complexity to impact.</h2>
+          </div>
+          <GhostButton href="/what-we-do#solve">See the problems we solve</GhostButton>
+        </div>
+        <div className={`grid sm:grid-cols-2 ${cases.length > 3 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-5`}>
+          {cases.map((p, i) => (
+            <a
+              key={p.id}
+              href="/what-we-do#solve"
+              title={p.reference_case}
+              className={`group keep-dark relative aspect-[4/3] sm:aspect-[4/5] lg:aspect-[4/3] rounded-[1.25rem] overflow-hidden border border-white/10 ${reveal(inView)}`}
+              style={{ transitionDelay: `${i * 110}ms` }}
+            >
+              <img src={caseImage(p, i)} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_30%,rgb(7_3_5/0.92))]" />
+              <CircleArrow className="absolute top-4 right-4" />
+              <div className="absolute inset-x-0 bottom-0 p-6">
+                <h3 className="font-display text-white text-lg font-medium leading-snug tracking-tight mb-4">{caseTitle(p.reference_case)}</h3>
+                <span className="inline-block px-3 py-1.5 rounded-full border border-white/20 bg-black/30 font-mono text-[10px] uppercase tracking-[0.2em] text-white/80">{p.title}</span>
               </div>
             </a>
           ))}
@@ -2196,12 +2329,14 @@ export default function App({ page: initialPage = 'home' }) {
       {page === 'home' && (
         <>
           <Hero headline={settings.hero_headline} subtext={settings.hero_subtext} />
-          <Statement />
-          <HowItWorks />
+          <WhoWeAre />
+          <Philosophy />
+          <HowWeWork />
           <ExplorePages />
+          <CaseStudies problems={problems} />
           {testimonialsSection}
           {customers.length > 0 && <Clients customers={customers} />}
-          <FinalCta vision />
+          <FinalCta />
         </>
       )}
       <Footer settings={settings} />

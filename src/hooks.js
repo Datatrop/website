@@ -29,28 +29,3 @@ export function useOnScreen(threshold = 0.1) {
 
 export const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-// 0 → 1 as the visitor scrolls through a tall section whose inner content is
-// position: sticky. 0 when the section's top reaches the viewport top, 1 when
-// its bottom reaches the viewport bottom.
-export function useStickyProgress() {
-  const ref = useRef(null)
-  const [p, setP] = useState(0)
-  useEffect(() => {
-    let raf = 0
-    const update = () => {
-      raf = 0
-      const el = ref.current
-      if (!el) return
-      const r = el.getBoundingClientRect()
-      const span = r.height - window.innerHeight
-      setP(span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 1)
-    }
-    const on = () => { if (!raf) raf = requestAnimationFrame(update) }
-    on()
-    window.addEventListener('scroll', on, { passive: true })
-    window.addEventListener('resize', on)
-    return () => { window.removeEventListener('scroll', on); window.removeEventListener('resize', on); cancelAnimationFrame(raf) }
-  }, [])
-  return [ref, p]
-}

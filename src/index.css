@@ -65,6 +65,11 @@ html.site-light .bg-brand-gradient {
   --text-glow: linear-gradient(90deg, #F08DB0 0%, #E0457B 45%, #B048BA 100%);
   color: rgb(var(--fg));
 }
+/* Soft pink text is too faint on the light page; use a deeper rose there */
+html.site-light .text-rose-soft { color: #B8285F; }
+html.site-light .keep-dark .text-rose-soft,
+html.site-light .viz-panel .text-rose-soft,
+html.site-light .bg-brand-gradient .text-rose-soft { color: #F08DB0; }
 html.site-light body { background: rgb(var(--page)); color: rgb(var(--fg)); }
 
 .dark {
@@ -329,6 +334,19 @@ html.site-light .viz-panel-pad { border-radius: 1.5rem; padding: clamp(12px, 2.5
   .surface, .card, .btn-primary, .btn-secondary { transition: none; }
   .surface:hover, .card-hover:hover, .btn-primary:hover, .btn-secondary:hover { transform: none; }
 }
+
+/* ── Home: photo edges fade into the page; hero network lines flow ───── */
+.earth-img {
+  -webkit-mask-image: radial-gradient(ellipse 75% 85% at 62% 52%, #000 45%, transparent 100%);
+  mask-image: radial-gradient(ellipse 75% 85% at 62% 52%, #000 45%, transparent 100%);
+}
+.cta-img {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 35%);
+  mask-image: linear-gradient(90deg, transparent, #000 35%);
+}
+.net-flow { stroke-dasharray: 3 5; animation: net-flow 2.4s linear infinite; }
+@keyframes net-flow { to { stroke-dashoffset: -16; } }
+@media (prefers-reduced-motion: reduce) { .net-flow { animation: none; } }
 
 /* ── Testimonials coverflow ───────────────────────────────────────────── */
 .testimonial-float { animation: testimonial-float 7s ease-in-out infinite; }
