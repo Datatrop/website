@@ -44,6 +44,16 @@ export const api = {
     req(`${BASE}/admin.php?resource=${resource}&id=${id}`, { method: 'PUT', body: payload }),
   remove: (resource, id) =>
     req(`${BASE}/admin.php?resource=${resource}&id=${id}`, { method: 'DELETE' }),
+  // Image upload (multipart): resolves to { url: '/uploads/…' }
+  uploadImage: async (file) => {
+    const body = new FormData()
+    body.append('file', file)
+    const res = await fetch(`${BASE}/upload.php`, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'fetch' }, body })
+    let data = null
+    try { data = await res.json() } catch { /* no/invalid JSON body */ }
+    if (!res.ok) throw new Error((data && data.error) || `Upload failed (${res.status})`)
+    return data
+  },
   saveContent: (payload) =>
     req(`${BASE}/admin.php?resource=site_content`, { method: 'PUT', body: payload }),
 

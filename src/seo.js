@@ -37,6 +37,14 @@ export const PAGE_META = {
     image: '/og/industries.jpg',
     crumb: 'Industries',
   },
+  news: {
+    path: '/news',
+    title: 'News & Events | Datatrop',
+    description:
+      'Events, talks, launches and milestones from Datatrop, the intelligent systems engineering company from Kerala, India.',
+    image: '/og/home.jpg',
+    crumb: 'News & Events',
+  },
   contact: {
     path: '/contact',
     title: 'Contact Datatrop | Book a 30-Minute Strategy Call',

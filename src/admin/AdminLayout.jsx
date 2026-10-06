@@ -57,6 +57,16 @@ const navItems = [
     ),
   },
   {
+    label: 'News & Events',
+    path: '/admin/news',
+    icon: (
+      <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+          d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1zm4 10h6" />
+      </svg>
+    ),
+  },
+  {
     label: 'Problems',
     path: '/admin/problems',
     icon: (

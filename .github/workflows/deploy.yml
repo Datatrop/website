@@ -43,10 +43,13 @@ jobs:
 
           # Built frontend (index.html, assets/) — everything except the api/
           # folder itself, which is synced separately below so its own
-          # exclusions (config.php) are easy to reason about.
+          # exclusions (config.php) are easy to reason about. Photos uploaded
+          # from the admin panel live in uploads/<year>/ on the server only,
+          # so those folders are excluded to keep --delete away from them.
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key -p $SSH_PORT" \
             --exclude 'api' \
+            --exclude 'uploads/*/' \
             dist/ "$SSH_USER@$SSH_HOST:$REMOTE_DIR/"
 
           # Backend PHP files — never touch config.php, it holds the live

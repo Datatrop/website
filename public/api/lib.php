@@ -181,6 +181,16 @@ function resources(): array
             'public_where'  => 'active = 1',
             'public_order'  => 'sort_order ASC',
         ],
+        'posts' => [
+            'table'         => 'posts',
+            'columns'       => ['title', 'kind', 'event_date', 'location', 'summary', 'body', 'image_url', 'link_url', 'link_label', 'active'],
+            'json'          => [],
+            'bool'          => ['active'],
+            'order'         => 'event_date DESC',
+            'public'        => true,
+            'public_where'  => 'active = 1',
+            'public_order'  => 'event_date DESC',
+        ],
         // Admin-only. NOT public — created via leads.php, read/managed in /admin.
         'leads' => [
             'table'   => 'leads',

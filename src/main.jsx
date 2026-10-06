@@ -15,6 +15,7 @@ import ServiceLines from './admin/ServiceLines.jsx'
 import Problems from './admin/Problems.jsx'
 import Leads from './admin/Leads.jsx'
 import Testimonials from './admin/Testimonials.jsx'
+import News from './admin/News.jsx'
 import Policies from './admin/Policies.jsx'
 import Integrations from './admin/Integrations.jsx'
 import { ThemeProvider } from './admin/ThemeContext.jsx'
@@ -36,7 +37,7 @@ createRoot(document.getElementById('root')).render(
         />
 
         {/* Site pages (one App, switched by `page`) */}
-        {['about', 'what-we-do', 'industries', 'contact'].map((page) => (
+        {['about', 'what-we-do', 'industries', 'news', 'contact'].map((page) => (
           <Route
             key={page}
             path={`/${page}`}
@@ -93,6 +94,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="leads" element={<Leads />} />
           <Route path="customers" element={<Customers />} />
           <Route path="testimonials" element={<Testimonials />} />
+          <Route path="news" element={<News />} />
           <Route path="problems" element={<Problems />} />
           <Route path="service-lines" element={<ServiceLines />} />
           <Route path="content" element={<Content />} />

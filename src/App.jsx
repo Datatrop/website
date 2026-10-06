@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import './App.css'
 import { api } from './lib/api'
 import { PAGE_META, pageKeyFromPath, applyPageMeta } from './seo'
@@ -388,6 +388,7 @@ function Navbar({ page }) {
                   </a>
                 </div>
               ))}
+              <a href="/news" onMouseEnter={() => setOpenPanel(null)} aria-current={page === 'news' ? 'page' : undefined} className={`px-4 py-2.5 text-[14px] hover:text-white transition-colors duration-200 ${page === 'news' ? 'text-white' : 'text-white/65'}`}>News</a>
               <a href="/contact" onMouseEnter={() => setOpenPanel(null)} aria-current={page === 'contact' ? 'page' : undefined} className={`px-4 py-2.5 text-[14px] hover:text-white transition-colors duration-200 ${page === 'contact' ? 'text-white' : 'text-white/65'}`}>Contact</a>
             </div>
 
@@ -450,6 +451,7 @@ function Navbar({ page }) {
                 )}
               </div>
             ))}
+            <a href="/news" onClick={() => setMenuOpen(false)} className="px-1 py-4 font-display text-lg text-white border-b border-white/[0.08]">News &amp; Events</a>
             <a href="/contact" onClick={() => setMenuOpen(false)} className="px-1 py-4 font-display text-lg text-white border-b border-white/[0.08]">Contact</a>
             <div className="pt-6 flex flex-col gap-3" onClick={() => setMenuOpen(false)}>
               <BookButton className="w-full" />
@@ -1646,6 +1648,134 @@ function FinalCta({ vision = false }) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// NEWS & EVENTS — posts managed in Admin → News & Events
+// ═══════════════════════════════════════════════════════════════════════════════
+const parseDay = (d) => { const [y, m, day] = String(d || '').slice(0, 10).split('-').map(Number); return new Date(y, (m || 1) - 1, day || 1) }
+const fmtDay = (d) => parseDay(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+const isUpcoming = (d) => { const t = new Date(); t.setHours(0, 0, 0, 0); return parseDay(d) >= t }
+
+function PostMeta({ post }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-white/55">
+      <span className="px-2.5 py-1 rounded-full border border-[rgb(var(--accent)_/_0.45)] text-rose-soft">{post.kind}</span>
+      <span>{fmtDay(post.event_date)}</span>
+      {post.location && <span className="normal-case tracking-normal font-sans text-[12px] text-white/50">· {post.location}</span>}
+    </div>
+  )
+}
+
+function PostImage({ post, className = '' }) {
+  return post.image_url
+    ? <img src={post.image_url} alt="" loading="lazy" className={`w-full h-full object-cover ${className}`} />
+    : (
+      <div className={`relative w-full h-full bg-brand-gradient overflow-hidden ${className}`}>
+        <Arcs className="opacity-50" />
+        <span className="absolute bottom-4 left-5 font-display text-white/80 text-2xl tracking-tight">{post.kind}</span>
+      </div>
+    )
+}
+
+function PostModal({ post, onClose }) {
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = '' }
+  }, [onClose])
+  const paragraphs = (post.body || post.summary || '').split(/\n\s*\n/).filter((t) => t.trim())
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-8" role="dialog" aria-modal="true" aria-label={post.title}>
+      <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={onClose} />
+      <article className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[1.5rem] border border-white/10 bg-[rgb(var(--surface))] shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9)] anim-rise">
+        <div className="relative aspect-[16/9]"><PostImage post={post} /></div>
+        <button onClick={onClose} aria-label="Close" className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 backdrop-blur border border-white/20 text-white flex items-center justify-center hover:border-rose">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+        <div className="p-7 sm:p-10">
+          <PostMeta post={post} />
+          <h2 className="mt-5 font-display text-white text-3xl sm:text-4xl font-medium tracking-[-0.03em] leading-tight">{post.title}</h2>
+          <div className="mt-6 flex flex-col gap-4 text-white/70 font-light leading-relaxed">
+            {paragraphs.map((t, i) => <p key={i} className="whitespace-pre-line">{t.trim()}</p>)}
+          </div>
+          {post.link_url && (
+            <a href={post.link_url} target="_blank" rel="noopener noreferrer" className="btn-primary mt-8 px-6 py-3.5">
+              {post.link_label || 'Read more'} <Arrow />
+            </a>
+          )}
+        </div>
+      </article>
+    </div>
+  )
+}
+
+function PostCard({ post, onOpen, i, inView, featured = false }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(post)}
+      className={`group card card-hover overflow-hidden text-left flex ${featured ? 'flex-col lg:flex-row' : 'flex-col'} ${reveal(inView)}`}
+      style={{ transitionDelay: `${i * 90}ms` }}
+    >
+      <div className={`relative overflow-hidden ${featured ? 'aspect-[16/9] lg:aspect-auto lg:w-[55%] lg:min-h-[340px]' : 'aspect-[16/10]'}`}>
+        <PostImage post={post} className="transition-transform duration-700 group-hover:scale-105" />
+      </div>
+      <div className={`flex flex-col flex-1 ${featured ? 'p-8 sm:p-10 justify-center' : 'p-6'}`}>
+        <PostMeta post={post} />
+        <h3 className={`mt-4 font-display text-white font-medium tracking-tight leading-snug ${featured ? 'text-2xl sm:text-3xl' : 'text-lg'}`}>{post.title}</h3>
+        {post.summary && <p className={`mt-3 text-white/55 font-light leading-relaxed ${featured ? 'text-base' : 'text-sm line-clamp-3'}`}>{post.summary}</p>}
+        <span className="mt-6 inline-flex items-center gap-2 text-sm text-white">
+          Read more <Arrow className="w-4 h-4 text-rose-soft transition-transform group-hover:translate-x-1" />
+        </span>
+      </div>
+    </button>
+  )
+}
+
+function NewsList({ posts, linkedin }) {
+  const [ref, inView] = useInView()
+  const [open, setOpen] = useState(null)
+  const close = useCallback(() => setOpen(null), [])
+  const upcoming = (posts || []).filter((p) => isUpcoming(p.event_date)).sort((a, b) => parseDay(a.event_date) - parseDay(b.event_date))
+  const past = (posts || []).filter((p) => !isUpcoming(p.event_date))
+
+  return (
+    <section className="glow-section py-20 sm:py-28">
+      <div className={WRAP} ref={ref}>
+        {posts === null ? (
+          <p className="text-white/40 text-sm animate-pulse">Loading…</p>
+        ) : posts.length === 0 ? (
+          <div className={`card p-10 sm:p-14 text-center max-w-2xl mx-auto ${reveal(inView)}`}>
+            <h2 className="font-display text-white text-2xl sm:text-3xl font-medium tracking-tight mb-4">Stories are on the way.</h2>
+            <p className="text-white/55 font-light leading-relaxed mb-8">We'll share our events, talks and milestones here. In the meantime, follow along on LinkedIn.</p>
+            {linkedin && <a href={linkedin} target="_blank" rel="noopener noreferrer" className="btn-secondary px-6 py-3.5">Follow Datatrop on LinkedIn <Arrow /></a>}
+          </div>
+        ) : (
+          <>
+            {upcoming.length > 0 && (
+              <div className="mb-20">
+                <Eyebrow className="mb-8">Upcoming</Eyebrow>
+                <div className="grid gap-5">
+                  {upcoming.map((p, i) => <PostCard key={p.id} post={p} onOpen={setOpen} i={i} inView={inView} featured />)}
+                </div>
+              </div>
+            )}
+            {past.length > 0 && (
+              <div>
+                <Eyebrow className="mb-8">Latest</Eyebrow>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {past.map((p, i) => <PostCard key={p.id} post={p} onOpen={setOpen} i={i} inView={inView} />)}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+      {open && <PostModal post={open} onClose={close} />}
+    </section>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // INNER PAGE HEADER — shared by About / What We Do / Industries
 // ═══════════════════════════════════════════════════════════════════════════════
 // Every inner page (About, What We Do, Industries, Contact) uses this header at
@@ -2051,7 +2181,7 @@ function Contact({ settings }) {
 const FOOTER_COLUMNS = [
   { title: 'About', links: [['Who We Are', '/about#who-we-are'], ['How We Engage', '/about#engage'], ['Complexity Scale', '/about#approach'], ['Why Datatrop', '/about#why']] },
   { title: 'What We Do', links: [['Capabilities', '/what-we-do#capabilities'], ['AI Workforce', '/what-we-do#workforce'], ['Problems We Solve', '/what-we-do#solve'], ['Industries', '/industries']] },
-  { title: 'Connect', links: [['Contact Us', '/contact'], ['Book a Call', '/contact#book'], ['Send a Message', '/contact#message']] },
+  { title: 'Connect', links: [['News & Events', '/news'], ['Contact Us', '/contact'], ['Book a Call', '/contact#book'], ['Send a Message', '/contact#message']] },
   { title: 'Legal', links: [['Privacy Policy', '/privacy'], ['Terms of Service', '/terms']] },
 ]
 
@@ -2195,6 +2325,7 @@ export default function App({ page: initialPage = 'home' }) {
   const [testimonials, setTestimonials] = useState([])
   const [problems, setProblems] = useState(DEFAULT_PROBLEMS)
   const [serviceLines, setServiceLines] = useState(DEFAULT_SERVICE_LINES)
+  const [posts, setPosts] = useState(null)
 
   useEffect(() => {
     initAnalytics()
@@ -2210,6 +2341,7 @@ export default function App({ page: initialPage = 'home' }) {
     api.getPublic('customers').then((d) => { if (Array.isArray(d)) setCustomers(d) }).catch(() => {})
     api.getPublic('ai_showcase').then((d) => { if (Array.isArray(d)) setShowcases(d) }).catch(() => {})
     api.getPublic('testimonials').then((d) => { if (Array.isArray(d)) setTestimonials(d) }).catch(() => {})
+    api.getPublic('posts').then((d) => setPosts(Array.isArray(d) ? d : [])).catch(() => setPosts([]))
     api.getPublic('problems').then((d) => { if (Array.isArray(d) && d.length) setProblems(d) }).catch(() => {})
     api.getPublic('service_lines').then((d) => { if (Array.isArray(d) && d.length) setServiceLines(d) }).catch(() => {})
   }, [])
@@ -2314,6 +2446,18 @@ export default function App({ page: initialPage = 'home' }) {
           />
           <FeaturedIndustries />
           <Industries />
+          <FinalCta />
+        </>
+      )}
+      {page === 'news' && (
+        <>
+          <PageHero
+            eyebrow="News & Events"
+            title="What we've been"
+            glow="up to."
+            intro="Events, talks, launches and milestones from the Datatrop team."
+          />
+          <NewsList posts={posts} linkedin={settings.linkedin_url} />
           <FinalCta />
         </>
       )}

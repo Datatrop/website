@@ -56,6 +56,22 @@ CREATE TABLE IF NOT EXISTS testimonials (
 ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS source VARCHAR(32) NULL DEFAULT 'Google';
 ALTER TABLE site_content ADD COLUMN IF NOT EXISTS google_reviews_url VARCHAR(512) NULL;
 
+-- ── News & events (the /news page) ──────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS posts (
+  id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+  title      VARCHAR(255) NOT NULL,
+  kind       VARCHAR(32)  NOT NULL DEFAULT 'News',   -- Event, News, Award, Partnership, Talk, Launch
+  event_date DATE NOT NULL,
+  location   VARCHAR(255) NULL,
+  summary    TEXT NULL,
+  body       LONGTEXT NULL,
+  image_url  VARCHAR(512) NULL,                      -- /uploads/… from the admin upload
+  link_url   VARCHAR(512) NULL,                      -- e.g. LinkedIn post or registration page
+  link_label VARCHAR(64)  NULL,
+  active     TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ── Customers ───────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS customers (
   id         BIGINT AUTO_INCREMENT PRIMARY KEY,
