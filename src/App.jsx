@@ -312,10 +312,10 @@ const MEGA_MENU = [
     page: 'about',
     href: '/about',
     panel: [
-      { title: 'Who We Are', desc: 'Our engineering philosophy and approach.', href: '/about#who-we-are' },
+      { title: 'Who We Are', desc: 'Why we exist and what we believe.', href: '/about#who-we-are' },
+      { title: 'Our Philosophy', desc: 'Decipher, derive, Datatrop.', href: '/about#philosophy' },
       { title: 'How We Engage', desc: 'Build, solve and innovate.', href: '/about#engage' },
-      { title: 'The Complexity Scale', desc: 'From automation to new products.', href: '/about#approach' },
-      { title: 'Why Datatrop', desc: 'Our philosophy, in numbers.', href: '/about#why' },
+      { title: 'Why Datatrop', desc: 'Our approach, in numbers.', href: '/about#why' },
     ],
   },
   {
@@ -2179,7 +2179,7 @@ function Contact({ settings }) {
 // FOOTER
 // ═══════════════════════════════════════════════════════════════════════════════
 const FOOTER_COLUMNS = [
-  { title: 'About', links: [['Who We Are', '/about#who-we-are'], ['How We Engage', '/about#engage'], ['Complexity Scale', '/about#approach'], ['Why Datatrop', '/about#why']] },
+  { title: 'About', links: [['Who We Are', '/about#who-we-are'], ['Our Philosophy', '/about#philosophy'], ['How We Engage', '/about#engage'], ['Complexity Scale', '/about#approach'], ['Why Datatrop', '/about#why']] },
   { title: 'What We Do', links: [['Capabilities', '/what-we-do#capabilities'], ['AI Workforce', '/what-we-do#workforce'], ['Problems We Solve', '/what-we-do#solve'], ['Industries', '/industries']] },
   { title: 'Connect', links: [['News & Events', '/news'], ['Contact Us', '/contact'], ['Book a Call', '/contact#book'], ['Send a Message', '/contact#message']] },
   { title: 'Legal', links: [['Privacy Policy', '/privacy'], ['Terms of Service', '/terms']] },
@@ -2350,9 +2350,10 @@ export default function App({ page: initialPage = 'home' }) {
   useEffect(() => {
     applyPageMeta(page)
     trackPageView(PAGE_META[page].path, PAGE_META[page].title)
+    // Clear the pending hash only once it has been used, so React's dev-mode
+    // double effect run doesn't lose it
     const hash = pendingHash.current
-    pendingHash.current = ''
-    const t = setTimeout(() => scrollToHash(hash), 60)
+    const t = setTimeout(() => { pendingHash.current = ''; scrollToHash(hash) }, 60)
     return () => clearTimeout(t)
   }, [page])
 
@@ -2410,9 +2411,10 @@ export default function App({ page: initialPage = 'home' }) {
             title="We turn complexity into"
             glow="stable systems."
             intro="We design, build and operate the intelligent systems that restore order wherever complexity slows an organization down."
-            links={[['Who we are', '/about#who-we-are'], ['How we engage', '/about#engage'], ['Complexity scale', '/about#approach'], ['Why Datatrop', '/about#why']]}
+            links={[['Who we are', '/about#who-we-are'], ['Our philosophy', '/about#philosophy'], ['How we engage', '/about#engage'], ['Complexity scale', '/about#approach'], ['Why Datatrop', '/about#why']]}
           />
           <AboutIntro about={settings.about_bio} />
+          <Philosophy />
           <ThreePillars />
           <Approach />
           <WhyDatatrop />

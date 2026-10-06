@@ -17,7 +17,7 @@ export const PAGE_META = {
     path: '/about',
     title: 'About Datatrop | Intelligent Systems Engineering Company',
     description:
-      'Datatrop is an intelligent systems engineering company. Learn how we build, solve and innovate, the complexity scale we work across, and why we start with the problem, not the technology.',
+      'Datatrop is an intelligent systems engineering company. Learn our philosophy (decipher, derive, Datatrop), how we engage, the complexity scale we work across, and why we start with the problem, not the technology.',
     image: '/og/about.jpg',
     crumb: 'About',
   },
