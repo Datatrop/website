@@ -13,17 +13,6 @@
     <meta name="format-detection" content="telephone=no" />
     <link rel="canonical" href="https://datatrop.in/" />
 
-    <!-- Light / dark mode (src/SiteThemeContext.jsx): apply a saved choice
-         before first paint so the page doesn't flash the other theme. -->
-    <script>
-      (function () {
-        try {
-          if (/^\/admin/.test(location.pathname)) return;
-          if (localStorage.getItem('datatrop_site_theme') === 'light') document.documentElement.classList.add('site-light');
-        } catch (e) {}
-      })();
-    </script>
-
     <!-- Brand intro (src/IntroOverlay.jsx), played once per visit (browser
          session). Decided before the app boots so the site never flashes up
          first. Skipped on refreshes within the same visit, for reduced-motion

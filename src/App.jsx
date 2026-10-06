@@ -16,7 +16,6 @@ import caseVoiceImg from './assets/home/case-voice.jpg'
 import ctaRoadImg from './assets/home/cta-road.jpg'
 import IntroOverlay from './IntroOverlay.jsx'
 import Logo from './Logo.jsx'
-import { ThemeToggle } from './SiteThemeContext.jsx'
 import { problemKind, capabilityKind } from './vizKinds'
 import { initAnalytics, trackPageView, track, analyticsAvailable, getConsent, setConsent } from './analytics'
 
@@ -366,7 +365,7 @@ function Navbar({ page }) {
   return (
     <>
       <nav
-        className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${solid ? 'bg-[rgb(var(--surface)/0.85)] backdrop-blur-xl border-b border-white/[0.07]' : 'keep-dark bg-transparent border-b border-transparent'}`}
+        className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${solid ? 'bg-[rgb(var(--surface)/0.85)] backdrop-blur-xl border-b border-white/[0.07]' : 'bg-transparent border-b border-transparent'}`}
         onMouseLeave={() => setOpenPanel(null)}
       >
         <div className={WRAP}>
@@ -393,12 +392,10 @@ function Navbar({ page }) {
             </div>
 
             <div className="hidden lg:flex items-center gap-3">
-              <ThemeToggle />
               <a href="/contact#message" className="btn-secondary px-5 py-3 text-[13px]">Send a message</a>
               <a {...bookProps} className="btn-primary px-5 py-3 text-[13px]">Book a call <Arrow className="w-3.5 h-3.5" /></a>
             </div>
 
-            <ThemeToggle className="lg:hidden ml-auto mr-2" />
             <button onClick={() => setMenuOpen((o) => !o)} className="lg:hidden p-2 -mr-2 text-white" aria-label="Menu" aria-expanded={menuOpen}>
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {menuOpen
@@ -531,7 +528,7 @@ function Hero({ headline, subtext }) {
   const s = subtext || DEFAULT_SUBTEXT
 
   return (
-    <section id="home" className="keep-dark relative lg:min-h-[100svh] flex flex-col overflow-hidden bg-[#070305]">
+    <section id="home" className="relative lg:min-h-[100svh] flex flex-col overflow-hidden bg-[#070305]">
       {/* Earth network: right half on desktop, a panel under the copy on phones */}
       <div className="hidden lg:block absolute inset-y-0 right-0 w-[57%] anim-fade" style={{ animationDelay: '0.2s' }}>
         <EarthNetwork />
@@ -599,7 +596,7 @@ function WhoWeAre() {
   return (
     <section id="statement" className="glow-section py-24 sm:py-32">
       <div className={`${WRAP} grid lg:grid-cols-12 gap-12 lg:gap-14 items-center`}>
-        <div ref={imgRef} className="keep-dark lg:col-span-7 relative aspect-[4/3] sm:aspect-[16/10] rounded-[1.5rem] overflow-hidden border border-white/10 shadow-[0_40px_80px_-40px_rgb(0_0_0/0.9)]">
+        <div ref={imgRef} className="lg:col-span-7 relative aspect-[4/3] sm:aspect-[16/10] rounded-[1.5rem] overflow-hidden border border-white/10 shadow-[0_40px_80px_-40px_rgb(0_0_0/0.9)]">
           <img src={whoWeAreImg} alt="A city's highway interchange at night" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.55),transparent_35%,transparent_65%,rgb(7_3_5/0.6))]" />
           {WHO_LABELS.map((l, i) => (
@@ -697,7 +694,7 @@ function Philosophy() {
                 <h3 className="font-mono text-[15px] uppercase tracking-[0.24em] text-rose-soft">{st.name}</h3>
               </div>
               <p className="text-white/60 font-light leading-relaxed md:min-h-[78px]">{st.body}</p>
-              <div className="viz-panel relative mt-8 aspect-[4/3] rounded-[1.25rem] overflow-hidden">
+              <div className="relative mt-8 aspect-[4/3] rounded-[1.25rem] overflow-hidden">
                 <PhilosophyViz kind={st.viz} />
               </div>
               <p className="mt-5 text-center font-mono text-[11px] uppercase tracking-[0.26em] text-white/45">{st.caption}</p>
@@ -860,7 +857,7 @@ function ThreePillars() {
               className={`card card-hover overflow-hidden flex flex-col ${reveal(inView)}`}
               style={{ transitionDelay: `${i * 110}ms` }}
             >
-              <div className="viz-panel relative h-52 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.8),transparent_70%)]">
+              <div className="relative h-52 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.8),transparent_70%)]">
                 <span className="absolute top-4 left-5 font-mono text-[10px] tracking-[0.2em] text-white/40">{fig}</span>
                 <span className="absolute top-4 right-5 font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft">{tag}</span>
                 <div className="absolute inset-0 px-6 pt-8 pb-2"><Figure /></div>
@@ -1000,7 +997,7 @@ function Workforce() {
         </div>
         <div className={`relative ${reveal(inView)}`} style={{ transitionDelay: '120ms' }}>
           <div className="absolute -inset-10 bg-[radial-gradient(circle_at_60%_40%,rgb(var(--grape-bright)/0.35),transparent_60%)] pointer-events-none" />
-          <div className="relative keep-dark viz-panel rounded-[1.25rem]"><Console /></div>
+          <div className="relative rounded-[1.25rem]"><Console /></div>
           <p className="relative mt-4 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">Illustrative interface</p>
         </div>
       </div>
@@ -1058,7 +1055,7 @@ function WhatWeBuild({ serviceLines }) {
                 <p className="text-white/70 text-base font-light leading-relaxed max-w-md mb-7">{lead.examples}</p>
                 <a {...bookProps} className="btn-secondary px-6 py-3.5">Talk to an engineer <Arrow /></a>
               </div>
-              <div className="viz-panel viz-panel-pad relative order-1 lg:order-2 aspect-[440/232] w-full">
+              <div className="relative order-1 lg:order-2 aspect-[440/232] w-full">
                 {capabilityKind(lead.name)
                   ? <CapabilityViz kind={capabilityKind(lead.name)} />
                   : <div className="icon-tile w-14 h-14"><CapIcon i={0} /></div>}
@@ -1073,7 +1070,7 @@ function WhatWeBuild({ serviceLines }) {
                 className={`card card-hover overflow-hidden flex flex-col ${reveal(inView)}`}
                 style={{ transitionDelay: `${(i + 1) * 80}ms` }}
               >
-                <div className="viz-panel h-44 px-6 pt-6 pb-3 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.7),transparent_70%)] flex items-center">
+                <div className="h-44 px-6 pt-6 pb-3 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.7),transparent_70%)] flex items-center">
                   {kind ? <CapabilityViz kind={kind} /> : <div className="icon-tile w-12 h-12 mx-auto"><CapIcon i={i + 1} /></div>}
                 </div>
                 <div className="p-7">
@@ -1221,7 +1218,7 @@ function WhatWeSolve({ problems }) {
                 <button type="button" onClick={() => { setAuto(false); setAfter(true) }} aria-pressed={after} className={`relative px-4 py-1.5 rounded-full transition-colors ${after ? 'text-white' : 'text-white/55'}`}>After</button>
               </div>
             </div>
-            <div className="viz-panel px-4 sm:px-8 pt-4">
+            <div className="px-4 sm:px-8 pt-4">
               <ProblemScene kind={problemKind(p.title)} after={after} label={`${p.title}: ${after ? afterText : before}`} />
             </div>
             <div className="grid sm:grid-cols-2 gap-px bg-white/[0.06] border-t border-white/[0.07]">
@@ -1312,7 +1309,7 @@ function WhyDatatrop() {
             society, whatever technology that requires.
           </p>
         </div>
-        <div className="keep-dark viz-panel viz-panel-pad"><StatTiles stats={STATS} /></div>
+        <StatTiles stats={STATS} />
       </div>
     </section>
   )
@@ -1616,7 +1613,7 @@ function FinalCta({ vision = false }) {
   return (
     <section className="py-12 sm:py-20">
       <div className={WRAP} ref={ref}>
-        <div className={`keep-dark relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#070305] ${reveal(inView)}`}>
+        <div className={`relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#070305] ${reveal(inView)}`}>
           <img src={ctaRoadImg} alt="" loading="lazy" className="absolute inset-y-0 right-0 w-full lg:w-[62%] h-full object-cover object-[50%_62%] cta-img" />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,#070305_0%,rgb(7_3_5/0.85)_40%,rgb(7_3_5/0.2)_100%)] lg:bg-[linear-gradient(90deg,#070305_30%,rgb(7_3_5/0.4)_65%,transparent)]" />
           <div className="relative grid lg:grid-cols-12 gap-10 items-end px-6 py-16 sm:px-14 sm:py-20">
@@ -1656,7 +1653,7 @@ function FinalCta({ vision = false }) {
 // each page whatever the copy length.
 function PageHero({ eyebrow, title, glow, intro, links = [], linksLabel = 'On this page' }) {
   return (
-    <section className="keep-dark page-hero relative overflow-hidden bg-brand-gradient flex flex-col">
+    <section className="page-hero relative overflow-hidden bg-brand-gradient flex flex-col">
       <Arcs className="opacity-70" />
       <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[rgb(var(--page))] to-transparent pointer-events-none" />
       <div className={`relative z-10 ${WRAP} w-full pt-32 lg:pt-44 pb-14 sm:pb-16`}>
@@ -1744,7 +1741,7 @@ function ExplorePages() {
               className={`group card card-hover overflow-hidden flex flex-col ${reveal(inView)}`}
               style={{ transitionDelay: `${i * 110}ms` }}
             >
-              <div className="keep-dark relative h-48 overflow-hidden">
+              <div className="relative h-48 overflow-hidden">
                 <img src={img} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.55),transparent_45%)]" />
                 <span className="absolute top-5 left-5 font-mono text-[11px] uppercase tracking-[0.22em] text-white/85">{label}</span>
@@ -1798,7 +1795,7 @@ function CaseStudies({ problems }) {
               key={p.id}
               href="/what-we-do#solve"
               title={p.reference_case}
-              className={`group keep-dark relative aspect-[4/3] sm:aspect-[4/5] lg:aspect-[4/3] rounded-[1.25rem] overflow-hidden border border-white/10 ${reveal(inView)}`}
+              className={`group relative aspect-[4/3] sm:aspect-[4/5] lg:aspect-[4/3] rounded-[1.25rem] overflow-hidden border border-white/10 ${reveal(inView)}`}
               style={{ transitionDelay: `${i * 110}ms` }}
             >
               <img src={caseImage(p, i)} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -2066,7 +2063,7 @@ function Footer({ settings }) {
   const linkedin = settings.linkedin_url || ''
 
   return (
-    <footer className="keep-dark bg-[rgb(var(--page))] relative overflow-hidden border-t border-white/[0.07] pt-20 pb-10">
+    <footer className="bg-[rgb(var(--page))] relative overflow-hidden border-t border-white/[0.07] pt-20 pb-10">
       <div className="absolute inset-x-0 bottom-0 h-[60%] bg-[radial-gradient(ellipse_70%_100%_at_20%_100%,rgb(var(--maroon)/0.9),transparent_70%)] pointer-events-none" />
       <div className={`relative ${WRAP}`}>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-10 pb-16">

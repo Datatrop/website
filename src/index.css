@@ -29,48 +29,13 @@
     linear-gradient(120deg, #3A0B20 0%, #1B050D 50%, #050204 100%);
 }
 
-/* Public-site theme surfaces. Dark is the default; html.site-light (set by
-   SiteThemeContext, and before paint by the inline script in index.html)
-   flips them. `.keep-dark` keeps a band dark in light mode: the WebGL hero,
-   page headers, the CTA panel, the footer and the illustrations. */
+/* Public-site surfaces, as RGB channels for rgb(var(--x) / a) */
 :root {
   --fg: 255 255 255;          /* text, and every white/x Tailwind class */
   --page: 7 3 5;              /* page background */
   --surface: 11 4 7;          /* solid panels, nav */
   --text-glow: linear-gradient(90deg, #F08DB0 0%, #E0457B 45%, #B048BA 100%);
 }
-html.site-light {
-  color-scheme: light;
-  --fg: 34 8 24;
-  --page: 251 247 250;
-  --surface: 255 255 255;
-  --ink: 251 247 250;
-  --dark-maroon: 255 255 255;
-  --maroon: 246 226 238;
-  --deep-grape: 243 230 243;
-  --glow-strength: 1;
-  --text-glow: linear-gradient(90deg, #C42D68 0%, #A3226B 45%, #7A2283 100%);
-}
-html.site-light .keep-dark,
-html.site-light .bg-brand-gradient {
-  color-scheme: dark;
-  --fg: 255 255 255;
-  --page: 7 3 5;
-  --surface: 11 4 7;
-  --ink: 7 3 5;
-  --dark-maroon: 27 5 13;
-  --maroon: 58 11 32;
-  --deep-grape: 84 19 63;
-  --glow-strength: 1.6;
-  --text-glow: linear-gradient(90deg, #F08DB0 0%, #E0457B 45%, #B048BA 100%);
-  color: rgb(var(--fg));
-}
-/* Soft pink text is too faint on the light page; use a deeper rose there */
-html.site-light .text-rose-soft { color: #B8285F; }
-html.site-light .keep-dark .text-rose-soft,
-html.site-light .viz-panel .text-rose-soft,
-html.site-light .bg-brand-gradient .text-rose-soft { color: #F08DB0; }
-html.site-light body { background: rgb(var(--page)); color: rgb(var(--fg)); }
 
 .dark {
   --glow-brand: 138 42 145;
@@ -232,15 +197,7 @@ body {
 
 }
 
-html.site-light .card { box-shadow: 0 1px 2px rgb(58 11 32 / 0.05), 0 24px 48px -32px rgb(58 11 32 / 0.25); background: rgb(255 255 255 / 0.7); }
-html.site-light .card-hover:hover { background: linear-gradient(180deg, #fff 0%, rgb(var(--maroon) / 0.5) 100%); }
-html.site-light .keep-dark .card { background: linear-gradient(180deg, rgb(255 255 255 / 0.045) 0%, rgb(255 255 255 / 0.012) 100%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 24px 48px -32px rgb(0 0 0 / 0.9); }
 
-/* Illustrations are drawn for a dark ground; in light mode they sit on a
-   dark panel, like a product screenshot. */
-.viz-panel { --fg: 255 255 255; --ink: 7 3 5; --dark-maroon: 27 5 13; --maroon: 58 11 32; --deep-grape: 84 19 63; --surface: 11 4 7; --page: 7 3 5; color: rgb(var(--fg)); }
-html.site-light .viz-panel { background-color: #12050D; }
-html.site-light .viz-panel-pad { border-radius: 1.5rem; padding: clamp(12px, 2.5vw, 28px); box-shadow: 0 30px 60px -30px rgb(58 11 32 / 0.45); }
 
 /* ── Glowing arcs (brand-board hero variations) ─────────────────────── */
 .arc-draw path {
