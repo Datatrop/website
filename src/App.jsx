@@ -2152,7 +2152,6 @@ function Footer({ settings, showNews = false }) {
               </>
             )}
           </p>
-          <p className="font-display text-white/40 text-[11px] uppercase tracking-[0.3em]">Engineering impossibilities to reality</p>
           <p className="text-white/40 text-xs">{location}</p>
         </div>
       </div>
