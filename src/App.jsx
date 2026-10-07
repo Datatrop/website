@@ -1951,7 +1951,6 @@ function Contact({ settings }) {
                       ? <a href={it.href} {...ext} aria-label={it.label} className={`${tile} hover:border-rose hover:bg-[rgb(var(--accent)_/_0.25)]`}>{it.icon}</a>
                       : <span className={tile}>{it.icon}</span>}
                     <div className="min-w-0">
-                      <div className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] mb-1">{it.label}</div>
                       {it.href
                         ? <a href={it.href} {...ext} className="text-white text-sm hover:text-rose-soft transition-colors break-words">{it.value}</a>
                         : <div className="text-white text-sm break-words">{it.value}</div>}
