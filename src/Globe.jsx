@@ -113,9 +113,9 @@ export default function Globe({ cx = 0.5, cy = 0.5, size = 0.36, maxWidth = 1, c
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
       ready = true
-      draw(time())
+      if (!gone) draw(time())
     }
-    img.onerror = () => setFallback(true)
+    img.onerror = () => { gone = true; setFallback(true) }
     img.src = earthNight
 
     const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -170,7 +170,9 @@ export default function Globe({ cx = 0.5, cy = 0.5, size = 0.36, maxWidth = 1, c
     el.addEventListener('pointercancel', onUp)
     const fctx = front.current.getContext('2d')
 
+    let gone = false // set once we switch to the still photo or unmount
     const resize = () => {
+      if (gone || !front.current) return
       const r = el.getBoundingClientRect()
       dpr = Math.min(window.devicePixelRatio || 1, 2)
       W = r.width; H = r.height
@@ -223,7 +225,7 @@ export default function Globe({ cx = 0.5, cy = 0.5, size = 0.36, maxWidth = 1, c
       })
     }
 
-    const loop = () => { step(); draw(time()); raf = visible && (!still || drag || Math.abs(vel) > 0.01) ? requestAnimationFrame(loop) : 0 }
+    const loop = () => { if (gone || !front.current) { raf = 0; return } step(); draw(time()); raf = visible && (!still || drag || Math.abs(vel) > 0.01) ? requestAnimationFrame(loop) : 0 }
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting
       if (visible && !raf) raf = requestAnimationFrame(loop)
@@ -231,6 +233,7 @@ export default function Globe({ cx = 0.5, cy = 0.5, size = 0.36, maxWidth = 1, c
     const ro = new ResizeObserver(resize)
     ro.observe(el); io.observe(el)
     return () => {
+      gone = true
       ro.disconnect(); io.disconnect(); cancelAnimationFrame(raf)
       el.removeEventListener('pointerdown', onDown)
       el.removeEventListener('pointermove', onMove)
