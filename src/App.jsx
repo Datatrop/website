@@ -510,7 +510,7 @@ function splitHeadline(text) {
   return [words.slice(0, -tail).join(' '), words.slice(-tail).join(' ')]
 }
 
-function Hero({ headline, subtext }) {
+function Hero({ headline, subtext, problems }) {
   const [head, tail] = splitHeadline(headline || DEFAULT_HEADLINE)
   const s = subtext || DEFAULT_SUBTEXT
 
@@ -518,7 +518,7 @@ function Hero({ headline, subtext }) {
     <section id="home" className="relative lg:min-h-[100svh] flex flex-col overflow-hidden bg-[#070305]">
       {/* Earth network: right half on desktop, a panel under the copy on phones */}
       <div className="hidden lg:block absolute inset-y-0 right-0 w-[56%] anim-fade" style={{ animationDelay: '0.2s' }}>
-        <Globe cx={0.52} cy={0.54} size={0.28} />
+        <Globe cx={0.52} cy={0.54} size={0.28} problems={problems} />
       </div>
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_45%_60%_at_8%_20%,rgb(var(--grape-bright)/0.28),transparent_70%)]" />
 
@@ -540,7 +540,7 @@ function Hero({ headline, subtext }) {
         </div>
       </div>
       <div className="lg:hidden relative h-[380px] sm:h-[460px] mb-6">
-        <Globe size={0.3} />
+        <Globe size={0.3} problems={problems} />
       </div>
     </section>
   )
@@ -2024,6 +2024,8 @@ export default function App({ page: initialPage = 'home' }) {
   const [customers, setCustomers] = useState([])
   const [showcases, setShowcases] = useState([])
   const [testimonials, setTestimonials] = useState([])
+  // Problems we solve (Admin → Problems), toured by the hero globe
+  const [problems, setProblems] = useState([])
   const [serviceLines, setServiceLines] = useState(DEFAULT_SERVICE_LINES)
   const [posts, setPosts] = useState(null)
   // The News page is only linked once there is something to show on it
@@ -2045,6 +2047,7 @@ export default function App({ page: initialPage = 'home' }) {
     api.getPublic('testimonials').then((d) => { if (Array.isArray(d)) setTestimonials(d) }).catch(() => {})
     api.getPublic('posts').then((d) => setPosts(Array.isArray(d) ? d : [])).catch(() => setPosts([]))
     api.getPublic('service_lines').then((d) => { if (Array.isArray(d) && d.length) setServiceLines(d) }).catch(() => {})
+    api.getPublic('problems').then((d) => { if (Array.isArray(d)) setProblems(d) }).catch(() => {})
   }, [])
 
   // Page title + land on any #section in the URL once the page has rendered
@@ -2181,7 +2184,7 @@ export default function App({ page: initialPage = 'home' }) {
       )}
       {page === 'home' && (
         <>
-          <Hero headline={settings.hero_headline} subtext={settings.hero_subtext} />
+          <Hero headline={settings.hero_headline} subtext={settings.hero_subtext} problems={problems} />
           <WhoWeAre />
           <Philosophy />
           <HowWeWork />
