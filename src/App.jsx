@@ -587,7 +587,7 @@ function WhoWeAre() {
         <PhotoLabels labels={WHO_LABELS} on={inView} />
       </div>
 
-      <div className={`relative ${WRAP} lg:min-h-[620px] flex items-center py-14 lg:py-24`}>
+      <div className={`relative ${WRAP} lg:min-h-[max(620px,100svh)] flex items-center py-14 lg:py-24`}>
         <div className="w-full lg:w-[40%] lg:ml-auto">
           <Eyebrow className="mb-8">Who we are</Eyebrow>
           <p ref={ref} className="font-display text-[28px] sm:text-[36px] lg:text-[40px] leading-[1.18] tracking-[-0.025em] font-medium">
