@@ -14,6 +14,11 @@ import caseOperationsImg from './assets/home/case-operations.jpg'
 import caseAutomotiveImg from './assets/home/case-automotive.jpg'
 import caseVoiceImg from './assets/home/case-voice.jpg'
 import ctaRoadImg from './assets/home/cta-road.jpg'
+import pageAboutImg from './assets/pages/about.jpg'
+import pageWhatImg from './assets/pages/what-we-do.jpg'
+import pageIndustriesImg from './assets/pages/industries.jpg'
+import pageNewsImg from './assets/pages/news.jpg'
+import pageContactImg from './assets/pages/contact.jpg'
 import IntroOverlay from './IntroOverlay.jsx'
 import Logo from './Logo.jsx'
 import { problemKind, capabilityKind } from './vizKinds'
@@ -549,6 +554,34 @@ const WHO_LABELS = [
   { text: 'Disconnected systems', x: 55, top: false, len: 30 },
 ]
 
+// Pointer lines with captions laid over a photo, as on Who we are and the
+// page headers. Top labels hang down; bottom labels point up. `wide` labels
+// are hidden on phones to keep the photo readable.
+function PhotoLabels({ labels, on }) {
+  return labels.map((l, i) => (
+    <div
+      key={l.text}
+      className={`absolute ${l.wide ? 'hidden sm:flex' : 'flex'} ${l.top ? 'top-[9%]' : 'bottom-[9%]'} flex-row items-stretch gap-3 transition-opacity duration-700 ${on ? 'opacity-100' : 'opacity-0'}`}
+      style={{ left: `${l.x}%`, transitionDelay: `${300 + i * 120}ms` }}
+    >
+      <span className={`relative w-px bg-white/75 shadow-[0_0_4px_rgb(0_0_0/0.8)] ${l.top ? 'origin-top' : 'origin-bottom self-end'} transition-transform duration-700 ${on ? 'scale-y-100' : 'scale-y-0'}`} style={{ height: `${l.len * 4.5}px`, transitionDelay: `${450 + i * 120}ms` }}>
+        <span className={`absolute left-1/2 -translate-x-1/2 w-[7px] h-[7px] rounded-full bg-white shadow-[0_0_10px_2px_rgb(255_255_255/0.6)] ${l.top ? 'bottom-0 translate-y-1/2' : 'top-0 -translate-y-1/2'}`} />
+      </span>
+      <span className={`font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.2em] text-white max-w-[110px] sm:max-w-[150px] leading-snug [text-shadow:0_1px_8px_rgb(0_0_0/0.9)] ${l.top ? '' : 'self-end'}`}>{l.text}</span>
+    </div>
+  ))
+}
+
+// Spread up to six captions over a photo: three along the top, three along the bottom
+function spreadLabels(texts) {
+  const xs = [[7, 29, 51], [15, 37, 59]]
+  const lens = [[38, 30, 44], [32, 40, 30]]
+  return texts.map((text, i) => {
+    const top = i % 2 === 0, k = Math.floor(i / 2)
+    return { text, top, x: xs[top ? 0 : 1][k], len: lens[top ? 0 : 1][k], wide: k === 1 }
+  })
+}
+
 function WhoWeAre() {
   const [ref, progress] = useScrollProgress()
   const [imgRef, inView] = useInView()
@@ -562,18 +595,7 @@ function WhoWeAre() {
       <div className="relative lg:absolute lg:inset-y-0 lg:left-0 lg:w-[72%] h-[420px] sm:h-[480px] lg:h-auto">
         <img src={whoWeAreImg} alt="A highway curving into a city skyline at night" loading="lazy" className="absolute inset-0 w-full h-full object-cover object-[45%_55%] who-img" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.45),transparent_30%,transparent_70%,rgb(7_3_5/0.55))]" />
-        {WHO_LABELS.map((l, i) => (
-          <div
-            key={l.text}
-            className={`absolute ${l.wide ? 'hidden sm:flex' : 'flex'} ${l.top ? 'top-[9%] flex-row' : 'bottom-[9%] flex-row'} items-stretch gap-3 transition-opacity duration-700 ${inView ? 'opacity-100' : 'opacity-0'}`}
-            style={{ left: `${l.x}%`, transitionDelay: `${300 + i * 120}ms` }}
-          >
-            <span className={`relative w-px bg-white/75 shadow-[0_0_4px_rgb(0_0_0/0.8)] ${l.top ? 'origin-top' : 'origin-bottom'} transition-transform duration-700 ${inView ? 'scale-y-100' : 'scale-y-0'} ${l.top ? '' : 'self-end'}`} style={{ height: `${l.len * 4.5}px`, transitionDelay: `${450 + i * 120}ms` }}>
-              <span className={`absolute left-1/2 -translate-x-1/2 w-[7px] h-[7px] rounded-full bg-white shadow-[0_0_10px_2px_rgb(255_255_255/0.6)] ${l.top ? 'bottom-0 translate-y-1/2' : 'top-0 -translate-y-1/2'}`} />
-            </span>
-            <span className={`font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.2em] text-white max-w-[110px] sm:max-w-[150px] leading-snug [text-shadow:0_1px_8px_rgb(0_0_0/0.9)] ${l.top ? '' : 'self-end'}`}>{l.text}</span>
-          </div>
-        ))}
+        <PhotoLabels labels={WHO_LABELS} on={inView} />
       </div>
 
       <div className={`relative ${WRAP} lg:min-h-[620px] flex items-center py-14 lg:py-24`}>
@@ -1796,31 +1818,40 @@ function NewsList({ posts, linkedin }) {
 // Every inner page (About, What We Do, Industries, Contact) uses this header at
 // the same fixed height and padding, so the title lands in the same place on
 // each page whatever the copy length.
-function PageHero({ eyebrow, title, glow, intro, links = [], linksLabel = 'On this page' }) {
+function PageHero({ eyebrow, title, glow, intro, links = [], linksLabel = 'On this page', img, imgAlt = '', imgPos = '50% 50%', labels = [] }) {
+  const [ref, inView] = useInView()
   return (
-    <section className="page-hero relative overflow-hidden bg-brand-gradient flex flex-col">
-      <Arcs className="opacity-70" />
-      <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[rgb(var(--page))] to-transparent pointer-events-none" />
-      <div className={`relative z-10 ${WRAP} w-full pt-32 lg:pt-44 pb-14 sm:pb-16`}>
-        <Eyebrow className="mb-6 anim-fade">{eyebrow}</Eyebrow>
-        <h1 className="font-display max-w-4xl text-[40px] leading-[1.04] sm:text-6xl lg:text-[76px] font-medium text-white tracking-[-0.04em] mb-7 anim-rise text-balance">
-          {title} {glow && <span className="text-glow">{glow}</span>}
-        </h1>
-        {intro && (
-          <p className="max-w-2xl text-base sm:text-lg text-white/65 font-light leading-relaxed line-clamp-3 anim-rise" style={{ animationDelay: '0.1s' }}>
-            {intro}
-          </p>
-        )}
-        {links.length > 0 && (
-          <nav aria-label={linksLabel} className="mt-10 flex flex-wrap items-center gap-2.5 anim-fade" style={{ animationDelay: '0.25s' }}>
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 mr-2">{linksLabel}</span>
-            {links.map(([label, href]) => (
-              <a key={href} href={href} className="text-[13px] px-4 py-2 rounded-full border border-white/15 bg-black/20 text-white/75 hover:text-white hover:border-rose/50 transition-colors">
-                {label}
-              </a>
-            ))}
-          </nav>
-        )}
+    <section ref={ref} className="page-hero relative overflow-hidden bg-[#070305] flex flex-col lg:block">
+      {/* Photo: left of the header on desktop (fading into the dark), on top on phones */}
+      <div className="relative order-1 lg:absolute lg:inset-y-0 lg:left-0 lg:w-[64%] h-[360px] sm:h-[440px] lg:h-auto mt-[72px] lg:mt-0">
+        <img src={img} alt={imgAlt} className="absolute inset-0 w-full h-full object-cover who-img" style={{ objectPosition: imgPos }} />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.6),transparent_35%,transparent_70%,rgb(7_3_5/0.6))]" />
+        <div className="absolute inset-0 lg:top-[72px]">
+          <PhotoLabels labels={spreadLabels(labels)} on={inView} />
+        </div>
+      </div>
+
+      <div className={`relative z-10 order-2 ${WRAP} w-full lg:min-h-[640px] flex items-center pt-10 lg:pt-28 pb-14 sm:pb-16`}>
+        <div className="w-full lg:w-[44%] lg:ml-auto">
+          <Eyebrow className="mb-6 anim-fade">{eyebrow}</Eyebrow>
+          <h1 className="font-display text-[38px] leading-[1.05] sm:text-5xl lg:text-[52px] font-medium text-white tracking-[-0.035em] mb-6 anim-rise text-balance">
+            {title} {glow && <span className="text-glow">{glow}</span>}
+          </h1>
+          {intro && (
+            <p className="text-base sm:text-lg text-white/65 font-light leading-relaxed anim-rise" style={{ animationDelay: '0.1s' }}>
+              {intro}
+            </p>
+          )}
+          {links.length > 0 && (
+            <nav aria-label={linksLabel} className="mt-8 flex flex-wrap items-center gap-2 anim-fade" style={{ animationDelay: '0.25s' }}>
+              {links.map(([label, href]) => (
+                <a key={href} href={href} className="text-[13px] px-3.5 py-2 rounded-full border border-white/15 bg-white/[0.03] text-white/75 hover:text-white hover:border-rose/50 transition-colors">
+                  {label}
+                </a>
+              ))}
+            </nav>
+          )}
+        </div>
       </div>
     </section>
   )
@@ -2035,6 +2066,10 @@ function ContactHero({ settings }) {
   return (
     <>
       <PageHero
+        img={pageContactImg}
+        imgAlt="A city at dusk seen from above"
+        imgPos="50% 60%"
+        labels={['Book a call', 'Email us', 'Send a message', 'LinkedIn', 'Kerala, India', 'Reply in 24 hours']}
         eyebrow="Contact"
         title="Let's talk about the problem"
         glow="you're solving."
@@ -2438,6 +2473,10 @@ export default function App({ page: initialPage = 'home' }) {
       {page === 'about' && (
         <>
           <PageHero
+            img={pageAboutImg}
+            imgAlt="A team working through a problem at a whiteboard"
+            imgPos="50% 40%"
+            labels={['Decipher', 'People first', 'Derive', 'Systems over software', 'Datatrop', 'Built to last']}
             eyebrow="About"
             title="We turn complexity into"
             glow="stable systems."
@@ -2455,6 +2494,10 @@ export default function App({ page: initialPage = 'home' }) {
       {page === 'what-we-do' && (
         <>
           <PageHero
+            img={pageWhatImg}
+            imgAlt="Rows of servers in a data centre"
+            imgPos="50% 50%"
+            labels={['AI agents', 'ERP', 'Automation', 'Data & BI', 'Platforms', 'Integrations']}
             eyebrow="What we do"
             title="Intelligent systems,"
             glow="engineered end to end."
@@ -2471,6 +2514,10 @@ export default function App({ page: initialPage = 'home' }) {
       {page === 'industries' && (
         <>
           <PageHero
+            img={pageIndustriesImg}
+            imgAlt="A container port with cranes at dusk"
+            imgPos="40% 55%"
+            labels={['Logistics', 'Manufacturing', 'Trade', 'Healthcare', 'Energy', 'Finance']}
             eyebrow="Industries"
             title="Defined by complexity,"
             glow="not by industry."
@@ -2485,6 +2532,10 @@ export default function App({ page: initialPage = 'home' }) {
       {page === 'news' && (
         <>
           <PageHero
+            img={pageNewsImg}
+            imgAlt="An audience watching a talk in a lit auditorium"
+            imgPos="50% 50%"
+            labels={['Events', 'Talks', 'Launches', 'Partnerships', 'Awards', 'Milestones']}
             eyebrow="News & Events"
             title="What we've been"
             glow="up to."
