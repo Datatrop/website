@@ -1087,8 +1087,8 @@ function WhatWeSolve({ problems }) {
         <div ref={ref}>
           <SectionHead
             eyebrow="Problems we solve"
-            title="The problems we keep being asked to fix."
-            intro="Each one looks different from the inside. Here is what it looks like today, and what changes once the system is in place."
+            title="Where complexity costs you most."
+            intro="Five problems we see in almost every organization: what each one looks like today, and what changes once the right system is in place."
             inView={inView}
           />
         </div>
