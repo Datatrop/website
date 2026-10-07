@@ -691,9 +691,9 @@ function AboutIntro({ about }) {
 // HOW IT WORKS — pinned while you scroll; the diagram tells the story
 // ═══════════════════════════════════════════════════════════════════════════════
 const PHILOSOPHY = [
-  { n: '01', name: 'Decipher', img: philNoiseImg, caption: 'From noise', body: 'We investigate the real problem beneath the surface: people, processes, data and constraints.' },
-  { n: '02', name: 'Derive', img: philClarityImg, caption: 'To clarity', body: 'We connect the dots, identify patterns and opportunities, and determine what should exist.' },
-  { n: '03', name: 'Datatrop', img: philSystemImg, caption: 'To a working system', body: 'We engineer and operate the complete system, combining technology, people and processes to deliver real outcomes.' },
+  { n: '01', name: 'Decipher', tone: 'text-white', img: philNoiseImg, caption: 'From noise', body: 'We investigate the real problem beneath the surface: people, processes, data and constraints.' },
+  { n: '02', name: 'Derive', tone: 'text-white/55', img: philClarityImg, caption: 'To clarity', body: 'We connect the dots, identify patterns and opportunities, and determine what should exist.' },
+  { n: '03', name: 'Datatrop', tone: 'text-glow', img: philSystemImg, caption: 'To a working system', body: 'We engineer and operate the complete system, combining technology, people and processes to deliver real outcomes.' },
 ]
 
 function Philosophy() {
@@ -701,25 +701,16 @@ function Philosophy() {
   return (
     <section id="philosophy" className="glow-section alt scroll-mt-20 py-24 sm:py-32 border-t border-white/[0.06]">
       <div className={WRAP} ref={ref}>
-        <div className={`grid lg:grid-cols-12 gap-8 items-end mb-16 sm:mb-20 ${reveal(inView)}`}>
-          <div className="lg:col-span-7">
-            <Eyebrow className="mb-6">The Datatrop philosophy</Eyebrow>
-            <h2 className="font-display text-[48px] sm:text-[68px] lg:text-[80px] font-medium tracking-[-0.045em] leading-[0.98]">
-              <span className="block text-white">Decipher.</span>
-              <span className="block text-white/55">Derive.</span>
-              <span className="block text-glow">Datatrop.</span>
-            </h2>
-          </div>
-          <p className="lg:col-span-5 text-white/65 text-lg sm:text-xl font-light leading-relaxed lg:pb-3">
+        <div className={`mb-12 sm:mb-14 ${reveal(inView)}`}>
+          <Eyebrow className="mb-4">The Datatrop philosophy</Eyebrow>
+          <h2 className="text-white/65 text-lg sm:text-xl font-light leading-relaxed max-w-xl">
             A disciplined approach to turn complexity into engineered systems.
-          </p>
+          </h2>
         </div>
         <ol className="grid md:grid-cols-3 gap-12 md:gap-8 lg:gap-12">
           {PHILOSOPHY.map((st, i) => (
             <li key={st.n} className={`relative flex flex-col ${reveal(inView)}`} style={{ transitionDelay: `${150 + i * 150}ms` }}>
-              <div className="flex items-center gap-4 mb-5">
-                <h3 className="font-mono text-[15px] uppercase tracking-[0.24em] text-rose-soft">{st.name}</h3>
-              </div>
+              <h3 className={`font-display text-[44px] sm:text-[52px] lg:text-[60px] font-medium tracking-[-0.045em] leading-none mb-5 pb-1 ${st.tone}`}>{st.name}.</h3>
               <p className="text-white/60 font-light leading-relaxed md:min-h-[78px]">{st.body}</p>
               <div className="group relative mt-8 aspect-square rounded-[1.25rem] overflow-hidden bg-black border border-white/[0.06]">
                 <img
