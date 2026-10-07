@@ -1450,12 +1450,12 @@ function Stars({ value, className = 'w-4 h-4' }) {
 }
 
 // The approval preview has no backend, so it carries a copy of the published
-// testimonials. The real site always reads them from Admin → Testimonials.
+// testimonials (Max's review was given to us directly, not on Google). The real site always reads them from Admin → Testimonials.
 const PREVIEW_TESTIMONIALS = [
   {
     id: 'g1',
     rating: 5,
-    source: 'Google',
+    source: 'Direct',
     name: 'Max Mooijenkind',
     role: 'Customer Success Manager',
     company: 'Flexxvoice',
@@ -1482,6 +1482,8 @@ function Testimonials({ items, reviewsUrl }) {
   const m = ring.length
   const rated = items.filter((t) => Number(t.rating) > 0)
   const avg = rated.length ? (rated.reduce((a, t) => a + Number(t.rating), 0) / rated.length).toFixed(1) : null
+  // Only credit Google when every rated review actually came from Google
+  const allGoogle = rated.length > 0 && rated.every((t) => t.source === 'Google')
 
   const go = (d) => setActive((i) => (i + d + m) % m)
 
@@ -1519,10 +1521,10 @@ function Testimonials({ items, reviewsUrl }) {
           <p className="mt-8 text-white/65 text-lg font-light">In their words, from the teams we've solved problems for.</p>
           {avg && (
             <div className="mt-6 inline-flex items-center gap-3 text-sm">
-              <GoogleG className="w-4 h-4" />
+              {allGoogle && <GoogleG className="w-4 h-4" />}
               <span className="font-display text-white text-lg">{avg}</span>
               <Stars value={Math.round(avg)} />
-              <span className="text-white/45 font-light">from {rated.length} review{rated.length === 1 ? '' : 's'}</span>
+              <span className="text-white/45 font-light">from {rated.length} {allGoogle ? 'Google ' : ''}review{rated.length === 1 ? '' : 's'}</span>
             </div>
           )}
         </div>
