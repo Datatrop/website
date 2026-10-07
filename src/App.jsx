@@ -4,7 +4,9 @@ import { api } from './lib/api'
 import { PAGE_META, pageKeyFromPath, applyPageMeta } from './seo'
 import { useInView } from './hooks'
 import { ProblemScene, CapabilityViz, StatTiles } from './visuals'
-import PhilosophyViz from './PhilosophyViz.jsx'
+import philNoiseImg from './assets/philosophy/noise.jpg'
+import philClarityImg from './assets/philosophy/clarity.jpg'
+import philSystemImg from './assets/philosophy/system.jpg'
 import Globe from './Globe.jsx'
 import whoWeAreImg from './assets/home/who-we-are.jpg'
 import exploreAboutImg from './assets/home/explore-about.jpg'
@@ -656,9 +658,9 @@ function AboutIntro({ about }) {
 // HOW IT WORKS — pinned while you scroll; the diagram tells the story
 // ═══════════════════════════════════════════════════════════════════════════════
 const PHILOSOPHY = [
-  { n: '01', name: 'Decipher', viz: 'decipher', caption: 'From noise', body: 'We investigate the real problem beneath the surface: people, processes, data and constraints.' },
-  { n: '02', name: 'Derive', viz: 'derive', caption: 'To clarity', body: 'We connect the dots, identify patterns and opportunities, and determine what should exist.' },
-  { n: '03', name: 'Datatrop', viz: 'datatrop', caption: 'To a working system', body: 'We engineer and operate the complete system, combining technology, people and processes to deliver real outcomes.' },
+  { n: '01', name: 'Decipher', img: philNoiseImg, caption: 'From noise', body: 'We investigate the real problem beneath the surface: people, processes, data and constraints.' },
+  { n: '02', name: 'Derive', img: philClarityImg, caption: 'To clarity', body: 'We connect the dots, identify patterns and opportunities, and determine what should exist.' },
+  { n: '03', name: 'Datatrop', img: philSystemImg, caption: 'To a working system', body: 'We engineer and operate the complete system, combining technology, people and processes to deliver real outcomes.' },
 ]
 
 function Philosophy() {
@@ -687,8 +689,14 @@ function Philosophy() {
                 <h3 className="font-mono text-[15px] uppercase tracking-[0.24em] text-rose-soft">{st.name}</h3>
               </div>
               <p className="text-white/60 font-light leading-relaxed md:min-h-[78px]">{st.body}</p>
-              <div className="relative mt-8 aspect-[4/3] rounded-[1.25rem] overflow-hidden">
-                <PhilosophyViz kind={st.viz} />
+              <div className="group relative mt-8 aspect-square rounded-[1.25rem] overflow-hidden bg-black border border-white/[0.06]">
+                <img
+                  src={st.img}
+                  alt=""
+                  loading="lazy"
+                  className="phil-img absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
+                  style={{ animationDelay: `${i * -3}s` }}
+                />
               </div>
               <p className="mt-5 text-center font-mono text-[11px] uppercase tracking-[0.26em] text-white/45">{st.caption}</p>
               {i < PHILOSOPHY.length - 1 && (

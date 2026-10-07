@@ -315,6 +315,15 @@ body {
 @keyframes net-flow { to { stroke-dashoffset: -16; } }
 @media (prefers-reduced-motion: reduce) { .net-flow { animation: none; } }
 
+/* ── Philosophy images: a slow breath so the section never sits still ── */
+.phil-img {
+  animation: phil-breathe 9s ease-in-out infinite;
+  -webkit-mask-image: radial-gradient(closest-side, #000 82%, transparent);
+  mask-image: radial-gradient(closest-side, #000 82%, transparent);
+}
+@keyframes phil-breathe { 50% { transform: scale(1.04); filter: brightness(1.12); } }
+@media (prefers-reduced-motion: reduce) { .phil-img { animation: none; } }
+
 /* ── Testimonials coverflow ───────────────────────────────────────────── */
 .testimonial-float { animation: testimonial-float 7s ease-in-out infinite; }
 @keyframes testimonial-float { 50% { transform: translateY(-8px); } }
