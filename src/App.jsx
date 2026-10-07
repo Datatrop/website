@@ -1831,7 +1831,7 @@ function PageHero({ eyebrow, title, glow, intro, links = [], linksLabel = 'On th
         </div>
       </div>
 
-      <div className={`relative z-10 order-2 ${WRAP} w-full lg:min-h-[640px] flex items-center pt-10 lg:pt-28 pb-14 sm:pb-16`}>
+      <div className={`relative z-10 order-2 ${WRAP} w-full lg:min-h-[max(640px,100svh)] flex items-center pt-10 lg:pt-28 pb-14 sm:pb-16`}>
         <div className="w-full lg:w-[44%] lg:ml-auto">
           <Eyebrow className="mb-6 anim-fade">{eyebrow}</Eyebrow>
           <h1 className="font-display text-[38px] leading-[1.05] sm:text-5xl lg:text-[52px] font-medium text-white tracking-[-0.035em] mb-6 anim-rise text-balance">
