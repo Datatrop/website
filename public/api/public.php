@@ -10,6 +10,8 @@ $pdo = db();
 
 if (!empty($res['single'])) {
     $row = $pdo->query("SELECT * FROM {$res['table']} ORDER BY {$res['order']} LIMIT 1")->fetch();
+    // Admin-only fields that must never reach visitors' browsers
+    if ($row) foreach ($res['private'] ?? [] as $col) unset($row[$col]);
     json_out($row ? shape_row($row, $res) : null);
 }
 

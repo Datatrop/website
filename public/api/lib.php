@@ -130,6 +130,7 @@ function resources(): array
             'order'   => 'id ASC',
             'single'  => true,           // one-row settings table
             'public'  => true,
+            'private' => ['contact_phone'], // kept for internal use, never published
         ],
         'customers' => [
             'table'         => 'customers',

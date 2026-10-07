@@ -10,7 +10,7 @@ const DEFAULTS = {
   about_bio:
     'Datatrop is a technology engineering company focused on solving the complex operational, analytical, and data-driven challenges that conventional software cannot adequately address.',
   contact_email: 'sales@datatrop.in',
-  contact_phone: '+91 79029 17795',
+  contact_phone: '',
   linkedin_url: 'https://www.linkedin.com/company/datatrop-ai',
   location: 'Kerala, India',
   brand_color: '#6B1E72',
@@ -135,6 +135,7 @@ export default function Content() {
             <div>
               <label className={lbl}>Phone</label>
               <input type="text" value={form.contact_phone} onChange={set('contact_phone')} className={inp} />
+              <p className="text-slate-500 dark:text-gray-700 text-xs mt-1.5">For internal reference only. Never shown on the website.</p>
             </div>
           </div>
           <div className="grid sm:grid-cols-2 gap-5">
