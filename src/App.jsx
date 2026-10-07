@@ -3,7 +3,7 @@ import './App.css'
 import { api } from './lib/api'
 import { PAGE_META, pageKeyFromPath, applyPageMeta } from './seo'
 import { useInView } from './hooks'
-import { ProblemScene, CapabilityViz, StatTiles } from './visuals'
+import { StatTiles } from './visuals'
 import philNoiseImg from './assets/philosophy/noise.jpg'
 import philClarityImg from './assets/philosophy/clarity.jpg'
 import philSystemImg from './assets/philosophy/system.jpg'
@@ -19,6 +19,16 @@ import caseVoiceImg from './assets/home/case-voice.jpg'
 import ctaRoadImg from './assets/home/cta-road.jpg'
 import pageAboutImg from './assets/pages/about.jpg'
 import engageBuildImg from './assets/engage/build.jpg'
+import capEnterpriseImg from './assets/capabilities/enterprise-ai.jpg'
+import capWorkforceImg from './assets/capabilities/workforce.jpg'
+import capRevenueImg from './assets/capabilities/revenue.jpg'
+import capCommunicationImg from './assets/capabilities/communication.jpg'
+import capProductImg from './assets/capabilities/product.jpg'
+import probFragmentedImg from './assets/problems/fragmented.jpg'
+import probRevenueImg from './assets/problems/revenue.jpg'
+import probCommunicationImg from './assets/problems/communication.jpg'
+import probIntelligenceImg from './assets/problems/intelligence.jpg'
+import probHumanImg from './assets/problems/human.jpg'
 import engageSolveImg from './assets/engage/solve.jpg'
 import engageInnovateImg from './assets/engage/innovate.jpg'
 import pageWhatImg from './assets/pages/what-we-do.jpg'
@@ -362,7 +372,7 @@ const MEGA_MENU = [
     href: '/what-we-do',
     panel: [
       { title: 'Capabilities', desc: 'The five system categories we engineer.', href: '/what-we-do#capabilities' },
-      { title: 'AI Workforce Platforms', desc: 'Multi-agent teams that execute operational work.', href: '/what-we-do#workforce' },
+      { title: 'AI Workforce Platforms', desc: 'Multi-agent teams that execute operational work.', href: '/what-we-do#capabilities' },
       { title: 'Problems We Solve', desc: 'Fragmentation, leakage, delay and more.', href: '/what-we-do#solve' },
       { title: 'Talk to an Engineer', desc: 'Book a 30-minute strategy call.', href: '/contact#book' },
     ],
@@ -886,142 +896,8 @@ function ThreePillars() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// AI WORKFORCE — product-console mockup
-// ═══════════════════════════════════════════════════════════════════════════════
-function Avatar({ label, agent = false }) {
-  return (
-    <span className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-semibold ${agent ? 'icon-tile' : 'bg-white/10 text-white/80'}`}>
-      {label}
-    </span>
-  )
-}
-
-function Console() {
-  const bars = [42, 55, 48, 63, 70, 82]
-  return (
-    <div className="card overflow-hidden text-left">
-      {/* Window chrome */}
-      <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.07] bg-black/20">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
-          <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
-          <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
-        </div>
-        <span className="font-mono text-[11px] text-white/45"># operations</span>
-        <span className="flex items-center gap-2 text-[11px] text-white/50">
-          <span className="live-dot w-1.5 h-1.5 rounded-full bg-rose" /> 4 agents live
-        </span>
-      </div>
-
-      <div className="p-5 sm:p-6 flex flex-col gap-5">
-        <div className="flex gap-3">
-          <Avatar label="IN" agent />
-          <div className="min-w-0">
-            <p className="text-[12px] text-white/45 mb-1"><span className="text-white/85 font-medium">Intake Agent</span> · 09:12</p>
-            <p className="text-sm text-white/75 font-light leading-relaxed">38 purchase orders came in overnight. 35 matched to stock; 3 need a supplier check.</p>
-            <span className="inline-block mt-2 text-[11px] px-2.5 py-1 rounded-full bg-rose/15 border border-rose/30 text-rose-soft">3 flagged for review</span>
-          </div>
-        </div>
-
-        <div className="flex gap-3">
-          <Avatar label="FI" agent />
-          <div className="min-w-0 flex-1">
-            <p className="text-[12px] text-white/45 mb-1"><span className="text-white/85 font-medium">Finance Agent</span> · 09:14</p>
-            <p className="text-sm text-white/75 font-light leading-relaxed">Reconciled 312 invoices against bank statements. Two variances above threshold need your sign-off.</p>
-            <div className="flex gap-2 mt-3">
-              <span className="text-[12px] px-3.5 py-1.5 rounded-full btn-primary">Approve both</span>
-              <span className="text-[12px] px-3.5 py-1.5 rounded-full border border-white/15 text-white/70">Review</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-3">
-          <Avatar label="OL" />
-          <div className="min-w-0">
-            <p className="text-[12px] text-white/45 mb-1"><span className="text-white/85 font-medium">Operations Lead</span> · 09:20</p>
-            <p className="text-sm text-white/75 font-light leading-relaxed">Approved. What does raw material demand look like next month?</p>
-          </div>
-        </div>
-
-        <div className="flex gap-3">
-          <Avatar label="DT" agent />
-          <div className="min-w-0 flex-1">
-            <p className="text-[12px] text-white/45 mb-2"><span className="text-white/85 font-medium">Planning Agent</span> · 09:20</p>
-            <div className="rounded-xl border border-white/[0.08] bg-black/25 p-4">
-              <div className="flex items-baseline justify-between mb-3">
-                <span className="text-[12px] text-white/55">Forecast demand · next 6 weeks</span>
-                <span className="text-[12px] text-rose-soft">+18%</span>
-              </div>
-              <div className="flex items-end gap-2 h-16">
-                {bars.map((h, i) => (
-                  <div key={i} className="flex-1 rounded-t-md" style={{ height: `${h}%`, background: i >= 4 ? 'linear-gradient(180deg,#E0457B,#6B1E72)' : 'rgba(255,255,255,0.12)' }} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Composer */}
-        <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
-          <span className="text-sm text-white/35 font-light flex-1">Ask your system anything…</span>
-          <span className="typing flex gap-1">
-            <span className="w-1 h-1 rounded-full bg-white/60" /><span className="w-1 h-1 rounded-full bg-white/60" /><span className="w-1 h-1 rounded-full bg-white/60" />
-          </span>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function Workforce() {
-  const [ref, inView] = useInView()
-  return (
-    <section id="workforce" className="glow-section py-28 sm:py-36">
-      <div className={`${WRAP} grid lg:grid-cols-2 gap-14 lg:gap-20 items-center`} ref={ref}>
-        <div className={reveal(inView)}>
-          <Eyebrow className="mb-5">AI workforce platforms</Eyebrow>
-          <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.06] mb-6">
-            Systems that work alongside your team.
-          </h2>
-          <p className="text-white/60 text-lg font-light leading-relaxed mb-5">
-            Multi-agent systems take on the repetitive operational work: intake, reconciliation, follow-ups, reporting.
-            Your people handle the decisions that matter.
-          </p>
-          <p className="text-white/60 font-light leading-relaxed mb-9">
-            Nothing runs as a black box. Every system is designed, deployed and maintained by our engineers, and
-            approvals and exceptions reach your team wherever it already works.
-          </p>
-          <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-3 mb-10">
-            {['Human approval on critical steps', 'Connects to your existing tools', 'Full audit trail of every action', 'Engineered and supported end to end'].map((f) => (
-              <li key={f} className="flex items-start gap-2.5 text-sm text-white/75">
-                <svg className="w-4 h-4 mt-0.5 text-rose-soft flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                {f}
-              </li>
-            ))}
-          </ul>
-          <BookButton>See it on your workflows</BookButton>
-        </div>
-        <div className={`relative ${reveal(inView)}`} style={{ transitionDelay: '120ms' }}>
-          <div className="absolute -inset-10 bg-[radial-gradient(circle_at_60%_40%,rgb(var(--grape-bright)/0.35),transparent_60%)] pointer-events-none" />
-          <div className="relative rounded-[1.25rem]"><Console /></div>
-          <p className="relative mt-4 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">Illustrative interface</p>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
 // WHAT WE BUILD  (Capabilities — DB-backed service lines, no pricing)
 // ═══════════════════════════════════════════════════════════════════════════════
-const CAP_ICONS = [
-  'M12 3l8.66 5v8L12 21l-8.66-5V8L12 3zm0 0v18M3.34 8L12 13l8.66-5',
-  'M12 4.5a2.5 2.5 0 013 2.45M12 4.5A2.5 2.5 0 009 6.95M12 4.5V3m6 8a2.5 2.5 0 01-.05 3M18 11a2.5 2.5 0 00-2.45-3M18 11h1.5M6 11a2.5 2.5 0 00-.05 3M6 11a2.5 2.5 0 012.45-3M6 11H4.5m4.5 6.05A2.5 2.5 0 0012 19.5a2.5 2.5 0 003-2.45M9 17.05V18.5',
-  'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6',
-  'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-4 4v-4z',
-  'M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z',
-]
-
 const DEFAULT_SERVICE_LINES = [
   { id: 's1', name: 'Enterprise AI Systems', examples: 'Unified operating platforms that connect every department into one intelligent system.' },
   { id: 's2', name: 'AI Workforce Platforms', examples: 'Multi-agent teams that execute operational work autonomously.' },
@@ -1030,13 +906,11 @@ const DEFAULT_SERVICE_LINES = [
   { id: 's5', name: 'AI Product Development', examples: 'AI-native products and industry platforms, engineered end-to-end.' },
 ]
 
-function CapIcon({ i, className = 'w-5 h-5' }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.4} d={CAP_ICONS[i % CAP_ICONS.length]} />
-    </svg>
-  )
-}
+
+// Photos for the capability cards, matched to admin service-line names
+const CAP_IMAGES = { enterprise: capEnterpriseImg, workforce: capWorkforceImg, revenue: capRevenueImg, communication: capCommunicationImg, product: capProductImg }
+const CAP_FALLBACK = [capEnterpriseImg, capWorkforceImg, capRevenueImg, capCommunicationImg, capProductImg]
+const capImage = (name, i) => CAP_IMAGES[capabilityKind(name)] || CAP_FALLBACK[i % CAP_FALLBACK.length]
 
 function WhatWeBuild({ serviceLines }) {
   const [ref, inView] = useInView()
@@ -1053,39 +927,32 @@ function WhatWeBuild({ serviceLines }) {
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {lead && (
-            <div className={`md:col-span-2 relative overflow-hidden rounded-[1.25rem] border border-white/10 bg-brand-gradient grid lg:grid-cols-2 items-center gap-6 p-8 sm:p-10 ${reveal(inView)}`}>
-              <Arcs variant="card" className="opacity-60" />
-              <div className="relative order-2 lg:order-1">
+            <div className={`group md:col-span-2 relative overflow-hidden rounded-[1.25rem] border border-white/10 min-h-[380px] flex items-end ${reveal(inView)}`}>
+              <img src={capImage(lead.name, 0)} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(7_3_5/0.92)_0%,rgb(7_3_5/0.7)_45%,rgb(7_3_5/0.1)_100%)]" />
+              <div className="relative p-8 sm:p-10 max-w-xl">
                 <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft">Flagship</span>
                 <h3 className="font-display text-white text-2xl sm:text-3xl font-medium tracking-tight mt-3 mb-3">{lead.name}</h3>
-                <p className="text-white/70 text-base font-light leading-relaxed max-w-md mb-7">{lead.examples}</p>
+                <p className="text-white/75 text-base font-light leading-relaxed mb-7">{lead.examples}</p>
                 <a {...bookProps} className="btn-secondary px-6 py-3.5">Talk to an engineer <Arrow /></a>
-              </div>
-              <div className="relative order-1 lg:order-2 aspect-[440/232] w-full">
-                {capabilityKind(lead.name)
-                  ? <CapabilityViz kind={capabilityKind(lead.name)} />
-                  : <div className="icon-tile w-14 h-14"><CapIcon i={0} /></div>}
               </div>
             </div>
           )}
-          {rest.map((s, i) => {
-            const kind = capabilityKind(s.name)
-            return (
-              <div
-                key={s.id}
-                className={`card card-hover overflow-hidden flex flex-col ${reveal(inView)}`}
-                style={{ transitionDelay: `${(i + 1) * 80}ms` }}
-              >
-                <div className="h-44 px-6 pt-6 pb-3 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.7),transparent_70%)] flex items-center">
-                  {kind ? <CapabilityViz kind={kind} /> : <div className="icon-tile w-12 h-12 mx-auto"><CapIcon i={i + 1} /></div>}
-                </div>
-                <div className="p-7">
-                  <h3 className="font-display text-white text-lg font-medium tracking-tight mb-2">{s.name}</h3>
-                  <p className="text-white/55 text-sm font-light leading-relaxed">{s.examples}</p>
-                </div>
+          {rest.map((s, i) => (
+            <div
+              key={s.id}
+              className={`group card card-hover overflow-hidden flex flex-col ${reveal(inView)}`}
+              style={{ transitionDelay: `${(i + 1) * 80}ms` }}
+            >
+              <div className="relative h-52 overflow-hidden border-b border-white/[0.07]">
+                <img src={capImage(s.name, i + 1)} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               </div>
-            )
-          })}
+              <div className="p-7">
+                <h3 className="font-display text-white text-lg font-medium tracking-tight mb-2">{s.name}</h3>
+                <p className="text-white/55 text-sm font-light leading-relaxed">{s.examples}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -1167,82 +1034,62 @@ const DEFAULT_PROBLEMS = [
   { id: 'p5', title: 'Human Dependency', symptoms: 'Repetitive work, hiring challenges, process bottlenecks.', solution: 'Deploy AI workforces that execute repetitive work while humans focus on strategy.', reference_case: 'AI Voice Ecosystems capable of autonomous customer interactions with memory and specialized capabilities.' },
 ]
 
+const PROBLEM_IMAGES = { fragmented: probFragmentedImg, leakage: probRevenueImg, communication: probCommunicationImg, knowledge: probIntelligenceImg, dependency: probHumanImg, delay: probIntelligenceImg }
+const PROBLEM_FALLBACK = [probFragmentedImg, probRevenueImg, probCommunicationImg, probIntelligenceImg, probHumanImg]
+const problemImage = (title, i) => PROBLEM_IMAGES[problemKind(title)] || PROBLEM_FALLBACK[i % PROBLEM_FALLBACK.length]
+
+// One row per problem: a real-world photo, what it looks like today, what
+// changes with Datatrop, and what we have built for it. Rows alternate sides.
+function ProblemRow({ p, i }) {
+  const [ref, inView] = useInView()
+  const flip = i % 2 === 1
+  return (
+    <article ref={ref} className={`grid lg:grid-cols-12 gap-6 lg:gap-12 items-center ${reveal(inView)}`}>
+      <div className={`lg:col-span-5 ${flip ? 'lg:order-2' : ''}`}>
+        <div className="group relative aspect-[4/3] rounded-[1.25rem] overflow-hidden border border-white/10">
+          <img src={problemImage(p.title, i)} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,rgb(7_3_5/0.75))]" />
+          <span className="absolute left-5 bottom-4 font-display text-white/90 text-5xl font-medium tracking-tight">{String(i + 1).padStart(2, '0')}</span>
+        </div>
+      </div>
+      <div className={`lg:col-span-7 ${flip ? 'lg:order-1' : ''}`}>
+        <h3 className="font-display text-white text-2xl sm:text-3xl font-medium tracking-tight mb-6">{p.title}</h3>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="rounded-2xl border border-[rgba(246,196,83,0.25)] bg-[rgba(246,196,83,0.05)] p-5">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#F6C453] mb-2">Today</p>
+            <p className="text-white/70 text-sm font-light leading-relaxed">{p.symptoms}</p>
+          </div>
+          <div className="rounded-2xl border border-[rgb(var(--accent)_/_0.35)] bg-[rgb(var(--maroon)_/_0.4)] p-5">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft mb-2">With Datatrop</p>
+            <p className="text-white/85 text-sm font-light leading-relaxed">{p.solution || p.description}</p>
+          </div>
+        </div>
+        {p.reference_case && (
+          <p className="mt-5 flex items-start gap-3 text-sm leading-relaxed text-white/65">
+            <span className="mt-0.5 flex-shrink-0 font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft">Built</span>
+            {p.reference_case}
+          </p>
+        )}
+      </div>
+    </article>
+  )
+}
+
 function WhatWeSolve({ problems }) {
   const [ref, inView] = useInView()
-  const [active, setActive] = useState(0)
-  const [after, setAfter] = useState(false)
-  const [auto, setAuto] = useState(true)
-  const p = problems[Math.min(active, problems.length - 1)]
-
-  // Flip between before and after on its own until the visitor takes over
-  useEffect(() => {
-    if (!inView || !auto || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const t = setInterval(() => setAfter((v) => !v), 3600)
-    return () => clearInterval(t)
-  }, [inView, auto, active])
-
-  const pick = (i) => { setActive(i); setAfter(false) }
-  const before = p.symptoms || ''
-  const afterText = p.solution || p.description || ''
-
   return (
     <section id="solve" className="glow-section scroll-mt-20 py-28 sm:py-36">
-      <div className={WRAP} ref={ref}>
-        <SectionHead
-          eyebrow="Problems we solve"
-          title="See the difference, not just the description."
-          intro="Pick a problem, then flip between how it looks today and how it looks once the system is in place."
-          inView={inView}
-        />
-        <div className={`grid lg:grid-cols-12 gap-6 lg:gap-10 ${reveal(inView)}`}>
-          {/* Problem picker */}
-          <div className="lg:col-span-4 flex lg:flex-col gap-2 overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0 pb-2 lg:pb-0" role="tablist" aria-label="Problems">
-            {problems.map((q, i) => (
-              <button
-                key={q.id}
-                role="tab"
-                aria-selected={i === active}
-                onClick={() => pick(i)}
-                className={`flex-shrink-0 text-left flex items-center gap-4 rounded-2xl border px-5 py-4 transition-all ${
-                  i === active ? 'border-[rgb(var(--accent)_/_0.55)] bg-[rgb(var(--maroon)_/_0.55)] text-white' : 'border-white/[0.08] bg-white/[0.02] text-white/60 hover:text-white hover:border-white/20'
-                }`}
-              >
-                <span className={`font-mono text-xs tabular-nums ${i === active ? 'text-rose-soft' : 'text-white/35'}`}>{String(i + 1).padStart(2, '0')}</span>
-                <span className="font-display text-[15px] sm:text-base font-medium whitespace-nowrap lg:whitespace-normal">{q.title}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Scene */}
-          <div className="lg:col-span-8 card overflow-hidden" role="tabpanel" aria-label={p.title}>
-            <div className="flex flex-wrap items-center justify-between gap-3 px-6 pt-6">
-              <h3 className="font-display text-white text-xl sm:text-2xl font-medium tracking-tight">{p.title}</h3>
-              <div className="relative inline-flex rounded-full border border-white/10 bg-black/30 p-1 text-[13px]" role="group" aria-label="Before or after">
-                <span className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full transition-all duration-500 ${after ? 'left-[calc(50%+0px)] bg-[linear-gradient(90deg,#8A2A91,#E0457B)]' : 'left-1 bg-[rgba(246,196,83,0.22)]'}`} />
-                <button type="button" onClick={() => { setAuto(false); setAfter(false) }} aria-pressed={!after} className={`relative px-4 py-1.5 rounded-full transition-colors ${!after ? 'text-white' : 'text-white/55'}`}>Before</button>
-                <button type="button" onClick={() => { setAuto(false); setAfter(true) }} aria-pressed={after} className={`relative px-4 py-1.5 rounded-full transition-colors ${after ? 'text-white' : 'text-white/55'}`}>After</button>
-              </div>
-            </div>
-            <div className="px-4 sm:px-8 pt-4">
-              <ProblemScene kind={problemKind(p.title)} after={after} label={`${p.title}: ${after ? afterText : before}`} />
-            </div>
-            <div className="grid sm:grid-cols-2 gap-px bg-white/[0.06] border-t border-white/[0.07]">
-              <div className={`bg-[rgb(var(--surface))] p-5 transition-opacity duration-500 ${after ? 'opacity-50' : 'opacity-100'}`}>
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#F6C453] mb-2">Today</p>
-                <p className="text-white/70 text-sm font-light leading-relaxed">{before}</p>
-              </div>
-              <div className={`bg-[rgb(var(--surface))] p-5 transition-opacity duration-500 ${after ? 'opacity-100' : 'opacity-50'}`}>
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft mb-2">With Datatrop</p>
-                <p className="text-white/80 text-sm font-light leading-relaxed">{afterText}</p>
-              </div>
-            </div>
-            {p.reference_case && (
-              <div className="flex items-start gap-3 px-5 py-4 border-t border-white/[0.07] bg-[rgb(var(--maroon)_/_0.35)]">
-                <span className="mt-0.5 flex-shrink-0 font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft">Built</span>
-                <p className="text-white/75 text-sm leading-relaxed">{p.reference_case}</p>
-              </div>
-            )}
-          </div>
+      <div className={WRAP}>
+        <div ref={ref}>
+          <SectionHead
+            eyebrow="Problems we solve"
+            title="The problems we keep being asked to fix."
+            intro="Each one looks different from the inside. Here is what it looks like today, and what changes once the system is in place."
+            inView={inView}
+          />
+        </div>
+        <div className="flex flex-col gap-16 sm:gap-20">
+          {problems.map((p, i) => <ProblemRow key={p.id} p={p} i={i} />)}
         </div>
       </div>
     </section>
@@ -1258,7 +1105,7 @@ const INDUSTRIES = [
   'Transportation', 'Aerospace', 'Agriculture',
 ]
 
-function Industries() {
+function Industries({ intro = "The industries above are where we're most often asked to help. The pattern repeats everywhere: fragmented systems, manual work and slow decisions." }) {
   const [ref, inView] = useInView()
   return (
     <section id="all-industries" className="glow-section scroll-mt-20 py-28 sm:py-36">
@@ -1266,7 +1113,7 @@ function Industries() {
         <SectionHead
           eyebrow="Also engaging across"
           title="Wherever complexity slows progress."
-          intro="The industries above are where we're most often asked to help. The pattern repeats everywhere: fragmented systems, manual work and slow decisions."
+          intro={intro}
           inView={inView}
           center
         />
@@ -2201,7 +2048,7 @@ function Contact({ settings }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 const FOOTER_COLUMNS = [
   { title: 'About', links: [['Who We Are', '/about#who-we-are'], ['Our Philosophy', '/#philosophy'], ['How We Engage', '/about#engage'], ['Complexity Scale', '/about#approach'], ['Why Datatrop', '/about#why']] },
-  { title: 'What We Do', links: [['Capabilities', '/what-we-do#capabilities'], ['AI Workforce', '/what-we-do#workforce'], ['Problems We Solve', '/what-we-do#solve'], ['Industries', '/industries']] },
+  { title: 'What We Do', links: [['Capabilities', '/what-we-do#capabilities'], ['Problems We Solve', '/what-we-do#solve'], ['Industries', '/industries']] },
   { title: 'Connect', links: [['News & Events', '/news'], ['Contact Us', '/contact'], ['Book a Call', '/contact#book'], ['Send a Message', '/contact#message']] },
   { title: 'Legal', links: [['Privacy Policy', '/privacy'], ['Terms of Service', '/terms']] },
 ]
@@ -2456,10 +2303,10 @@ export default function App({ page: initialPage = 'home' }) {
             title="Intelligent systems,"
             glow="engineered end to end."
             intro="From a single automated workflow to an operating platform for the whole organization. We design it, build it and keep it running."
-            links={[['Capabilities', '/what-we-do#capabilities'], ['AI workforce', '/what-we-do#workforce'], ['Problems we solve', '/what-we-do#solve']]}
+            links={[['Capabilities', '/what-we-do#capabilities'], ['Industries', '/what-we-do#all-industries'], ['Problems we solve', '/what-we-do#solve']]}
           />
           <WhatWeBuild serviceLines={serviceLines} />
-          <Workforce />
+          <Industries intro="Our systems are not tied to one sector. The pattern repeats everywhere: fragmented systems, manual work and slow decisions." />
           <WhatWeSolve problems={problems} />
           {showcases.length > 0 && <Showcase items={showcases} />}
           <FinalCta />
