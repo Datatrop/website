@@ -4,7 +4,7 @@ import { api } from './lib/api'
 // Default boilerplate shown until you edit the text in Admin → Policies.
 // Use "## " at the start of a line for a section heading.
 export const POLICY_DEFAULTS = {
-  privacy: `Datatrop AI Systems ("Datatrop", "we", "us") respects your privacy. This policy explains what information we collect and how we use it.
+  privacy: `Datatrop ("we", "us") respects your privacy. This policy explains what information we collect and how we use it.
 
 ## Information We Collect
 When you submit the contact or strategy-call form, we collect the details you provide — your name, company, work email, industry, company size, and the challenge you describe. We do not collect payment information through this website.
@@ -18,19 +18,22 @@ Submissions are stored securely and retained only as long as needed to serve you
 ## Third Parties
 We may use trusted service providers (such as hosting and communication tools) to operate this website. They process data only on our behalf.
 
+## Cookies and Analytics
+If you choose "Accept analytics" in the cookie banner, we use Google Analytics to understand how visitors use this website, such as which pages are viewed and which buttons are clicked. Google Analytics sets cookies and collects usage data, including an approximate location and device information; IP addresses are anonymised. We do not use advertising cookies. If you decline, no analytics cookies are set. You can change your choice at any time through "Cookie settings" in the footer of the main website.
+
 ## Your Rights
 You may request access to, correction of, or deletion of the personal information you have shared with us by contacting us.
 
 ## Contact
 For any privacy questions, email us at the address listed in the Contact section of our website.`,
 
-  terms: `These Terms govern your use of the Datatrop AI Systems website. By using this website, you agree to these Terms.
+  terms: `These Terms govern your use of the Datatrop website. By using this website, you agree to these Terms.
 
 ## Use of the Website
 This website and its content are provided for general information about Datatrop's services. You agree to use it lawfully and not to misuse or attempt to disrupt it.
 
 ## Intellectual Property
-All content, branding, and materials on this website are owned by Datatrop AI Systems unless stated otherwise, and may not be reproduced without permission.
+All content, branding, and materials on this website are owned by Datatrop unless stated otherwise, and may not be reproduced without permission.
 
 ## No Warranty
 The website is provided "as is". While we aim for accuracy, we make no warranties about the completeness or reliability of its content.
@@ -57,9 +60,9 @@ function renderBody(text) {
     const line = raw.trim()
     if (!line) return null
     if (line.startsWith('## ')) {
-      return <h2 key={i} className="text-white text-xl font-normal mt-10 mb-3">{line.slice(3)}</h2>
+      return <h2 key={i} className="font-display text-white text-xl font-medium mt-10 mb-3">{line.slice(3)}</h2>
     }
-    return <p key={i} className="text-slate-400 font-light leading-relaxed mb-4">{line}</p>
+    return <p key={i} className="text-white/60 font-light leading-relaxed mb-4">{line}</p>
   })
 }
 
@@ -68,7 +71,7 @@ export default function PolicyPage({ which }) {
   const title = which === 'terms' ? 'Terms of Service' : 'Privacy Policy'
 
   useEffect(() => {
-    document.title = `${title} — Datatrop AI Systems`
+    document.title = `${title} — Datatrop`
     api.getContent().then((row) => {
       if (!row) return
       setSettings(row)
@@ -79,26 +82,22 @@ export default function PolicyPage({ which }) {
     }).catch(() => {})
   }, [title])
 
-  const company = settings.company_name || 'Datatrop AI Systems'
+  const company = settings.company_name || 'Datatrop'
   const dbText = which === 'terms' ? settings.terms : settings.privacy_policy
   const body = (dbText && dbText.trim()) ? dbText : POLICY_DEFAULTS[which] || POLICY_DEFAULTS.privacy
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#F8FAFC]">
+    <div className="min-h-screen bg-[#070305] text-white">
       {/* Simple top bar */}
-      <header className="border-b border-white/[0.06]">
+      <header className="border-b border-white/[0.07] bg-brand-gradient">
         <div className="max-w-3xl mx-auto px-5 sm:px-8 h-20 flex items-center justify-between">
-          <a href="/" className="text-white font-medium tracking-tight">{company}</a>
+          <a href="/" className="font-display text-white font-medium tracking-tight">{company}</a>
           <a href="/" className="text-sm text-slate-400 hover:text-white font-light transition-colors">← Back to site</a>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-5 sm:px-8 py-16">
-        <span className="inline-flex items-center gap-2 text-[rgb(var(--brand))] text-[11px] font-medium uppercase tracking-[0.25em] mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--accent))]" />
-          Legal
-        </span>
-        <h1 className="text-3xl sm:text-4xl font-light tracking-tight mb-10">{title}</h1>
+        <h1 className="font-display text-3xl sm:text-5xl font-medium tracking-[-0.03em] mb-10">{title}</h1>
         <div>{renderBody(body)}</div>
       </main>
 

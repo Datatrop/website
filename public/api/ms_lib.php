@@ -135,14 +135,16 @@ function ms_graph(string $method, string $path, $json = null): array
     );
 }
 
-function ms_send_mail(string $to, string $subject, string $html): bool
+function ms_send_mail(string $to, string $subject, string $html, ?string $replyTo = null): bool
 {
+    $message = [
+        'subject'      => $subject,
+        'body'         => ['contentType' => 'HTML', 'content' => $html],
+        'toRecipients' => [['emailAddress' => ['address' => $to]]],
+    ];
+    if ($replyTo) $message['replyTo'] = [['emailAddress' => ['address' => $replyTo]]];
     $r = ms_graph('POST', '/me/sendMail', [
-        'message' => [
-            'subject'      => $subject,
-            'body'         => ['contentType' => 'HTML', 'content' => $html],
-            'toRecipients' => [['emailAddress' => ['address' => $to]]],
-        ],
+        'message'         => $message,
         'saveToSentItems' => true,
     ]);
     return $r['code'] >= 200 && $r['code'] < 300;

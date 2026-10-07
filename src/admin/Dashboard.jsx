@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
 
 const statusColor = {
-  Active: 'bg-green-500/10 text-green-400 border-green-500/20',
-  Completed: 'bg-gray-500/10 text-gray-400 border-gray-500/20',
-  Ongoing: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  Active: 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/20',
+  Completed: 'bg-slate-100 dark:bg-gray-500/10 text-slate-500 dark:text-gray-400 border-slate-200 dark:border-gray-500/20',
+  Ongoing: 'bg-[rgb(var(--brand)_/_0.08)] text-[rgb(var(--brand))] border-[rgb(var(--brand)_/_0.2)]',
 }
 
 export default function Dashboard() {
@@ -98,11 +98,11 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="pt-4">
-        <div className="h-7 w-40 bg-[#111] rounded-lg animate-pulse mb-2" />
-        <div className="h-4 w-60 bg-[#0c0c0c] rounded-lg animate-pulse mb-8" />
+        <div className="h-7 w-40 bg-black/[0.06] dark:bg-[#150811] rounded-lg animate-pulse mb-2" />
+        <div className="h-4 w-60 bg-black/[0.04] dark:bg-[#10060B] rounded-lg animate-pulse mb-8" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {[0, 1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-24 rounded-2xl bg-[#090909] border border-[#1a1a1a] animate-pulse" />
+            <div key={i} className="h-24 rounded-2xl bg-white dark:bg-[#0D0509] border border-black/[0.07] dark:border-[#2A0F1D] animate-pulse" />
           ))}
         </div>
       </div>
@@ -112,8 +112,8 @@ export default function Dashboard() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-gray-500 text-sm mt-1">Overview of your Datatrop operations</p>
+        <h1 className="text-2xl font-display font-semibold text-[#1B050D] dark:text-white">Dashboard</h1>
+        <p className="text-slate-500 dark:text-gray-500 text-sm mt-1">Overview of your Datatrop operations</p>
       </div>
 
       {/* Stat cards */}
@@ -122,44 +122,44 @@ export default function Dashboard() {
           <Link
             key={s.label}
             to={s.link}
-            className="p-5 rounded-2xl border border-[#1a1a1a] bg-[#090909] hover:border-blue-500/20 transition-all duration-200 group block"
+            className="p-5 rounded-2xl border border-black/[0.07] dark:border-[#2A0F1D] bg-white dark:bg-[#0D0509] hover:border-[rgb(var(--brand)_/_0.3)] dark:hover:border-rose/20 hover:shadow-md transition-all duration-200 group block"
           >
             <div className="flex items-center justify-between mb-3">
-              <p className="text-gray-600 text-[10px] font-semibold uppercase tracking-widest">{s.label}</p>
-              <div className="w-9 h-9 rounded-xl bg-blue-500/[0.07] border border-blue-500/[0.12] flex items-center justify-center text-blue-500/70 group-hover:bg-blue-500/[0.12] group-hover:text-blue-500 transition-all duration-200">
+              <p className="text-slate-500 dark:text-gray-600 text-[10px] font-semibold uppercase tracking-widest">{s.label}</p>
+              <div className="w-9 h-9 rounded-xl bg-[rgb(var(--brand)_/_0.06)] dark:bg-rose/[0.07] border border-[rgb(var(--brand)_/_0.12)] dark:border-rose/[0.12] flex items-center justify-center text-[rgb(var(--brand)_/_0.7)] dark:text-rose/70 group-hover:bg-[rgb(var(--brand)_/_0.12)] dark:group-hover:bg-rose/[0.12] group-hover:text-[rgb(var(--brand))] dark:group-hover:text-rose-soft transition-all duration-200">
                 {s.icon}
               </div>
             </div>
-            <p className="text-3xl font-black text-white">{s.value}</p>
+            <p className="text-3xl font-black text-[#1B050D] dark:text-white">{s.value}</p>
           </Link>
         ))}
       </div>
 
       {/* Recent customers */}
-      <div className="rounded-2xl border border-[#1a1a1a] bg-[#090909] overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#1a1a1a] flex items-center justify-between">
-          <h2 className="text-white font-semibold text-sm">Recent Customers</h2>
-          <Link to="/admin/customers" className="text-blue-400 hover:text-blue-500 text-xs transition-colors">
+      <div className="rounded-2xl border border-black/[0.07] dark:border-[#2A0F1D] bg-white dark:bg-[#0D0509] overflow-hidden">
+        <div className="px-6 py-4 border-b border-black/[0.07] dark:border-[#2A0F1D] flex items-center justify-between">
+          <h2 className="text-[#1B050D] dark:text-white font-semibold text-sm">Recent Customers</h2>
+          <Link to="/admin/customers" className="text-[rgb(var(--brand))] hover:text-[rgb(var(--accent))] dark:text-rose-soft dark:hover:text-rose text-xs transition-colors">
             View all →
           </Link>
         </div>
         {recent.length === 0 ? (
-          <div className="px-6 py-12 text-center text-gray-600 text-sm">
+          <div className="px-6 py-12 text-center text-slate-500 dark:text-gray-600 text-sm">
             No customers yet.{' '}
-            <Link to="/admin/customers" className="text-blue-400 hover:text-blue-500 transition-colors">
+            <Link to="/admin/customers" className="text-[rgb(var(--brand))] hover:text-[rgb(var(--accent))] dark:text-rose-soft dark:hover:text-rose transition-colors">
               Add your first one
             </Link>
           </div>
         ) : (
-          <div className="divide-y divide-[#0f0f0f]">
+          <div className="divide-y divide-black/[0.06] dark:divide-[#130710]">
             {recent.map((c) => (
-              <div key={c.id} className="flex items-center justify-between px-6 py-4 hover:bg-white/[0.015] transition-colors">
+              <div key={c.id} className="flex items-center justify-between px-6 py-4 hover:bg-black/[0.02] dark:hover:bg-white/[0.015] transition-colors">
                 <div>
-                  <p className="text-white text-sm font-medium">{c.name}</p>
-                  <p className="text-gray-600 text-xs mt-0.5">{c.company || '—'}</p>
+                  <p className="text-[#1B050D] dark:text-white text-sm font-medium">{c.name}</p>
+                  <p className="text-slate-500 dark:text-gray-600 text-xs mt-0.5">{c.company || '—'}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <p className="text-gray-600 text-xs hidden sm:block">
+                  <p className="text-slate-500 dark:text-gray-600 text-xs hidden sm:block">
                     {c.created_at
                       ? new Date(c.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
                       : '—'}

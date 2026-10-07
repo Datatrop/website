@@ -34,25 +34,39 @@ $stmt->execute([
     $challenge,
 ]);
 
-// Notify via Outlook if connected. Best-effort only — a mail failure must never
-// lose the lead, which is already safely stored above.
+// Email the message to the sales inbox (config 'lead_notify_to', default
+// sales@datatrop.in), with Reply-To set to the visitor so sales can answer
+// straight from their inbox. Sent through the connected Outlook account when
+// there is one, otherwise through the server's own mail(). Best-effort only:
+// a mail failure must never lose the lead, which is already saved above.
 try {
+    global $CONFIG;
+    $to   = (string) (($CONFIG['lead_notify_to'] ?? '') ?: 'sales@datatrop.in');
+    $esc  = fn($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
+    $subj = 'New message from datatrop.in: ' . $name . ($company !== '' ? ' (' . $company . ')' : '');
+    $html = '<h2>New message from datatrop.in</h2>'
+        . '<p><strong>Name:</strong> ' . $esc($name) . '</p>'
+        . '<p><strong>Company:</strong> ' . $esc($company !== '' ? $company : '—') . '</p>'
+        . '<p><strong>Email:</strong> <a href="mailto:' . $esc($email) . '">' . $esc($email) . '</a></p>'
+        . '<p><strong>Industry:</strong> ' . $esc($industry !== '' ? $industry : '—') . '</p>'
+        . '<p><strong>Company size:</strong> ' . $esc($size !== '' ? $size : '—') . '</p>'
+        . '<p><strong>Message:</strong><br>' . nl2br($esc($challenge)) . '</p>'
+        . '<p style="color:#666">Reply to this email to answer them directly. It is also saved in the admin panel → Leads.</p>';
+
+    $sent = false;
     require_once __DIR__ . '/ms_lib.php';
-    if (ms_connected()) {
-        $row = ms_row();
-        $to  = $row['account_email'] ?? null;
-        if ($to) {
-            $esc  = fn($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
-            $html = '<h2>New lead from datatrop.in</h2>'
-                . '<p><strong>Name:</strong> ' . $esc($name) . '</p>'
-                . '<p><strong>Company:</strong> ' . $esc($company !== '' ? $company : '—') . '</p>'
-                . '<p><strong>Email:</strong> <a href="mailto:' . $esc($email) . '">' . $esc($email) . '</a></p>'
-                . '<p><strong>Industry:</strong> ' . $esc($industry !== '' ? $industry : '—') . '</p>'
-                . '<p><strong>Company size:</strong> ' . $esc($size !== '' ? $size : '—') . '</p>'
-                . '<p><strong>Challenge:</strong><br>' . nl2br($esc($challenge)) . '</p>'
-                . '<p style="color:#666">View it in the admin panel → Leads.</p>';
-            ms_send_mail($to, 'New lead: ' . $name . ($company !== '' ? ' (' . $company . ')' : ''), $html);
-        }
+    if (ms_connected()) $sent = ms_send_mail($to, $subj, $html, $email);
+
+    if (!$sent) {
+        // Header injection is impossible here: $email passed FILTER_VALIDATE_EMAIL,
+        // and the subject is stripped of line breaks.
+        $from    = (string) (($CONFIG['mail_from'] ?? '') ?: 'no-reply@datatrop.in');
+        $headers = "MIME-Version: 1.0\r\n"
+            . "Content-Type: text/html; charset=UTF-8\r\n"
+            . "From: Datatrop Website <$from>\r\n"
+            . "Reply-To: $email\r\n";
+        $safeSubj = '=?UTF-8?B?' . base64_encode(str_replace(["\r", "\n"], ' ', $subj)) . '?=';
+        @mail($to, $safeSubj, $html, $headers, '-f' . $from);
     }
 } catch (Throwable $e) {
     // ignore — lead is saved regardless

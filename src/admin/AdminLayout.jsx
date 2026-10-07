@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
+import { useTheme } from './ThemeContext.jsx'
 
-const _logoMods = import.meta.glob('../assets/logo.png', { eager: true })
-const logoSrc = _logoMods['../assets/logo.png']?.default ?? null
+import Logo from '../Logo.jsx'
 
 const navItems = [
   {
@@ -13,6 +13,16 @@ const navItems = [
       <svg className="w-4.5 h-4.5 w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
           d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Deals',
+    path: '/admin/deals',
+    icon: (
+      <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+          d="M20 7h-3V5a2 2 0 00-2-2H9a2 2 0 00-2 2v2H4a1 1 0 00-1 1v3c0 1.1.9 2 2 2h14a2 2 0 002-2V8a1 1 0 00-1-1zM9 5h6v2H9V5zm12 8.5V19a2 2 0 01-2 2H5a2 2 0 01-2-2v-5.5a4 4 0 002 .5h14a4 4 0 002-.5z" />
       </svg>
     ),
   },
@@ -43,6 +53,16 @@ const navItems = [
       <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
           d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'News & Events',
+    path: '/admin/news',
+    icon: (
+      <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+          d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1zm4 10h6" />
       </svg>
     ),
   },
@@ -109,19 +129,40 @@ const navItems = [
   },
 ]
 
+function ThemeToggleButton({ className = '' }) {
+  const { theme, toggleTheme } = useTheme()
+  return (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      aria-label="Toggle dark mode"
+      title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      className={`p-1.5 rounded-lg text-slate-500 dark:text-gray-500 hover:text-[#1B050D] dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors ${className}`}
+    >
+      {theme === 'dark' ? (
+        <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      ) : (
+        <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
 function SidebarContent({ onClose, user, onLogout }) {
   return (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-[#1a1a1a] flex items-center justify-between">
+      <div className="px-5 py-5 border-b border-black/[0.07] dark:border-[#2A0F1D] flex items-center justify-between">
         <a href="/" className="flex items-center gap-2.5">
-          {logoSrc ? (
-            <img src={logoSrc} alt="Datatrop" className="h-7 w-auto object-contain" />
-          ) : (
-            <span className="text-white font-bold text-base tracking-tight">Datatrop</span>
-          )}
+          <Logo className="h-8 w-auto text-[#1B050D] dark:text-white" title="Datatrop" />
         </a>
-        <span className="text-[9px] font-semibold uppercase tracking-widest text-gray-600 border border-[#222] rounded-md px-2 py-0.5">
+        <span className="text-[9px] font-semibold uppercase tracking-widest text-slate-500 dark:text-gray-600 border border-black/10 dark:border-[#33142A] rounded-md px-2 py-0.5">
           Admin
         </span>
       </div>
@@ -136,8 +177,8 @@ function SidebarContent({ onClose, user, onLogout }) {
             className={({ isActive }) =>
               `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
                 isActive
-                  ? 'bg-blue-500/[0.1] text-blue-500 border border-blue-500/20'
-                  : 'text-gray-500 hover:text-white hover:bg-white/[0.04] border border-transparent'
+                  ? 'bg-[rgb(var(--brand)_/_0.08)] dark:bg-rose/10 text-[rgb(var(--brand))] visited:text-[rgb(var(--brand))] dark:text-rose-soft dark:visited:text-rose-soft border border-[rgb(var(--brand)_/_0.2)] dark:border-rose/20'
+                  : 'text-slate-500 visited:text-slate-500 dark:text-gray-500 dark:visited:text-gray-500 hover:text-[#1B050D] dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.04] border border-transparent'
               }`
             }
           >
@@ -148,14 +189,17 @@ function SidebarContent({ onClose, user, onLogout }) {
       </nav>
 
       {/* User + logout */}
-      <div className="p-3 border-t border-[#1a1a1a] flex flex-col gap-1">
-        <div className="px-3.5 py-3 rounded-xl bg-[#0c0c0c] border border-[#1a1a1a]">
-          <p className="text-[9px] text-gray-600 uppercase tracking-widest mb-0.5">Signed in as</p>
-          <p className="text-gray-300 text-xs font-medium truncate">{user?.email ?? '—'}</p>
+      <div className="p-3 border-t border-black/[0.07] dark:border-[#2A0F1D] flex flex-col gap-1">
+        <div className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-[#FAF5F8] dark:bg-[#10060B] border border-black/[0.07] dark:border-[#2A0F1D]">
+          <div className="min-w-0">
+            <p className="text-[9px] text-slate-500 dark:text-gray-600 uppercase tracking-widest mb-0.5">Signed in as</p>
+            <p className="text-[#1B050D] dark:text-gray-300 text-xs font-medium truncate">{user?.email ?? '—'}</p>
+          </div>
+          <ThemeToggleButton />
         </div>
         <button
           onClick={onLogout}
-          className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm text-gray-500 hover:text-red-400 hover:bg-red-500/[0.05] transition-all duration-150 w-full"
+          className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm text-slate-500 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/[0.05] transition-all duration-150 w-full"
         >
           <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -183,36 +227,36 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex">
+    <div className="min-h-screen bg-gradient-to-b from-white to-[#F6EFF4] dark:!bg-none dark:!bg-[#070305] flex">
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-56 bg-[#070707] border-r border-[#1a1a1a] fixed top-0 bottom-0 left-0">
+      <aside className="hidden md:flex flex-col w-56 bg-white dark:bg-[#0B0407] border-r border-black/[0.07] dark:border-[#2A0F1D] fixed top-0 bottom-0 left-0">
         <SidebarContent user={user} onLogout={handleLogout} onClose={() => {}} />
       </aside>
 
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div className="md:hidden fixed inset-0 z-50 flex">
-          <div className="w-56 bg-[#070707] border-r border-[#1a1a1a] flex flex-col">
+          <div className="w-56 bg-white dark:bg-[#0B0407] border-r border-black/[0.07] dark:border-[#2A0F1D] flex flex-col">
             <SidebarContent user={user} onLogout={handleLogout} onClose={() => setSidebarOpen(false)} />
           </div>
-          <div className="flex-1 bg-black/70 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+          <div className="flex-1 bg-black/40 dark:bg-black/70 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
         </div>
       )}
 
       {/* Main content area */}
       <div className="flex-1 md:ml-56 flex flex-col min-h-screen">
         {/* Mobile top bar */}
-        <header className="md:hidden flex items-center justify-between px-5 h-14 border-b border-[#1a1a1a] bg-[#070707] sticky top-0 z-30">
+        <header className="md:hidden flex items-center justify-between px-5 h-14 border-b border-black/[0.07] dark:border-[#2A0F1D] bg-white dark:bg-[#0B0407] sticky top-0 z-30">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-1.5 text-gray-400 hover:text-white transition-colors"
+            className="p-1.5 text-slate-500 dark:text-gray-400 hover:text-[#1B050D] dark:hover:text-white transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <span className="text-white font-semibold text-sm">Admin Panel</span>
-          <div className="w-8" />
+          <span className="text-[#1B050D] dark:text-white font-semibold text-sm">Admin Panel</span>
+          <ThemeToggleButton />
         </header>
 
         <main className="flex-1 p-5 sm:p-8 max-w-5xl w-full">

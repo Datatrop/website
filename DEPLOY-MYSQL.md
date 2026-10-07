@@ -55,7 +55,7 @@ React site **and** the `api/` PHP folder.
   Service Lines, hero text, etc. now come from MySQL. The 3D robot still waves.
 - **Admin:** go to `https://datatrop.in/admin` → log in with:
   - Email: `support@datatrop.in`
-  - Password: *the one you gave me* (`7apYzyZOY;`)
+  - Password: *(rotate this — see Security follow-ups below; do not store the plaintext password in this file)*
 - Add a customer or showcase in the admin, refresh the site — it should appear.
 
 ## Quick API sanity checks (optional, in your browser)

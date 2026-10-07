@@ -39,6 +39,9 @@ if ($m === 'GET') {
 if ($m === 'POST') {
     $payload = build_payload(read_json_body(), $res);
     if (!$payload) json_error('No data provided', 400);
+    if ($_GET['resource'] === 'deals' && empty($payload['deal_id'])) {
+        $payload['deal_id'] = next_deal_id($pdo);
+    }
     $rid = insert_row($pdo, $res, $payload);
     json_out(fetch_by_id($pdo, $res, $rid), 201);
 }

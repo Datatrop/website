@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS site_content (
   brand_color    VARCHAR(16),
   accent_color   VARCHAR(16),
   google_reviews_url VARCHAR(512),
+  booking_url    VARCHAR(512),
   privacy_policy LONGTEXT,
   terms          LONGTEXT,
   updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -55,6 +56,24 @@ CREATE TABLE IF NOT EXISTS testimonials (
 -- Upgrade path for tables created before these columns existed
 ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS source VARCHAR(32) NULL DEFAULT 'Google';
 ALTER TABLE site_content ADD COLUMN IF NOT EXISTS google_reviews_url VARCHAR(512) NULL;
+-- Microsoft Bookings (or similar) page shown on /contact instead of the built-in scheduler
+ALTER TABLE site_content ADD COLUMN IF NOT EXISTS booking_url VARCHAR(512) NULL;
+
+-- ── News & events (the /news page) ──────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS posts (
+  id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+  title      VARCHAR(255) NOT NULL,
+  kind       VARCHAR(32)  NOT NULL DEFAULT 'News',   -- Event, News, Award, Partnership, Talk, Launch
+  event_date DATE NOT NULL,
+  location   VARCHAR(255) NULL,
+  summary    TEXT NULL,
+  body       LONGTEXT NULL,
+  image_url  VARCHAR(512) NULL,                      -- /uploads/… from the admin upload
+  link_url   VARCHAR(512) NULL,                      -- e.g. LinkedIn post or registration page
+  link_label VARCHAR(64)  NULL,
+  active     TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ── Customers ───────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS customers (
@@ -133,6 +152,80 @@ CREATE TABLE IF NOT EXISTS leads (
   created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ── Deals (internal tracker — one table, two views) ──────────────────────────
+-- Admin-only, never exposed via public.php. A deal moves from the "Deals Under
+-- Discussion" pipeline view into the "Running Deals" execution view purely by
+-- flipping `phase` — same row, same deal_id, no data duplication.
+CREATE TABLE IF NOT EXISTS deals (
+  id                     BIGINT AUTO_INCREMENT PRIMARY KEY,
+  deal_id                VARCHAR(32)  NOT NULL UNIQUE,   -- e.g. DT-2026-001
+  phase                  VARCHAR(16)  NOT NULL DEFAULT 'discussion', -- discussion | running
+
+  -- Shared identity fields
+  deal_name              VARCHAR(255) NOT NULL,
+  company                VARCHAR(255) NULL,
+  contact_person         VARCHAR(255) NULL,
+  email                  VARCHAR(255) NULL,
+  phone                  VARCHAR(64)  NULL,
+  source                 VARCHAR(64)  NULL,
+  sales_owner            VARCHAR(255) NULL,
+
+  -- Pre-sales pipeline fields
+  stage                  VARCHAR(32)  NOT NULL DEFAULT 'Discovery',
+  probability            INT NULL,
+  estimated_value        DECIMAL(14,2) NULL,
+  proposed_value         DECIMAL(14,2) NULL,
+  expected_closing_date  DATE NULL,
+  last_discussion        DATE NULL,
+  next_followup          DATE NULL,
+  proposal_version       VARCHAR(32) NULL,
+  proposal_document_url  VARCHAR(512) NULL,
+  meeting_notes          TEXT NULL,
+  client_requirements    TEXT NULL,
+  risks_notes            TEXT NULL,
+  internal_notes         TEXT NULL,
+
+  -- Execution dashboard fields
+  project_manager        VARCHAR(255) NULL,
+  lead_developer         VARCHAR(255) NULL,
+  supporting_developers  VARCHAR(255) NULL,
+  account_manager        VARCHAR(255) NULL,
+  backend_developer      VARCHAR(255) NULL,
+  frontend_developer     VARCHAR(255) NULL,
+  ai_engineer            VARCHAR(255) NULL,
+  qa_engineer            VARCHAR(255) NULL,
+  ui_designer            VARCHAR(255) NULL,
+  priority               VARCHAR(16)  NOT NULL DEFAULT 'Medium',
+  start_date             DATE NULL,
+  expected_delivery      DATE NULL,
+  actual_completion      DATE NULL,
+  current_status         VARCHAR(32)  NOT NULL DEFAULT 'Planning',
+
+  -- Financials (Running Deals)
+  project_value          DECIMAL(14,2) NULL,
+  cost_estimate          DECIMAL(14,2) NULL,
+  development_cost       DECIMAL(14,2) NULL,
+  third_party_costs      DECIMAL(14,2) NULL,
+  amount_invoiced        DECIMAL(14,2) NULL,
+  amount_received        DECIMAL(14,2) NULL,
+
+  -- Next action
+  next_task               VARCHAR(255) NULL,
+  next_task_assigned      VARCHAR(255) NULL,
+  next_task_due           DATE NULL,
+
+  -- Repeating structures, stored as JSON arrays of objects
+  deliverables    JSON NULL,   -- [{name, status, due_date, completed_date}]
+  milestones      JSON NULL,   -- [{name, planned_date, actual_date, status}]
+  daily_updates   JSON NULL,   -- [{date, developer, update, hours, blockers}]
+  attachments     JSON NULL,   -- [{label, url, category}]
+  risks_issues    JSON NULL,   -- [{issue, priority, owner, status}]
+  communications  JSON NULL,   -- [{date, type, summary}]
+
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ============================================================================
 -- SEED DATA
 -- ============================================================================
@@ -142,17 +235,17 @@ INSERT INTO site_content
   (company_name, tagline, hero_headline, hero_subtext, about_bio,
    contact_email, contact_phone, linkedin_url, location, brand_color, accent_color)
 SELECT
-  'Datatrop AI Systems',
-  'Engineering Intelligence. Solving Complexity.',
-  'Engineering Intelligence for Complex Businesses.',
-  'When conventional software reaches its limits, we design AI-powered business systems that transform operational complexity into clarity, control, and autonomous execution.',
-  'Datatrop AI Systems is a technology engineering company focused on solving the complex operational, analytical, and data-driven challenges that conventional software cannot adequately address.',
+  'Datatrop',
+  'Engineering certainty in a complex world.',
+  'Engineering certainty in a complex world.',
+  'Datatrop is an intelligent systems engineering company. We design, build, and operate the systems that restore order wherever complexity prevents progress, whether the solution is known, unknown, or yet to be invented.',
+  'Datatrop is an intelligent systems engineering company that designs, builds, and operates solutions for complex business and societal challenges. AI, automation, and software are not our identity; they are the delivery mechanisms we choose once we understand the problem.',
   'sales@datatrop.in',
   '+91 79029 17795',
   'https://www.linkedin.com/company/datatrop-ai',
   'Kerala, India',
-  '#3B82F6',
-  '#10B981'
+  '#6B1E72',
+  '#E0457B'
 FROM DUAL
 WHERE NOT EXISTS (SELECT 1 FROM site_content);
 
@@ -162,7 +255,7 @@ SELECT title, symptoms, solution, reference_case, sort_order FROM (
   SELECT 'Fragmented Operations' AS title,
          'Excel everywhere, data duplication, manual handoffs, no visibility.' AS symptoms,
          'Disconnected systems become one intelligent operating platform.' AS solution,
-         'Sufi Group Unified Operations System — covering sales, procurement, inventory, dispatch, finance, accounting and HR in one platform.' AS reference_case,
+         'Unified Operating Systems, covering sales, procurement, inventory, dispatch, finance, accounting and HR in one platform.' AS reference_case,
          0 AS sort_order
   UNION ALL SELECT 'Revenue Leakage',
          'Missed leads, poor follow-up, lost opportunities, low conversion.',
@@ -170,7 +263,7 @@ SELECT title, symptoms, solution, reference_case, sort_order FROM (
   UNION ALL SELECT 'Communication Chaos',
          'Calls on personal phones, no visibility, lost customers, no accountability.',
          'Unify calls, messages, and customer interactions into one intelligent communication layer.',
-         'Automotive communication system with centralized IVR, CRM tracking, dashboards and AI call intelligence.', 2
+         'Logistics and supply chain, with centralized IVR, CRM tracking, dashboards and AI call intelligence.', 2
   UNION ALL SELECT 'Organizational Intelligence',
          'Knowledge trapped in employees, decisions depend on individuals, no institutional memory.',
          'Turn scattered knowledge into permanent institutional memory.', NULL, 3
@@ -200,3 +293,11 @@ WHERE NOT EXISTS (SELECT 1 FROM service_lines);
 --   password_hash) since the plaintext was shared in chat.
 INSERT IGNORE INTO admin_users (email, password_hash) VALUES
 ('support@datatrop.in', '$2b$10$m/RR7wVZ/AP4dUmLez/Mqu2ZWPn9DfLusbSvna94fgJ8MKpyslSjC');
+
+-- Brand refresh (grape / maroon palette). Moves the stored theme colours off
+-- either earlier default pair (blue/green or navy/gold); leaves any custom
+-- colours chosen in admin alone.
+UPDATE site_content
+SET brand_color = '#6B1E72', accent_color = '#E0457B'
+WHERE (brand_color IS NULL OR brand_color = '' OR UPPER(brand_color) IN ('#003057', '#3B82F6'))
+  AND (accent_color IS NULL OR accent_color = '' OR UPPER(accent_color) IN ('#B08D4A', '#10B981'));

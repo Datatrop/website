@@ -1,0 +1,61 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Builds the app and pre-renders one HTML file per page (see scripts/prerender.mjs).
+      # Set the GA_MEASUREMENT_ID repository variable (Settings → Secrets and
+      # variables → Actions → Variables) to switch Google Analytics on.
+      - name: Build
+        run: npm run build
+        env:
+          VITE_GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
+
+      - name: Deploy over SSH (rsync)
+        env:
+          SSH_HOST: ${{ secrets.HOSTINGER_SSH_HOST }}
+          SSH_PORT: ${{ secrets.HOSTINGER_SSH_PORT }}
+          SSH_USER: ${{ secrets.HOSTINGER_SSH_USER }}
+          REMOTE_DIR: domains/datatrop.in/public_html
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.HOSTINGER_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+          # Built frontend (index.html, assets/) — everything except the api/
+          # folder itself, which is synced separately below so its own
+          # exclusions (config.php) are easy to reason about. Photos uploaded
+          # from the admin panel live in uploads/<year>/ on the server only,
+          # so those folders are excluded to keep --delete away from them.
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p $SSH_PORT" \
+            --exclude 'api' \
+            --exclude 'uploads/*/' \
+            dist/ "$SSH_USER@$SSH_HOST:$REMOTE_DIR/"
+
+          # Backend PHP files — never touch config.php, it holds the live
+          # production DB/Azure credentials and is edited by hand on the
+          # server, not tracked with real secrets in this repo.
+          rsync -avz \
+            -e "ssh -i ~/.ssh/deploy_key -p $SSH_PORT" \
+            --exclude 'config.php' \
+            public/api/ "$SSH_USER@$SSH_HOST:$REMOTE_DIR/api/"

@@ -23,8 +23,8 @@ export default function ProtectedRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-blue-500 text-sm animate-pulse">Authenticating…</div>
+      <div className="min-h-screen bg-gradient-to-b from-white to-[#F6EFF4] dark:!bg-none dark:!bg-[#070305] flex items-center justify-center">
+        <div className="text-[rgb(var(--brand))] text-sm animate-pulse">Authenticating…</div>
       </div>
     )
   }

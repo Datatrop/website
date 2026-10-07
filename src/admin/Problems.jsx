@@ -86,19 +86,19 @@ export default function Problems() {
   }
 
   const inp =
-    'w-full px-4 py-3 rounded-xl bg-[#0c0c0c] border border-[#222] text-white placeholder-gray-600 text-sm focus:outline-none focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/[0.12] transition-colors'
+    'w-full px-4 py-3 rounded-xl bg-[#FAF5F8] dark:bg-[#10060B] border border-black/10 dark:border-[#33142A] text-[#1B050D] dark:text-white placeholder-slate-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-[rgb(var(--brand)_/_0.5)] focus:ring-1 focus:ring-[rgb(var(--brand)/0.12)] transition-colors'
 
   return (
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">Problems We Solve</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage the problem categories shown on the website</p>
+          <h1 className="text-2xl font-display font-semibold text-[#1B050D] dark:text-white">Problems We Solve</h1>
+          <p className="text-slate-500 dark:text-gray-500 text-sm mt-1">Manage the problem categories shown on the website</p>
         </div>
         <button
           onClick={openAdd}
-          className="px-4 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-sm font-bold transition-all duration-200 hover:-translate-y-px btn-cyan-glow"
+          className="px-4 py-2.5 rounded-xl bg-[rgb(var(--brand))] hover:shadow-[0_10px_40px_-8px_rgb(var(--brand)_/_0.6)] text-white text-sm font-bold transition-all duration-200 hover:-translate-y-px btn-cyan-glow"
         >
           + Add Problem
         </button>
@@ -106,19 +106,19 @@ export default function Problems() {
 
       {/* Empty-state hint */}
       {!loading && items.length === 0 && (
-        <div className="mb-5 px-4 py-3 rounded-xl border border-blue-500/15 bg-blue-500/[0.03] text-gray-400 text-xs leading-relaxed">
+        <div className="mb-5 px-4 py-3 rounded-xl border border-[rgb(var(--brand)/0.15)] bg-[rgb(var(--brand)/0.04)] text-slate-600 dark:text-gray-400 text-xs leading-relaxed">
           No problems saved yet — the website is showing the 5 built-in playbook defaults. Add rows here to override them.
         </div>
       )}
 
       {/* Table */}
-      <div className="rounded-2xl border border-[#1a1a1a] bg-[#090909] overflow-hidden">
+      <div className="rounded-2xl border border-black/[0.07] dark:border-[#2A0F1D] bg-white dark:bg-[#0D0509] overflow-hidden">
         {loading ? (
-          <div className="px-6 py-12 text-center text-gray-500 text-sm animate-pulse">Loading problems…</div>
+          <div className="px-6 py-12 text-center text-slate-500 dark:text-gray-500 text-sm animate-pulse">Loading problems…</div>
         ) : items.length === 0 ? (
           <div className="px-6 py-16 text-center">
-            <p className="text-gray-600 text-sm mb-3">No problems yet</p>
-            <button onClick={openAdd} className="text-blue-400 hover:text-blue-500 text-sm transition-colors">
+            <p className="text-slate-500 dark:text-gray-600 text-sm mb-3">No problems yet</p>
+            <button onClick={openAdd} className="text-[rgb(var(--brand))] hover:text-[rgb(var(--accent))] text-sm transition-colors">
               Add your first problem →
             </button>
           </div>
@@ -126,33 +126,33 @@ export default function Problems() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[760px]">
               <thead>
-                <tr className="border-b border-[#1a1a1a]">
+                <tr className="border-b border-black/[0.07] dark:border-[#2A0F1D]">
                   {['#', 'Title', 'Symptoms', 'Reference Case', 'Active', ''].map((h) => (
                     <th
                       key={h}
-                      className="px-5 py-3.5 text-left text-[10px] font-semibold text-gray-600 uppercase tracking-widest whitespace-nowrap"
+                      className="px-5 py-3.5 text-left text-[10px] font-semibold text-slate-500 dark:text-gray-600 uppercase tracking-widest whitespace-nowrap"
                     >
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#0f0f0f]">
+              <tbody className="divide-y divide-black/[0.06] dark:divide-[#130710]">
                 {items.map((item) => (
-                  <tr key={item.id} className="hover:bg-white/[0.015] transition-colors group">
-                    <td className="px-5 py-4 text-gray-500 tabular-nums">{item.sort_order}</td>
-                    <td className="px-5 py-4 text-white font-medium whitespace-nowrap">{item.title}</td>
-                    <td className="px-5 py-4 text-gray-400 max-w-[240px]">
+                  <tr key={item.id} className="hover:bg-black/[0.02] dark:hover:bg-white/[0.015] transition-colors group">
+                    <td className="px-5 py-4 text-slate-500 dark:text-gray-500 tabular-nums">{item.sort_order}</td>
+                    <td className="px-5 py-4 text-[#1B050D] dark:text-white font-medium whitespace-nowrap">{item.title}</td>
+                    <td className="px-5 py-4 text-slate-600 dark:text-gray-400 max-w-[240px]">
                       <p className="truncate text-xs">{item.symptoms || '—'}</p>
                     </td>
-                    <td className="px-5 py-4 text-gray-500 max-w-[200px]">
+                    <td className="px-5 py-4 text-slate-500 dark:text-gray-500 max-w-[200px]">
                       <p className="truncate text-xs">{item.reference_case || '—'}</p>
                     </td>
                     <td className="px-5 py-4">
                       <button
                         onClick={() => toggleActive(item)}
                         className={`relative w-10 h-5 rounded-full transition-all duration-200 focus:outline-none ${
-                          item.active ? 'bg-blue-500' : 'bg-[#222]'
+                          item.active ? 'bg-[rgb(var(--brand))]' : 'bg-slate-200 dark:bg-[#33142A]'
                         }`}
                       >
                         <span
@@ -166,13 +166,13 @@ export default function Problems() {
                       <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => openEdit(item)}
-                          className="text-gray-500 hover:text-blue-500 text-xs font-medium transition-colors"
+                          className="text-slate-500 dark:text-gray-500 hover:text-[rgb(var(--brand))] text-xs font-medium transition-colors"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(item.id)}
-                          className="text-gray-500 hover:text-red-400 text-xs font-medium transition-colors"
+                          className="text-slate-500 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 text-xs font-medium transition-colors"
                         >
                           Delete
                         </button>
@@ -189,11 +189,11 @@ export default function Problems() {
       {/* Modal */}
       {modal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={() => setModal(false)} />
-          <div className="relative w-full max-w-md bg-[#0a0a0a] border border-[#1e1e1e] rounded-2xl p-7 shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div className="absolute inset-0 bg-black/40 dark:bg-black/75 backdrop-blur-sm" onClick={() => setModal(false)} />
+          <div className="relative w-full max-w-md bg-white dark:bg-[#0E0509] border border-black/[0.08] dark:border-[#2E1120] rounded-2xl p-7 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-white font-bold text-lg">{editing ? 'Edit Problem' : 'Add Problem'}</h2>
-              <button onClick={() => setModal(false)} className="text-gray-600 hover:text-white transition-colors p-1">
+              <h2 className="text-[#1B050D] dark:text-white font-bold text-lg">{editing ? 'Edit Problem' : 'Add Problem'}</h2>
+              <button onClick={() => setModal(false)} className="text-slate-500 dark:text-gray-600 hover:text-[#1B050D] dark:hover:text-white transition-colors p-1">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -202,8 +202,8 @@ export default function Problems() {
 
             <form onSubmit={handleSave} className="flex flex-col gap-4">
               <div>
-                <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-1.5">
-                  Title <span className="text-blue-400">*</span>
+                <label className="block text-[10px] font-semibold text-slate-500 dark:text-gray-500 uppercase tracking-widest mb-1.5">
+                  Title <span className="text-[rgb(var(--brand))]">*</span>
                 </label>
                 <input
                   type="text"
@@ -216,7 +216,7 @@ export default function Problems() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-1.5">
+                <label className="block text-[10px] font-semibold text-slate-500 dark:text-gray-500 uppercase tracking-widest mb-1.5">
                   Symptoms
                 </label>
                 <textarea
@@ -229,7 +229,7 @@ export default function Problems() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-1.5">
+                <label className="block text-[10px] font-semibold text-slate-500 dark:text-gray-500 uppercase tracking-widest mb-1.5">
                   What We Build (solution)
                 </label>
                 <textarea
@@ -242,20 +242,20 @@ export default function Problems() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-1.5">
+                <label className="block text-[10px] font-semibold text-slate-500 dark:text-gray-500 uppercase tracking-widest mb-1.5">
                   Reference Case (optional)
                 </label>
                 <textarea
                   value={form.reference_case}
                   onChange={(e) => setForm((f) => ({ ...f, reference_case: e.target.value }))}
                   rows={2}
-                  placeholder="Sufi Group Unified Operations System — covering sales, procurement, inventory…"
+                  placeholder="Unified Operating Systems — covering sales, procurement, inventory…"
                   className={`${inp} resize-none`}
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-1.5">
+                <label className="block text-[10px] font-semibold text-slate-500 dark:text-gray-500 uppercase tracking-widest mb-1.5">
                   Sort Order
                 </label>
                 <input
@@ -266,16 +266,16 @@ export default function Problems() {
                 />
               </div>
 
-              <div className="flex items-center justify-between px-4 py-3.5 rounded-xl bg-[#0c0c0c] border border-[#222]">
+              <div className="flex items-center justify-between px-4 py-3.5 rounded-xl bg-[#FAF5F8] dark:bg-[#10060B] border border-black/10 dark:border-[#33142A]">
                 <div>
-                  <p className="text-white text-sm font-medium">Active</p>
-                  <p className="text-gray-600 text-xs mt-0.5">Show this problem on the website</p>
+                  <p className="text-[#1B050D] dark:text-white text-sm font-medium">Active</p>
+                  <p className="text-slate-500 dark:text-gray-600 text-xs mt-0.5">Show this problem on the website</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setForm((f) => ({ ...f, active: !f.active }))}
                   className={`relative w-10 h-5 rounded-full transition-all duration-200 focus:outline-none ${
-                    form.active ? 'bg-blue-500' : 'bg-[#333]'
+                    form.active ? 'bg-[rgb(var(--brand))]' : 'bg-slate-300 dark:bg-[#3D1832]'
                   }`}
                 >
                   <span
@@ -287,7 +287,7 @@ export default function Problems() {
               </div>
 
               {formError && (
-                <div className="text-red-400 text-xs px-3 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20">
+                <div className="text-red-600 dark:text-red-400 text-xs px-3 py-2.5 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20">
                   {formError}
                 </div>
               )}
@@ -296,14 +296,14 @@ export default function Problems() {
                 <button
                   type="button"
                   onClick={() => setModal(false)}
-                  className="flex-1 py-3 rounded-xl border border-[#222] text-gray-400 hover:text-white hover:border-[#333] text-sm font-medium transition-colors"
+                  className="flex-1 py-3 rounded-xl border border-black/10 dark:border-[#33142A] text-slate-600 dark:text-gray-400 hover:text-[#1B050D] dark:hover:text-white hover:border-black/20 dark:hover:border-[#3D1832] text-sm font-medium transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 py-3 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 py-3 rounded-xl bg-[rgb(var(--brand))] hover:shadow-[0_10px_40px_-8px_rgb(var(--brand)_/_0.6)] text-white text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving ? 'Saving…' : editing ? 'Save Changes' : 'Add Problem'}
                 </button>
