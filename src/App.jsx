@@ -605,7 +605,7 @@ function AboutIntro({ about }) {
       <div ref={ref} className={`${WRAP} grid lg:grid-cols-12 gap-12 lg:gap-14 items-center ${reveal(inView)}`}>
         <div className="lg:col-span-5">
           <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.06] mb-8">
-            Whenever complexity prevents progress, we build the system that <span className="text-glow">restores order.</span>
+            Whenever obscurity prevents progress, we build the system that <span className="text-glow">restores order.</span>
           </h2>
           <p className="text-white/60 font-light leading-relaxed">{about || DEFAULT_ABOUT}</p>
         </div>
