@@ -5,7 +5,7 @@ import { PAGE_META, pageKeyFromPath, applyPageMeta } from './seo'
 import { useInView } from './hooks'
 import { ProblemScene, CapabilityViz, StatTiles } from './visuals'
 import PhilosophyViz from './PhilosophyViz.jsx'
-import heroEarth from './assets/home/hero-earth.jpg'
+import Globe from './Globe.jsx'
 import whoWeAreImg from './assets/home/who-we-are.jpg'
 import exploreAboutImg from './assets/home/explore-about.jpg'
 import exploreWhatImg from './assets/home/explore-what-we-do.jpg'
@@ -479,52 +479,6 @@ function splitHeadline(text) {
   return [words.slice(0, -tail).join(' '), words.slice(-tail).join(' ')]
 }
 
-// The hero's right side: Earth at night with a live network tying together
-// what every hard problem is made of. Positions are % of the panel.
-const NET_HUB = [55, 44]
-const NET_CLUSTER = [[47, 37], [60, 35], [51, 52], [64, 47], [42, 47], [57, 27], [68, 40]]
-const NET_LABELS = [
-  { text: 'People', at: [36, 18] },
-  { text: 'Processes', at: [16, 33] },
-  { text: 'Technology', at: [82, 16] },
-  { text: 'Data', at: [22, 60] },
-  { text: 'Real problems', at: [80, 70], key: true },
-]
-
-function EarthNetwork() {
-  const curve = ([x1, y1], [x2, y2], bend = 0.18) => {
-    const mx = (x1 + x2) / 2 - (y2 - y1) * bend
-    const my = (y1 + y2) / 2 + (x2 - x1) * bend
-    return `M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}`
-  }
-  return (
-    <div className="absolute inset-0" aria-hidden="true">
-      <img src={heroEarth} alt="" className="absolute inset-0 w-full h-full object-cover object-[62%_55%] earth-img" />
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full">
-        <ellipse cx="58" cy="50" rx="46" ry="16" transform="rotate(-14 58 50)" fill="none" stroke="rgb(240 141 176 / 0.35)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-        {NET_CLUSTER.map((c, i) => (
-          <path key={`c${i}`} d={curve(NET_HUB, c, 0.1)} fill="none" stroke="rgb(240 141 176 / 0.7)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-        ))}
-        {NET_CLUSTER.map((c, i) => (
-          <path key={`x${i}`} d={curve(c, NET_CLUSTER[(i + 2) % NET_CLUSTER.length], 0.05)} fill="none" stroke="rgb(176 72 186 / 0.55)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-        ))}
-        {NET_LABELS.map((l, i) => (
-          <path key={l.text} d={curve(NET_CLUSTER[i % NET_CLUSTER.length], l.at)} fill="none" stroke={l.key ? 'rgb(240 141 176 / 0.9)' : 'rgb(240 141 176 / 0.45)'} strokeWidth="1" vectorEffect="non-scaling-stroke" className="net-flow" style={{ animationDelay: `${i * -0.7}s` }} />
-        ))}
-      </svg>
-      {[NET_HUB, ...NET_CLUSTER].map(([x, y], i) => (
-        <span key={i} className={`absolute rounded-full -translate-x-1/2 -translate-y-1/2 ${i === 0 ? 'w-3 h-3 bg-white shadow-[0_0_24px_6px_rgb(224_69_123/0.8)]' : 'w-1.5 h-1.5 bg-rose-soft shadow-[0_0_10px_2px_rgb(224_69_123/0.7)]'}`} style={{ left: `${x}%`, top: `${y}%` }} />
-      ))}
-      {NET_LABELS.map((l) => (
-        <span key={l.text} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${l.at[0]}%`, top: `${l.at[1]}%` }}>
-          <span className={`block mx-auto rounded-full ${l.key ? 'w-3 h-3 bg-white live-dot' : 'w-1.5 h-1.5 bg-rose-soft'}`} />
-          <span className={`block mt-2 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.22em] whitespace-nowrap text-center ${l.key ? 'text-white' : 'text-white/70'}`}>{l.text}</span>
-        </span>
-      ))}
-    </div>
-  )
-}
-
 function Hero({ headline, subtext }) {
   const [head, tail] = splitHeadline(headline || DEFAULT_HEADLINE)
   const s = subtext || DEFAULT_SUBTEXT
@@ -532,8 +486,8 @@ function Hero({ headline, subtext }) {
   return (
     <section id="home" className="relative lg:min-h-[100svh] flex flex-col overflow-hidden bg-[#070305]">
       {/* Earth network: right half on desktop, a panel under the copy on phones */}
-      <div className="hidden lg:block absolute inset-y-0 right-0 w-[57%] anim-fade" style={{ animationDelay: '0.2s' }}>
-        <EarthNetwork />
+      <div className="hidden lg:block absolute inset-y-0 right-0 w-[56%] anim-fade" style={{ animationDelay: '0.2s' }}>
+        <Globe cx={0.52} cy={0.54} size={0.28} />
       </div>
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_45%_60%_at_8%_20%,rgb(var(--grape-bright)/0.28),transparent_70%)]" />
 
@@ -555,8 +509,8 @@ function Hero({ headline, subtext }) {
           </div>
         </div>
       </div>
-      <div className="lg:hidden relative h-[340px] sm:h-[420px] mb-6">
-        <EarthNetwork />
+      <div className="lg:hidden relative h-[380px] sm:h-[460px] mb-6">
+        <Globe size={0.3} />
       </div>
     </section>
   )
@@ -578,14 +532,15 @@ const PRINCIPLES = [
   'Measurable, lasting value',
 ]
 
-// The everyday shapes of complexity, pinned over a real city at night
+// The everyday shapes of complexity, pinned over a real city at night.
+// x is % across the photo; top labels hang down, bottom ones point up.
 const WHO_LABELS = [
-  { text: 'Supply chain disruptions', x: 8, top: true, len: 44 },
-  { text: 'Manual processes', x: 36, top: true, len: 30, wide: true },
-  { text: 'Data silos', x: 63, top: true, len: 48 },
-  { text: 'Regulatory complexity', x: 14, top: false, len: 40 },
-  { text: 'Unpredictable demand', x: 46, top: false, len: 54, wide: true },
-  { text: 'Disconnected systems', x: 75, top: false, len: 36 },
+  { text: 'Supply chain disruptions', x: 9, top: true, len: 38 },
+  { text: 'Manual processes', x: 27, top: true, len: 30, wide: true },
+  { text: 'Data silos', x: 45, top: true, len: 44 },
+  { text: 'Regulatory complexity', x: 15, top: false, len: 32 },
+  { text: 'Unpredictable demand', x: 35, top: false, len: 40, wide: true },
+  { text: 'Disconnected systems', x: 55, top: false, len: 30 },
 ]
 
 function WhoWeAre() {
@@ -596,34 +551,34 @@ function WhoWeAre() {
   const payoff = lit > words.length + 1
 
   return (
-    <section id="statement" className="glow-section py-24 sm:py-32">
-      <div className={`${WRAP} grid lg:grid-cols-12 gap-12 lg:gap-14 items-center`}>
-        <div ref={imgRef} className="lg:col-span-7 relative aspect-[4/3] sm:aspect-[16/10] rounded-[1.5rem] overflow-hidden border border-white/10 shadow-[0_40px_80px_-40px_rgb(0_0_0/0.9)]">
-          <img src={whoWeAreImg} alt="A city's highway interchange at night" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.55),transparent_35%,transparent_65%,rgb(7_3_5/0.6))]" />
-          {WHO_LABELS.map((l, i) => (
-            <div
-              key={l.text}
-              className={`absolute ${l.wide ? 'hidden sm:flex' : 'flex'} flex-col ${l.top ? 'top-[6%]' : 'bottom-[6%] flex-col-reverse'} transition-all duration-700 ${inView ? 'opacity-100' : 'opacity-0'}`}
-              style={{ left: `${l.x}%`, transitionDelay: `${300 + i * 120}ms` }}
-            >
-              <span className="font-mono text-[8px] sm:text-[10px] uppercase tracking-[0.18em] text-white/85 max-w-[90px] sm:max-w-[120px] leading-snug">{l.text}</span>
-              <span
-                className={`ml-1 w-px bg-gradient-to-b ${l.top ? 'from-white/60 to-white/10 mt-2' : 'from-white/10 to-white/60 mb-2'} origin-top transition-transform duration-700 ${inView ? 'scale-y-100' : 'scale-y-0'}`}
-                style={{ height: `${l.len}%`, minHeight: `${l.len * 1.6}px`, transitionDelay: `${450 + i * 120}ms` }}
-              />
-              <span className="ml-[1px] -translate-x-[3px] w-[7px] h-[7px] rounded-full bg-rose-soft shadow-[0_0_10px_2px_rgb(224_69_123/0.8)]" />
-            </div>
-          ))}
-        </div>
-        <div className="lg:col-span-5">
+    <section id="statement" ref={imgRef} className="relative overflow-hidden border-y border-white/[0.06]">
+      {/* Photo spans the left of the band and fades into the page on the right */}
+      <div className="relative lg:absolute lg:inset-y-0 lg:left-0 lg:w-[72%] h-[420px] sm:h-[480px] lg:h-auto">
+        <img src={whoWeAreImg} alt="A highway curving into a city skyline at night" loading="lazy" className="absolute inset-0 w-full h-full object-cover object-[45%_55%] who-img" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.45),transparent_30%,transparent_70%,rgb(7_3_5/0.55))]" />
+        {WHO_LABELS.map((l, i) => (
+          <div
+            key={l.text}
+            className={`absolute ${l.wide ? 'hidden sm:flex' : 'flex'} ${l.top ? 'top-[9%] flex-row' : 'bottom-[9%] flex-row'} items-stretch gap-3 transition-opacity duration-700 ${inView ? 'opacity-100' : 'opacity-0'}`}
+            style={{ left: `${l.x}%`, transitionDelay: `${300 + i * 120}ms` }}
+          >
+            <span className={`relative w-px bg-white/75 shadow-[0_0_4px_rgb(0_0_0/0.8)] ${l.top ? 'origin-top' : 'origin-bottom'} transition-transform duration-700 ${inView ? 'scale-y-100' : 'scale-y-0'} ${l.top ? '' : 'self-end'}`} style={{ height: `${l.len * 4.5}px`, transitionDelay: `${450 + i * 120}ms` }}>
+              <span className={`absolute left-1/2 -translate-x-1/2 w-[7px] h-[7px] rounded-full bg-white shadow-[0_0_10px_2px_rgb(255_255_255/0.6)] ${l.top ? 'bottom-0 translate-y-1/2' : 'top-0 -translate-y-1/2'}`} />
+            </span>
+            <span className={`font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.2em] text-white max-w-[110px] sm:max-w-[150px] leading-snug [text-shadow:0_1px_8px_rgb(0_0_0/0.9)] ${l.top ? '' : 'self-end'}`}>{l.text}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className={`relative ${WRAP} lg:min-h-[620px] flex items-center py-14 lg:py-24`}>
+        <div className="w-full lg:w-[40%] lg:ml-auto">
           <Eyebrow className="mb-8">Who we are</Eyebrow>
-          <p ref={ref} className="font-display text-[26px] sm:text-[34px] lg:text-[36px] leading-[1.22] tracking-[-0.025em] font-normal">
+          <p ref={ref} className="font-display text-[28px] sm:text-[36px] lg:text-[40px] leading-[1.18] tracking-[-0.025em] font-medium">
             {words.map((w, i) => (
-              <span key={i} className={`transition-colors duration-500 ${i < lit ? 'text-white/90' : 'text-white/[0.14]'}`}>{w} </span>
+              <span key={i} className={`transition-colors duration-500 ${i < lit ? 'text-white' : 'text-white/[0.16]'}`}>{w} </span>
             ))}
           </p>
-          <p className={`mt-8 font-display text-[26px] sm:text-[34px] lg:text-[36px] leading-tight tracking-[-0.025em] font-medium transition-all duration-700 ${payoff ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
+          <p className={`mt-8 font-display text-[28px] sm:text-[36px] lg:text-[40px] leading-tight tracking-[-0.025em] font-medium transition-all duration-700 ${payoff ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
             <span className="text-glow">{STATEMENT_PAYOFF}</span>
           </p>
         </div>
@@ -1929,7 +1884,7 @@ function CaseStudies({ problems }) {
               style={{ transitionDelay: `${i * 110}ms` }}
             >
               <img src={caseImage(p, i)} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_30%,rgb(7_3_5/0.92))]" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.1)_20%,rgb(7_3_5/0.96)_85%)]" />
               <CircleArrow className="absolute top-4 right-4" />
               <div className="absolute inset-x-0 bottom-0 p-6">
                 <h3 className="font-display text-white text-lg font-medium leading-snug tracking-tight mb-4">{caseTitle(p.reference_case)}</h3>
