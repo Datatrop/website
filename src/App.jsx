@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import './App.css'
 import { api } from './lib/api'
-import { PAGE_META, pageKeyFromPath, applyPageMeta } from './seo'
+import { PAGE_META, pageKeyFromPath, applyPageMeta, SHOW_INDUSTRIES_PAGE } from './seo'
 import { useInView } from './hooks'
 import { StatTiles } from './visuals'
 import philNoiseImg from './assets/philosophy/noise.jpg'
@@ -354,7 +354,10 @@ function Arcs({ className = '', variant = 'hero' }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // NAVBAR — mega-menu structure (top-level items with hover-revealed panels)
 // ═══════════════════════════════════════════════════════════════════════════════
-const MEGA_MENU = [
+// The Industries page is hidden for now (switch in seo.js)
+const onPage = (href) => SHOW_INDUSTRIES_PAGE || !href.startsWith('/industries')
+
+const MEGA_MENU_ALL = [
   {
     label: 'About',
     page: 'about',
@@ -389,6 +392,7 @@ const MEGA_MENU = [
     ],
   },
 ]
+const MEGA_MENU = MEGA_MENU_ALL.filter((m) => onPage(m.href))
 
 function Navbar({ page, showNews = false }) {
   const [scrolled, setScrolled] = useState(false)
@@ -1669,7 +1673,7 @@ function PageHero({ eyebrow, title, glow, intro, links = [], linksLabel = 'On th
 }
 
 // ── Home: one card per page, so the homepage stays short ────────────────────
-const EXPLORE = [
+const EXPLORE_ALL = [
   {
     href: '/about',
     label: 'About',
@@ -1695,6 +1699,7 @@ const EXPLORE = [
     tags: ['Manufacturing', 'Supply chain', 'Healthcare', 'Finance', 'And more'],
   },
 ]
+const EXPLORE = EXPLORE_ALL.filter((e) => onPage(e.href))
 
 function CircleArrow({ className = '' }) {
   return (
@@ -1720,7 +1725,7 @@ function ExplorePages() {
             Explore our philosophy, what we build, and the real-world problems we solve across industries.
           </p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className={`grid grid-cols-1 ${EXPLORE.length === 2 ? 'md:grid-cols-2' : 'lg:grid-cols-3'} gap-5`}>
           {EXPLORE.map(({ href, label, img, title, desc, tags }, i) => (
             <a
               key={href}
@@ -2083,7 +2088,7 @@ function Footer({ settings, showNews = false }) {
             <div key={col.title}>
               <h4 className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] mb-5">{col.title}</h4>
               <div className="flex flex-col gap-3">
-                {col.links.filter(([, h]) => showNews || h !== '/news').map(([l, h]) => (
+                {col.links.filter(([, h]) => (showNews || h !== '/news') && onPage(h)).map(([l, h]) => (
                   <a key={l} href={h} className="text-white/65 hover:text-white text-sm transition-colors">{l}</a>
                 ))}
               </div>

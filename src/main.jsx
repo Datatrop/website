@@ -21,6 +21,7 @@ import Integrations from './admin/Integrations.jsx'
 import { ThemeProvider } from './admin/ThemeContext.jsx'
 import { SiteThemeProvider } from './SiteThemeContext.jsx'
 import PolicyPage from './PolicyPage.jsx'
+import { SHOW_INDUSTRIES_PAGE } from './seo.js'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -37,7 +38,7 @@ createRoot(document.getElementById('root')).render(
         />
 
         {/* Site pages (one App, switched by `page`) */}
-        {['about', 'what-we-do', 'industries', 'news', 'contact'].map((page) => (
+        {['about', 'what-we-do', ...(SHOW_INDUSTRIES_PAGE ? ['industries'] : []), 'news', 'contact'].map((page) => (
           <Route
             key={page}
             path={`/${page}`}

@@ -5,7 +5,11 @@
 
 export const SITE_URL = 'https://datatrop.in'
 
-export const PAGE_META = {
+// The Industries page is hidden for now. Set to true to bring it back: its
+// route, menu entry, home card, footer link and pre-rendered page all follow.
+export const SHOW_INDUSTRIES_PAGE = false
+
+const ALL_PAGE_META = {
   home: {
     path: '/',
     title: 'Datatrop | AI Systems & Business Automation Engineering',
@@ -54,6 +58,10 @@ export const PAGE_META = {
     crumb: 'Contact',
   },
 }
+
+export const PAGE_META = Object.fromEntries(
+  Object.entries(ALL_PAGE_META).filter(([k]) => SHOW_INDUSTRIES_PAGE || k !== 'industries')
+)
 
 export const pageKeyFromPath = (path) => {
   const clean = (path || '/').replace(/\/+$/, '') || '/'
