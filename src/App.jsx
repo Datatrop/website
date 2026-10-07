@@ -916,48 +916,89 @@ const CAP_IMAGES = { enterprise: capEnterpriseImg, workforce: capWorkforceImg, r
 const CAP_FALLBACK = [capEnterpriseImg, capWorkforceImg, capRevenueImg, capCommunicationImg, capProductImg]
 const capImage = (name, i) => CAP_IMAGES[capabilityKind(name)] || CAP_FALLBACK[i % CAP_FALLBACK.length]
 
+// Capabilities as a sliding row: any number of service lines fit without
+// making the page longer. Glides on its own; arrows, swipe and the scrollbar
+// all work, and it pauses while hovered or focused.
+const CAP_SLIDE_MS = 4500
+
 function WhatWeBuild({ serviceLines }) {
   const [ref, inView] = useInView()
-  const lead = serviceLines[0]
-  const rest = serviceLines.slice(1)
+  const track = useRef(null)
+  const [paused, setPaused] = useState(false)
+  const [atStart, setAtStart] = useState(true)
+
+  const step = (dir) => {
+    const el = track.current
+    if (!el) return
+    const card = el.querySelector('[data-slide]')
+    const by = card ? card.getBoundingClientRect().width + 20 : el.clientWidth * 0.8
+    // Wrap back to the start after the last card
+    if (dir > 0 && el.scrollLeft + el.clientWidth >= el.scrollWidth - 4) el.scrollTo({ left: 0, behavior: 'smooth' })
+    else el.scrollBy({ left: dir * by, behavior: 'smooth' })
+  }
+  const onScroll = () => {
+    const el = track.current
+    if (!el) return
+    setAtStart(el.scrollLeft < 4)
+  }
+
+  useEffect(() => {
+    if (!inView || paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const t = setInterval(() => step(1), CAP_SLIDE_MS)
+    return () => clearInterval(t)
+  }, [inView, paused])
+
+  const arrow = 'w-12 h-12 rounded-full border border-[rgb(var(--accent)_/_0.45)] bg-[rgb(var(--ink)_/_0.6)] text-white flex items-center justify-center hover:border-rose hover:bg-[rgb(var(--maroon)_/_0.6)] transition-colors disabled:opacity-30'
+
   return (
     <section id="capabilities" className="glow-section alt scroll-mt-20 py-28 sm:py-36">
       <div className={WRAP} ref={ref}>
-        <SectionHead
-          eyebrow="Capabilities"
-          title="What we build."
-          intro="Five system categories, each engineered around how your organization actually operates."
-          inView={inView}
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {lead && (
-            <div className={`group md:col-span-2 relative overflow-hidden rounded-[1.25rem] border border-white/10 min-h-[380px] flex items-end ${reveal(inView)}`}>
-              <img src={capImage(lead.name, 0)} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(7_3_5/0.92)_0%,rgb(7_3_5/0.7)_45%,rgb(7_3_5/0.1)_100%)]" />
-              <div className="relative p-8 sm:p-10 max-w-xl">
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft">Flagship</span>
-                <h3 className="font-display text-white text-2xl sm:text-3xl font-medium tracking-tight mt-3 mb-3">{lead.name}</h3>
-                <p className="text-white/75 text-base font-light leading-relaxed mb-7">{lead.examples}</p>
-                <a {...bookProps} className="btn-secondary px-6 py-3.5">Talk to an engineer <Arrow /></a>
-              </div>
-            </div>
-          )}
-          {rest.map((s, i) => (
-            <div
-              key={s.id}
-              className={`group card card-hover overflow-hidden flex flex-col ${reveal(inView)}`}
-              style={{ transitionDelay: `${(i + 1) * 80}ms` }}
-            >
-              <div className="relative h-52 overflow-hidden border-b border-white/[0.07]">
-                <img src={capImage(s.name, i + 1)} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              </div>
-              <div className="p-7">
-                <h3 className="font-display text-white text-lg font-medium tracking-tight mb-2">{s.name}</h3>
-                <p className="text-white/55 text-sm font-light leading-relaxed">{s.examples}</p>
-              </div>
-            </div>
-          ))}
+        <div className={`flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 ${reveal(inView)}`}>
+          <div className="max-w-3xl">
+            <Eyebrow className="mb-5">Capabilities</Eyebrow>
+            <h2 className="font-display text-[34px] sm:text-5xl lg:text-[56px] font-medium text-white tracking-[-0.03em] leading-[1.04]">What we build.</h2>
+            <p className="mt-6 text-white/60 text-base sm:text-lg font-light leading-relaxed max-w-2xl">Each system is engineered around how your organization actually operates.</p>
+          </div>
+          <div className="flex gap-3 flex-shrink-0">
+            <button type="button" onClick={() => { setPaused(true); step(-1) }} disabled={atStart} aria-label="Previous capability" className={arrow}><Arrow className="w-5 h-5 rotate-180" /></button>
+            <button type="button" onClick={() => { setPaused(true); step(1) }} aria-label="Next capability" className={arrow}><Arrow className="w-5 h-5" /></button>
+          </div>
         </div>
+      </div>
+
+      <div
+        ref={track}
+        onScroll={onScroll}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocus={() => setPaused(true)}
+        onBlur={() => setPaused(false)}
+        onTouchStart={() => setPaused(true)}
+        className={`cap-track flex gap-5 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 ${reveal(inView)}`}
+        style={{ paddingInline: 'max(20px, calc((100vw - 1240px) / 2 + 40px))', scrollPaddingInline: 'max(20px, calc((100vw - 1240px) / 2 + 40px))' }}
+        aria-roledescription="carousel"
+        aria-label="Capabilities"
+      >
+        {serviceLines.map((sl, i) => (
+          <article
+            key={sl.id}
+            data-slide
+            className="group snap-start flex-shrink-0 w-[82vw] sm:w-[46vw] lg:w-[380px] card card-hover overflow-hidden flex flex-col"
+          >
+            <div className="relative h-56 overflow-hidden border-b border-white/[0.07]">
+              <img src={capImage(sl.name, i)} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              {i === 0 && <span className="absolute top-4 left-4 font-mono text-[10px] uppercase tracking-[0.2em] text-white px-2.5 py-1 rounded-full bg-black/50 backdrop-blur">Flagship</span>}
+            </div>
+            <div className="p-7 flex flex-col flex-1">
+              <span className="font-mono text-[11px] text-rose-soft mb-3">{String(i + 1).padStart(2, '0')}</span>
+              <h3 className="font-display text-white text-xl font-medium tracking-tight mb-2">{sl.name}</h3>
+              <p className="text-white/55 text-sm font-light leading-relaxed flex-1">{sl.examples}</p>
+              <a {...bookProps} className="mt-6 inline-flex items-center gap-2 text-sm text-white/80 hover:text-white">
+                Talk to an engineer <Arrow className="w-4 h-4 text-rose-soft transition-transform group-hover:translate-x-1" />
+              </a>
+            </div>
+          </article>
+        ))}
       </div>
     </section>
   )

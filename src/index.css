@@ -324,6 +324,10 @@ body {
 @keyframes phil-breathe { 50% { transform: scale(1.04); filter: brightness(1.12); } }
 @media (prefers-reduced-motion: reduce) { .phil-img { animation: none; } }
 
+/* Capability slider: scrolls sideways without a visible scrollbar */
+.cap-track { scrollbar-width: none; }
+.cap-track::-webkit-scrollbar { display: none; }
+
 /* ── Testimonials coverflow ───────────────────────────────────────────── */
 .testimonial-float { animation: testimonial-float 7s ease-in-out infinite; }
 @keyframes testimonial-float { 50% { transform: translateY(-8px); } }
