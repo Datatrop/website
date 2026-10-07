@@ -742,7 +742,7 @@ function HowWeWork() {
                     onClick={() => pick(i)}
                     onMouseEnter={() => pick(i)}
                     aria-pressed={on}
-                    className={`w-full flex items-center gap-3.5 rounded-full border pl-2.5 pr-5 py-2.5 text-left transition-all duration-500 ${
+                    className={`w-full min-h-[64px] flex items-center justify-center rounded-full border px-6 py-3 text-center transition-all duration-500 ${
                       on
                         ? 'border-rose bg-[linear-gradient(90deg,rgb(var(--grape-bright)/0.45),rgb(var(--maroon)/0.9))] shadow-[0_0_40px_-6px_rgb(224_69_123/0.7)] scale-[1.04]'
                         : done
@@ -750,13 +750,10 @@ function HowWeWork() {
                           : 'border-white/15 bg-[rgb(var(--surface))] hover:border-white/30'
                     }`}
                   >
-                    <span className={`flex-shrink-0 w-10 h-10 rounded-full border flex items-center justify-center font-mono text-[11px] transition-colors duration-500 ${on ? 'bg-rose border-rose text-white' : done ? 'border-rose/60 text-rose-soft' : 'border-[rgb(var(--accent)_/_0.4)] text-white/70'}`}>
-                      {done ? '✓' : String(i + 1).padStart(2, '0')}
-                    </span>
                     <span className={`text-[14px] leading-snug transition-colors duration-500 ${on ? 'text-white' : 'text-white/70'}`}>{st.label}</span>
                   </button>
                   {/* Phones: the explanation opens under the lit step */}
-                  <p className={`lg:hidden overflow-hidden px-5 text-white/65 text-sm font-light leading-relaxed transition-all duration-500 ${on ? 'max-h-32 pt-3' : 'max-h-0'}`}>{st.desc}</p>
+                  <p className={`lg:hidden overflow-hidden px-5 font-display text-white/70 text-base leading-snug transition-all duration-500 ${on ? 'max-h-32 pt-3' : 'max-h-0'}`}>{st.desc}</p>
                 </li>
               )
             })}
@@ -764,9 +761,8 @@ function HowWeWork() {
         </div>
 
         {/* Desktop: the lit step's explanation, under the row */}
-        <div className="hidden lg:flex items-start gap-6 mt-10 min-h-[64px]">
-          <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-rose-soft pt-1.5 whitespace-nowrap">Step {String(shown + 1).padStart(2, '0')}</span>
-          <p key={shown} className={`max-w-3xl text-white/75 text-lg font-light leading-relaxed ${active >= 0 ? 'anim-fade' : 'opacity-0'}`}>{HOW_STEPS[shown].desc}</p>
+        <div className="hidden lg:block mt-10 min-h-[64px]">
+          <p key={shown} className={`max-w-3xl font-display text-white/70 text-[22px] tracking-[-0.01em] leading-snug ${active >= 0 ? 'anim-fade' : 'opacity-0'}`}>{HOW_STEPS[shown].desc}</p>
         </div>
       </div>
     </section>
@@ -1734,11 +1730,10 @@ function ExplorePages() {
             >
               <div className="relative h-48 overflow-hidden">
                 <img src={img} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.55),transparent_45%)]" />
-                <span className="absolute top-5 left-5 font-mono text-[11px] uppercase tracking-[0.22em] text-white/85">{label}</span>
                 <CircleArrow className="absolute top-4 right-4" />
               </div>
               <div className="p-7 flex flex-col flex-1">
+                <p className="font-display text-glow text-[34px] leading-none font-semibold tracking-[-0.03em] pb-1 mb-4">{label}</p>
                 <h3 className="font-display text-white text-xl font-medium tracking-tight mb-3">{title}</h3>
                 <p className="text-white/55 text-sm font-light leading-relaxed mb-6 flex-1">{desc}</p>
                 <div className="flex flex-wrap gap-2">
