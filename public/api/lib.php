@@ -37,9 +37,11 @@ function json_error(string $message, int $code = 400): void
     json_out(['error' => $message], $code);
 }
 
-// Turn any uncaught error into JSON instead of an HTML 500.
+// Turn any uncaught error into JSON instead of an HTML 500. The details go to
+// the server's PHP error log, never to the visitor (they can reveal table names).
 set_exception_handler(function ($e) {
-    json_error('Server error: ' . $e->getMessage(), 500);
+    error_log('Datatrop API: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+    json_error('Something went wrong on our side. Please try again, or email sales@datatrop.in.', 500);
 });
 
 // ── DB connection (PDO) ─────────────────────────────────────────────────────
