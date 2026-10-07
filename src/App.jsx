@@ -864,22 +864,45 @@ function WhatWeBuild({ serviceLines }) {
   const [ref, inView] = useInView()
   const track = useRef(null)
   const [paused, setPaused] = useState(false)
-  const [atStart, setAtStart] = useState(true)
+  const settle = useRef(0)
+  const n = serviceLines.length
+  // Three copies of the cards side by side; we sit in the middle copy and
+  // quietly jump back by one copy whenever the scroll drifts into the outer
+  // ones, so the ring goes round forever in either direction.
+  const loop = [0, 1, 2].flatMap((copy) => serviceLines.map((sl, i) => ({ sl, i, copy })))
 
+  const copyWidth = (el) => {
+    const slides = el.querySelectorAll('[data-slide]')
+    return slides.length > n ? slides[n].offsetLeft - slides[0].offsetLeft : 0
+  }
+  const recentre = () => {
+    const el = track.current
+    const w = el && copyWidth(el)
+    if (!w) return
+    if (el.scrollLeft < w * 0.5) el.scrollLeft += w
+    else if (el.scrollLeft >= w * 1.5) el.scrollLeft -= w
+  }
   const step = (dir) => {
     const el = track.current
     if (!el) return
     const card = el.querySelector('[data-slide]')
     const by = card ? card.getBoundingClientRect().width + 20 : el.clientWidth * 0.8
-    // Wrap back to the start after the last card
-    if (dir > 0 && el.scrollLeft + el.clientWidth >= el.scrollWidth - 4) el.scrollTo({ left: 0, behavior: 'smooth' })
-    else el.scrollBy({ left: dir * by, behavior: 'smooth' })
+    el.scrollBy({ left: dir * by, behavior: 'smooth' })
   }
   const onScroll = () => {
+    clearTimeout(settle.current)
+    settle.current = setTimeout(recentre, 140)
+  }
+
+  // Start on the middle copy, and stay aligned when the window resizes
+  useEffect(() => {
     const el = track.current
     if (!el) return
-    setAtStart(el.scrollLeft < 4)
-  }
+    const place = () => { el.scrollLeft = copyWidth(el) }
+    place()
+    window.addEventListener('resize', place)
+    return () => { window.removeEventListener('resize', place); clearTimeout(settle.current) }
+  }, [n])
 
   useEffect(() => {
     if (!inView || paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -898,7 +921,7 @@ function WhatWeBuild({ serviceLines }) {
             <p className="mt-6 text-white/60 text-base sm:text-lg font-light leading-relaxed max-w-2xl">Each system is engineered around how your organization actually operates.</p>
           </div>
           <div className="flex gap-3 flex-shrink-0">
-            <button type="button" onClick={() => { setPaused(true); step(-1) }} disabled={atStart} aria-label="Previous capability" className={arrow}><Arrow className="w-5 h-5 rotate-180" /></button>
+            <button type="button" onClick={() => { setPaused(true); step(-1) }} aria-label="Previous capability" className={arrow}><Arrow className="w-5 h-5 rotate-180" /></button>
             <button type="button" onClick={() => { setPaused(true); step(1) }} aria-label="Next capability" className={arrow}><Arrow className="w-5 h-5" /></button>
           </div>
         </div>
@@ -912,15 +935,16 @@ function WhatWeBuild({ serviceLines }) {
         onFocus={() => setPaused(true)}
         onBlur={() => setPaused(false)}
         onTouchStart={() => setPaused(true)}
-        className={`cap-track flex gap-5 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 ${reveal(inView)}`}
+        className={`cap-track flex gap-5 overflow-x-auto snap-x snap-mandatory pb-4 ${reveal(inView)}`}
         style={{ paddingInline: 'max(20px, calc((100vw - 1240px) / 2 + 40px))', scrollPaddingInline: 'max(20px, calc((100vw - 1240px) / 2 + 40px))' }}
         aria-roledescription="carousel"
         aria-label="Capabilities"
       >
-        {serviceLines.map((sl, i) => (
+        {loop.map(({ sl, i, copy }) => (
           <article
-            key={sl.id}
+            key={`${copy}-${sl.id}`}
             data-slide
+            aria-hidden={copy !== 1 || undefined}
             className="group snap-start flex-shrink-0 w-[82vw] sm:w-[46vw] lg:w-[380px] card card-hover overflow-hidden flex flex-col"
           >
             <div className="relative h-56 overflow-hidden border-b border-white/[0.07]">
@@ -931,7 +955,7 @@ function WhatWeBuild({ serviceLines }) {
               <span className="font-mono text-[11px] text-rose-soft mb-3">{String(i + 1).padStart(2, '0')}</span>
               <h3 className="font-display text-white text-xl font-medium tracking-tight mb-2">{sl.name}</h3>
               <p className="text-white/55 text-sm font-light leading-relaxed flex-1">{sl.examples}</p>
-              <a {...bookProps} className="mt-6 inline-flex items-center gap-2 text-sm text-white/80 hover:text-white">
+              <a {...bookProps} tabIndex={copy === 1 ? undefined : -1} className="mt-6 inline-flex items-center gap-2 text-sm text-white/80 hover:text-white">
                 Talk to an engineer <Arrow className="w-4 h-4 text-rose-soft transition-transform group-hover:translate-x-1" />
               </a>
             </div>
