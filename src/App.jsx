@@ -12,9 +12,6 @@ import whoWeAreImg from './assets/home/who-we-are.jpg'
 import exploreAboutImg from './assets/home/explore-about.jpg'
 import exploreWhatImg from './assets/home/explore-what-we-do.jpg'
 import exploreIndustriesImg from './assets/home/explore-industries.jpg'
-import caseOperationsImg from './assets/home/case-operations.jpg'
-import caseLogisticsImg from './assets/home/case-logistics.jpg'
-import caseVoiceImg from './assets/home/case-voice.jpg'
 import ctaRoadImg from './assets/home/cta-road.jpg'
 import pageAboutImg from './assets/pages/about.jpg'
 import engageBuildImg from './assets/engage/build.jpg'
@@ -1026,17 +1023,6 @@ function Approach() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// WHAT WE SOLVE  (DB-backed problems, row list)
-// ═══════════════════════════════════════════════════════════════════════════════
-const DEFAULT_PROBLEMS = [
-  { id: 'p1', title: 'Fragmented Operations', symptoms: 'Excel everywhere, data duplication, manual handoffs, no visibility.', solution: 'Disconnected systems become one intelligent operating platform.', reference_case: 'Unified Operating Systems, covering sales, procurement, inventory, dispatch, finance, accounting and HR in one platform.' },
-  { id: 'p2', title: 'Revenue Leakage', symptoms: 'Missed leads, poor follow-up, lost opportunities, low conversion.', solution: 'Capture every opportunity with AI-driven sales intelligence.' },
-  { id: 'p3', title: 'Communication Chaos', symptoms: 'Calls on personal phones, no visibility, lost customers, no accountability.', solution: 'Unify calls, messages, and customer interactions into one intelligent communication layer.', reference_case: 'Logistics and supply chain, with centralized IVR, CRM tracking, dashboards and AI call intelligence.' },
-  { id: 'p4', title: 'Organizational Intelligence', symptoms: 'Knowledge trapped in employees, decisions depend on individuals, no institutional memory.', solution: 'Turn scattered knowledge into permanent institutional memory.' },
-  { id: 'p5', title: 'Human Dependency', symptoms: 'Repetitive work, hiring challenges, process bottlenecks.', solution: 'Deploy AI workforces that execute repetitive work while humans focus on strategy.', reference_case: 'AI Voice Ecosystems capable of autonomous customer interactions with memory and specialized capabilities.' },
-]
-
-// ═══════════════════════════════════════════════════════════════════════════════
 // INDUSTRIES — breadth without claiming false depth in every domain
 // ═══════════════════════════════════════════════════════════════════════════════
 const INDUSTRIES = [
@@ -1650,54 +1636,6 @@ function ExplorePages() {
   )
 }
 
-// ── Home: real reference cases, taken from the problems we solve (admin) ────
-const CASE_IMAGES = [
-  [/operat|fragment|inventor|dispatch/i, caseOperationsImg],
-  [/logistic|supply|communic|call|crm/i, caseLogisticsImg],
-  [/voice|human|depend|workforce/i, caseVoiceImg],
-]
-const caseImage = (p, i) =>
-  (CASE_IMAGES.find(([re]) => re.test(`${p.title} ${p.reference_case}`)) || CASE_IMAGES[i % CASE_IMAGES.length])[1]
-// "Unified Operating Systems, covering sales…" → "Unified Operating Systems"
-const caseTitle = (text) => text.split(/,| with | capable | covering | that /)[0].trim()
-
-function CaseStudies({ problems }) {
-  const [ref, inView] = useInView()
-  const cases = problems.filter((p) => p.reference_case && p.reference_case.trim()).slice(0, 4)
-  if (!cases.length) return null
-  return (
-    <section id="case-studies" className="glow-section py-24 sm:py-32 border-t border-white/[0.06]">
-      <div className={WRAP} ref={ref}>
-        <div className={`flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 ${reveal(inView)}`}>
-          <div>
-            <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05]">From complexity to impact.</h2>
-          </div>
-          <GhostButton href="/what-we-do">See what we build</GhostButton>
-        </div>
-        <div className={`grid sm:grid-cols-2 ${cases.length > 3 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-5`}>
-          {cases.map((p, i) => (
-            <a
-              key={p.id}
-              href="/what-we-do"
-              title={p.reference_case}
-              className={`group relative aspect-[4/3] sm:aspect-[4/5] lg:aspect-[4/3] rounded-[1.25rem] overflow-hidden border border-white/10 ${reveal(inView)}`}
-              style={{ transitionDelay: `${i * 110}ms` }}
-            >
-              <img src={caseImage(p, i)} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.1)_20%,rgb(7_3_5/0.96)_85%)]" />
-              <CircleArrow className="absolute top-4 right-4" />
-              <div className="absolute inset-x-0 bottom-0 p-6">
-                <h3 className="font-display text-white text-lg font-medium leading-snug tracking-tight mb-4">{caseTitle(p.reference_case)}</h3>
-                <span className="inline-block px-3 py-1.5 rounded-full border border-white/20 bg-black/30 font-mono text-[10px] uppercase tracking-[0.2em] text-white/80">{p.title}</span>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
 // ── Industries page: the four industries we are most often asked about ──────
 const FEATURED_INDUSTRIES = [
   {
@@ -1950,7 +1888,6 @@ const FOOTER_COLUMNS = [
 
 function Footer({ settings, showNews = false }) {
   const company = settings.company_name || 'Datatrop'
-  const tagline = settings.tagline || 'Engineering Intelligence. Solving Complexity.'
   const location = settings.location || 'Kerala, India'
   const email = settings.contact_email || 'sales@datatrop.in'
   const linkedin = settings.linkedin_url || DEFAULT_LINKEDIN
@@ -1962,7 +1899,9 @@ function Footer({ settings, showNews = false }) {
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-10 pb-16">
           <div className="col-span-2 sm:col-span-4 lg:col-span-2">
             <LogoMark footer />
-            <p className="text-white/55 text-sm font-light mt-5 max-w-xs leading-relaxed">{tagline}</p>
+            <p className="font-display text-xl font-medium tracking-[-0.02em] mt-5">
+              <span className="text-white">Decipher.</span> <span className="text-white/55">Derive.</span> <span className="text-glow">Datatrop.</span>
+            </p>
             <div className="flex items-center gap-3 mt-7">
               <a href={`mailto:${email}`} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/55 hover:text-white hover:border-rose/50 transition-colors" aria-label="Email">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
@@ -2085,7 +2024,6 @@ export default function App({ page: initialPage = 'home' }) {
   const [customers, setCustomers] = useState([])
   const [showcases, setShowcases] = useState([])
   const [testimonials, setTestimonials] = useState([])
-  const [problems, setProblems] = useState(DEFAULT_PROBLEMS)
   const [serviceLines, setServiceLines] = useState(DEFAULT_SERVICE_LINES)
   const [posts, setPosts] = useState(null)
   // The News page is only linked once there is something to show on it
@@ -2106,7 +2044,6 @@ export default function App({ page: initialPage = 'home' }) {
     api.getPublic('ai_showcase').then((d) => { if (Array.isArray(d)) setShowcases(d) }).catch(() => {})
     api.getPublic('testimonials').then((d) => { if (Array.isArray(d)) setTestimonials(d) }).catch(() => {})
     api.getPublic('posts').then((d) => setPosts(Array.isArray(d) ? d : [])).catch(() => setPosts([]))
-    api.getPublic('problems').then((d) => { if (Array.isArray(d) && d.length) setProblems(d) }).catch(() => {})
     api.getPublic('service_lines').then((d) => { if (Array.isArray(d) && d.length) setServiceLines(d) }).catch(() => {})
   }, [])
 
@@ -2249,7 +2186,6 @@ export default function App({ page: initialPage = 'home' }) {
           <Philosophy />
           <HowWeWork />
           <ExplorePages />
-          <CaseStudies problems={problems} />
           {testimonialsSection}
           {customers.length > 0 && <Clients customers={customers} />}
           <FinalCta />
