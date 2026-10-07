@@ -669,10 +669,32 @@ function Philosophy() {
   )
 }
 
-const HOW_STEPS = ['Understand the challenge', 'Derive what matters', 'Architect the system', 'Build & deploy', 'Operate and evolve']
+const HOW_STEPS = [
+  { label: 'Understand the challenge', desc: 'We sit with your team, map the operation and find what is really holding it back, not just the symptoms.' },
+  { label: 'Derive what matters', desc: 'We turn what we learned into a clear definition of what the solution must achieve, and how we will measure it.' },
+  { label: 'Architect the system', desc: 'We choose the right mix of technology, data, AI, process and people, and design how they fit together.' },
+  { label: 'Build & deploy', desc: 'We engineer it, test it against real work and roll it out alongside your team, step by step.' },
+  { label: 'Operate and evolve', desc: 'We run it, measure the results and keep improving it as your business grows.' },
+]
+const HOW_STEP_MS = 3200
 
 function HowWeWork() {
   const [ref, inView] = useInView()
+  const [active, setActive] = useState(-1)
+  const [paused, setPaused] = useState(false)
+  const n = HOW_STEPS.length
+
+  // When the section arrives, run through the steps one by one, then keep cycling
+  useEffect(() => {
+    if (!inView || paused) return
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const t = setTimeout(() => setActive((a) => (still && a >= 0 ? a : (a + 1) % n)), active < 0 ? 400 : HOW_STEP_MS)
+    return () => clearTimeout(t)
+  }, [inView, paused, active, n])
+
+  const shown = Math.max(active, 0)
+  const pick = (i) => { setActive(i); setPaused(true) }
+
   return (
     <section id="how-it-works" className="glow-section scroll-mt-20 py-20 sm:py-28 border-t border-white/[0.06]">
       <div className={WRAP} ref={ref}>
@@ -687,20 +709,52 @@ function HowWeWork() {
             Every engagement follows the Datatrop philosophy, adapted to your problem and context.
           </p>
         </div>
-        <ol className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-2">
-          {HOW_STEPS.map((label, i) => (
-            <li key={label} className={`contents ${reveal(inView)}`}>
-              <div
-                className={`group flex-1 flex items-center gap-3.5 rounded-full border border-white/12 bg-white/[0.03] pl-2.5 pr-5 py-2.5 hover:border-[rgb(var(--accent)_/_0.6)] hover:bg-[rgb(var(--maroon)_/_0.35)] transition-all duration-500 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-                style={{ transitionDelay: `${150 + i * 90}ms` }}
-              >
-                <span className="flex-shrink-0 w-10 h-10 rounded-full border border-[rgb(var(--accent)_/_0.55)] flex items-center justify-center font-mono text-[11px] text-white">{String(i + 1).padStart(2, '0')}</span>
-                <span className="text-white text-[14px] leading-snug">{label}</span>
-              </div>
-              {i < HOW_STEPS.length - 1 && <Arrow className="hidden lg:block flex-shrink-0 w-3.5 h-3.5 text-white/30" />}
-            </li>
-          ))}
-        </ol>
+
+        <div className="relative" onMouseLeave={() => setPaused(false)}>
+          {/* Track and the glowing beam that runs along it (desktop) */}
+          <div className="hidden lg:block absolute left-[5%] right-[5%] top-1/2 -translate-y-1/2 h-px bg-white/10" aria-hidden="true">
+            <div
+              className="h-full bg-[linear-gradient(90deg,#8A2A91,#E0457B)] shadow-[0_0_12px_2px_rgb(224_69_123/0.7)] transition-[width] duration-700 ease-out"
+              style={{ width: `${active < 0 ? 0 : (shown / (n - 1)) * 100}%` }}
+            />
+          </div>
+          <ol className="relative grid gap-3 lg:grid-cols-5 lg:gap-5">
+            {HOW_STEPS.map((st, i) => {
+              const on = i === shown && active >= 0
+              const done = active >= 0 && i < shown
+              return (
+                <li key={st.label} className={`${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} transition-all duration-500`} style={{ transitionDelay: `${150 + i * 90}ms` }}>
+                  <button
+                    type="button"
+                    onClick={() => pick(i)}
+                    onMouseEnter={() => pick(i)}
+                    aria-pressed={on}
+                    className={`w-full flex items-center gap-3.5 rounded-full border pl-2.5 pr-5 py-2.5 text-left transition-all duration-500 ${
+                      on
+                        ? 'border-rose bg-[linear-gradient(90deg,rgb(var(--grape-bright)/0.45),rgb(var(--maroon)/0.9))] shadow-[0_0_40px_-6px_rgb(224_69_123/0.7)] scale-[1.04]'
+                        : done
+                          ? 'border-[rgb(var(--accent)_/_0.45)] bg-[rgb(var(--surface))]'
+                          : 'border-white/15 bg-[rgb(var(--surface))] hover:border-white/30'
+                    }`}
+                  >
+                    <span className={`flex-shrink-0 w-10 h-10 rounded-full border flex items-center justify-center font-mono text-[11px] transition-colors duration-500 ${on ? 'bg-rose border-rose text-white' : done ? 'border-rose/60 text-rose-soft' : 'border-[rgb(var(--accent)_/_0.4)] text-white/70'}`}>
+                      {done ? '✓' : String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className={`text-[14px] leading-snug transition-colors duration-500 ${on ? 'text-white' : 'text-white/70'}`}>{st.label}</span>
+                  </button>
+                  {/* Phones: the explanation opens under the lit step */}
+                  <p className={`lg:hidden overflow-hidden px-5 text-white/65 text-sm font-light leading-relaxed transition-all duration-500 ${on ? 'max-h-32 pt-3' : 'max-h-0'}`}>{st.desc}</p>
+                </li>
+              )
+            })}
+          </ol>
+        </div>
+
+        {/* Desktop: the lit step's explanation, under the row */}
+        <div className="hidden lg:flex items-start gap-6 mt-10 min-h-[64px]">
+          <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-rose-soft pt-1.5 whitespace-nowrap">Step {String(shown + 1).padStart(2, '0')}</span>
+          <p key={shown} className={`max-w-3xl text-white/75 text-lg font-light leading-relaxed ${active >= 0 ? 'anim-fade' : 'opacity-0'}`}>{HOW_STEPS[shown].desc}</p>
+        </div>
       </div>
     </section>
   )
@@ -1758,7 +1812,7 @@ function PageHero({ eyebrow, title, glow, intro, links = [], linksLabel = 'On th
           <nav aria-label={linksLabel} className="mt-10 flex flex-wrap items-center gap-2.5 anim-fade" style={{ animationDelay: '0.25s' }}>
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 mr-2">{linksLabel}</span>
             {links.map(([label, href]) => (
-              <a key={href} href={href} className="text-[13px] px-4 py-2 rounded-full border border-white/12 bg-black/20 text-white/75 hover:text-white hover:border-rose/50 transition-colors">
+              <a key={href} href={href} className="text-[13px] px-4 py-2 rounded-full border border-white/15 bg-black/20 text-white/75 hover:text-white hover:border-rose/50 transition-colors">
                 {label}
               </a>
             ))}
