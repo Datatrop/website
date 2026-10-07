@@ -3,7 +3,6 @@ import './App.css'
 import { api } from './lib/api'
 import { PAGE_META, pageKeyFromPath, applyPageMeta, SHOW_INDUSTRIES_PAGE } from './seo'
 import { useInView } from './hooks'
-import { StatTiles } from './visuals'
 import philNoiseImg from './assets/philosophy/noise.jpg'
 import philClarityImg from './assets/philosophy/clarity.jpg'
 import philSystemImg from './assets/philosophy/system.jpg'
@@ -356,7 +355,6 @@ const MEGA_MENU_ALL = [
       { title: 'Who We Are', desc: 'Why we exist and what we believe.', href: '/about#who-we-are' },
       { title: 'Our Philosophy', desc: 'Decipher, derive, Datatrop.', href: '/#philosophy' },
       { title: 'How We Engage', desc: 'Build, solve and innovate.', href: '/about#engage' },
-      { title: 'Why Datatrop', desc: 'Our approach, in numbers.', href: '/about#why' },
     ],
   },
   {
@@ -1138,37 +1136,6 @@ function Industries({ intro = "The industries above are where we're most often a
             </span>
           ))}
         </div>
-      </div>
-    </section>
-  )
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// BY THE NUMBERS + PHILOSOPHY
-// ═══════════════════════════════════════════════════════════════════════════════
-const STATS = [
-  { num: 5, max: 5, suffix: '+', kind: 'segments', label: 'System categories engineered' },
-  { num: 8, max: 8, kind: 'dots', label: 'Industries served' },
-  { num: 24, max: 24, display: '24/7', kind: 'clock', label: 'Autonomous execution' },
-  { num: 100, max: 100, suffix: '%', kind: 'ring', label: 'Built around the problem' },
-]
-
-function WhyDatatrop() {
-  const [ref, inView] = useInView()
-  return (
-    <section id="why" className="glow-section alt py-28 sm:py-36">
-      <div className={WRAP} ref={ref}>
-        <div className={`max-w-3xl mb-16 ${reveal(inView)}`}>
-          <h2 className="font-display text-[34px] sm:text-5xl lg:text-[56px] font-medium text-white tracking-[-0.03em] leading-[1.04]">
-            Complexity is inevitable. <span className="text-glow">Chaos is optional.</span>
-          </h2>
-          <p className="mt-6 max-w-2xl text-white/60 text-base sm:text-lg font-light leading-relaxed">
-            Every complex problem can be understood, engineered, and transformed into a stable system. Our mission is to
-            eliminate complexity, restore stability, and solve meaningful problems for businesses, industries and
-            society, whatever technology that requires.
-          </p>
-        </div>
-        <StatTiles stats={STATS} />
       </div>
     </section>
   )
@@ -2044,7 +2011,7 @@ function Contact({ settings }) {
 // FOOTER
 // ═══════════════════════════════════════════════════════════════════════════════
 const FOOTER_COLUMNS = [
-  { title: 'About', links: [['Who We Are', '/about#who-we-are'], ['Our Philosophy', '/#philosophy'], ['How We Engage', '/about#engage'], ['Complexity Scale', '/about#approach'], ['Why Datatrop', '/about#why']] },
+  { title: 'About', links: [['Who We Are', '/about#who-we-are'], ['Our Philosophy', '/#philosophy'], ['How We Engage', '/about#engage'], ['Complexity Scale', '/about#approach']] },
   { title: 'What We Do', links: [['Capabilities', '/what-we-do#capabilities'], ['Problems We Solve', '/what-we-do#solve'], ['Industries', '/industries']] },
   { title: 'Connect', links: [['News & Events', '/news'], ['Contact Us', '/contact'], ['Book a Call', '/contact#book'], ['Send a Message', '/contact#message']] },
   { title: 'Legal', links: [['Privacy Policy', '/privacy'], ['Terms of Service', '/terms']] },
@@ -2280,12 +2247,11 @@ export default function App({ page: initialPage = 'home' }) {
             title="We turn complexity into"
             glow="stable systems."
             intro="We design, build and operate the intelligent systems that restore order wherever complexity slows an organization down."
-            links={[['Who we are', '/about#who-we-are'], ['How we engage', '/about#engage'], ['Complexity scale', '/about#approach'], ['Why Datatrop', '/about#why']]}
+            links={[['Who we are', '/about#who-we-are'], ['How we engage', '/about#engage'], ['Complexity scale', '/about#approach']]}
           />
           <AboutIntro about={settings.about_bio} />
           <ThreePillars />
           <Approach />
-          <WhyDatatrop />
           <FinalCta vision />
         </>
       )}
