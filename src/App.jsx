@@ -712,13 +712,11 @@ function HowWeWork() {
   return (
     <section id="how-it-works" className="glow-section scroll-mt-20 py-20 sm:py-28 border-t border-white/[0.06]">
       <div className={WRAP} ref={ref}>
-        <div className={`grid lg:grid-cols-12 gap-6 items-end mb-12 ${reveal(inView)}`}>
-          <div className="lg:col-span-7">
-            <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05]">
-              We start with your challenge, <span className="text-glow">not the technology.</span>
-            </h2>
-          </div>
-          <p className="lg:col-span-5 text-white/60 text-base sm:text-lg font-light leading-relaxed">
+        <div className={`max-w-3xl mb-12 ${reveal(inView)}`}>
+          <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05]">
+            We start with your challenge, <span className="text-glow sm:block">not the technology.</span>
+          </h2>
+          <p className="mt-6 text-white/60 text-base sm:text-lg font-light leading-relaxed max-w-2xl">
             Every engagement follows the Datatrop philosophy, adapted to your problem and context.
           </p>
         </div>
@@ -1175,13 +1173,11 @@ function WhyDatatrop() {
   return (
     <section id="why" className="glow-section alt py-28 sm:py-36">
       <div className={WRAP} ref={ref}>
-        <div className={`grid lg:grid-cols-12 gap-10 mb-16 ${reveal(inView)}`}>
-          <div className="lg:col-span-7">
-            <h2 className="font-display text-[34px] sm:text-5xl lg:text-[56px] font-medium text-white tracking-[-0.03em] leading-[1.04]">
-              Complexity is inevitable. <span className="text-glow">Chaos is optional.</span>
-            </h2>
-          </div>
-          <p className="lg:col-span-5 lg:pt-12 text-white/60 text-lg font-light leading-relaxed">
+        <div className={`max-w-3xl mb-16 ${reveal(inView)}`}>
+          <h2 className="font-display text-[34px] sm:text-5xl lg:text-[56px] font-medium text-white tracking-[-0.03em] leading-[1.04]">
+            Complexity is inevitable. <span className="text-glow">Chaos is optional.</span>
+          </h2>
+          <p className="mt-6 max-w-2xl text-white/60 text-base sm:text-lg font-light leading-relaxed">
             Every complex problem can be understood, engineered, and transformed into a stable system. Our mission is to
             eliminate complexity, restore stability, and solve meaningful problems for businesses, industries and
             society, whatever technology that requires.
@@ -1496,8 +1492,8 @@ function FinalCta({ vision = false }) {
         <div className={`relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#070305] ${reveal(inView)}`}>
           <img src={ctaRoadImg} alt="" loading="lazy" className="absolute inset-y-0 right-0 w-full lg:w-[62%] h-full object-cover object-[50%_62%] cta-img" />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,#070305_0%,rgb(7_3_5/0.85)_40%,rgb(7_3_5/0.2)_100%)] lg:bg-[linear-gradient(90deg,#070305_30%,rgb(7_3_5/0.4)_65%,transparent)]" />
-          <div className="relative grid lg:grid-cols-12 gap-10 items-end px-6 py-16 sm:px-14 sm:py-20">
-            <div className="lg:col-span-7">
+          <div className="relative px-6 py-16 sm:px-14 sm:py-20">
+            <div className="max-w-2xl">
               {vision && (
                 <p className="font-display text-xl sm:text-2xl text-white/75 font-light leading-snug tracking-tight mb-12 max-w-2xl">
                   Our vision: to become the world's most trusted systems engineering company for solving complex challenges through
@@ -1507,9 +1503,7 @@ function FinalCta({ vision = false }) {
               <h2 className="font-display text-4xl sm:text-5xl lg:text-[56px] font-medium text-white tracking-[-0.04em] leading-[1.04]">
                 Have a problem that doesn't fit a product? <span className="text-glow">Let's Datatrop it.</span>
               </h2>
-            </div>
-            <div className="lg:col-span-5">
-              <p className="text-white/70 text-base sm:text-lg font-light leading-relaxed mb-8 max-w-md">
+              <p className="mt-6 text-white/70 text-base sm:text-lg font-light leading-relaxed mb-8 max-w-xl">
                 Whether the solution is known, unknown, or yet to be invented, we can help you turn complexity into a working system.
               </p>
               <div className="flex flex-col sm:flex-row gap-3.5">
@@ -1734,13 +1728,11 @@ function ExplorePages() {
   return (
     <section id="explore" className="glow-section alt py-24 sm:py-32 border-t border-white/[0.06]">
       <div className={WRAP} ref={ref}>
-        <div className={`grid lg:grid-cols-12 gap-6 items-end mb-12 sm:mb-14 ${reveal(inView)}`}>
-          <div className="lg:col-span-7">
-            <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05]">
-              See how we turn complexity <span className="text-glow">into systems.</span>
-            </h2>
-          </div>
-          <p className="lg:col-span-5 text-white/60 text-base sm:text-lg font-light leading-relaxed">
+        <div className={`max-w-3xl mb-12 sm:mb-14 ${reveal(inView)}`}>
+          <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05]">
+            See how we turn complexity <span className="text-glow sm:block">into systems.</span>
+          </h2>
+          <p className="mt-6 text-white/60 text-base sm:text-lg font-light leading-relaxed max-w-2xl">
             Explore our philosophy, what we build, and the real-world problems we solve across industries.
           </p>
         </div>
