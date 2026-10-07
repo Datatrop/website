@@ -287,19 +287,9 @@ function GhostButton({ href, children, className = '' }) {
 }
 
 // ── Section heading ───────────────────────────────────────────────────────────
-function Eyebrow({ children, className = '' }) {
-  return (
-    <span className={`inline-flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-white/55 ${className}`}>
-      <span className="w-1.5 h-1.5 rounded-full bg-rose" />
-      {children}
-    </span>
-  )
-}
-
-function SectionHead({ eyebrow, title, intro, inView, center = false }) {
+function SectionHead({ title, intro, inView, center = false }) {
   return (
     <div className={`${center ? 'mx-auto text-center' : ''} max-w-3xl mb-14 sm:mb-16 ${reveal(inView)}`}>
-      {eyebrow && <Eyebrow className="mb-5">{eyebrow}</Eyebrow>}
       <h2 className="font-display text-[34px] sm:text-5xl lg:text-[56px] font-medium text-white tracking-[-0.03em] leading-[1.04] text-balance">
         {title}
       </h2>
@@ -545,7 +535,6 @@ function Hero({ headline, subtext }) {
 
       <div className={`relative z-10 ${WRAP} w-full flex-1 flex items-center pt-32 sm:pt-36 pb-10 lg:pb-16 pointer-events-none`}>
         <div className="max-w-[640px] pointer-events-auto">
-          <Eyebrow className="mb-8 anim-fade text-white/70">Engineering impossibilities to reality</Eyebrow>
 
           <h1 className="font-display text-[44px] leading-[1.02] sm:text-7xl lg:text-[64px] xl:text-[72px] font-medium text-white tracking-[-0.045em] mb-8 anim-rise text-balance">
             {head} {tail && <span className="text-glow">{tail}</span>}
@@ -630,7 +619,6 @@ function WhoWeAre() {
 
       <div className={`relative ${WRAP} lg:min-h-[max(620px,100svh)] flex items-center py-14 lg:py-24`}>
         <div className="w-full lg:w-[40%] lg:ml-auto">
-          <Eyebrow className="mb-8">Who we are</Eyebrow>
           <p ref={ref} className="font-display text-[28px] sm:text-[36px] lg:text-[40px] leading-[1.18] tracking-[-0.025em] font-medium">
             {words.map((w, i) => (
               <span key={i} className={`transition-colors duration-500 ${i < lit ? 'text-white' : 'text-white/[0.16]'}`}>{w} </span>
@@ -654,7 +642,6 @@ function AboutIntro({ about }) {
     <section id="who-we-are" className="glow-section scroll-mt-20 py-24 sm:py-32">
       <div ref={ref} className={`${WRAP} grid lg:grid-cols-12 gap-12 lg:gap-14 items-center ${reveal(inView)}`}>
         <div className="lg:col-span-5">
-          <Eyebrow className="mb-5">Who we are</Eyebrow>
           <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.06] mb-8">
             Whenever complexity prevents progress, we build the system that <span className="text-glow">restores order.</span>
           </h2>
@@ -702,7 +689,6 @@ function Philosophy() {
     <section id="philosophy" className="glow-section alt scroll-mt-20 py-24 sm:py-32 border-t border-white/[0.06]">
       <div className={WRAP} ref={ref}>
         <div className={`mb-12 sm:mb-14 ${reveal(inView)}`}>
-          <Eyebrow className="mb-4">The Datatrop philosophy</Eyebrow>
           <h2 className="text-white/65 text-lg sm:text-xl font-light leading-relaxed max-w-xl">
             A disciplined approach to turn complexity into engineered systems.
           </h2>
@@ -764,7 +750,6 @@ function HowWeWork() {
       <div className={WRAP} ref={ref}>
         <div className={`grid lg:grid-cols-12 gap-6 items-end mb-12 ${reveal(inView)}`}>
           <div className="lg:col-span-7">
-            <Eyebrow className="mb-5">How we work</Eyebrow>
             <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05]">
               We start with your challenge, <span className="text-glow">not the technology.</span>
             </h2>
@@ -859,7 +844,7 @@ function ThreePillars() {
   return (
     <section id="engage" className="glow-section alt py-28 sm:py-36">
       <div className={WRAP} ref={ref}>
-        <SectionHead eyebrow="How we engage" title="Organized by problem, not by technology." inView={inView} />
+        <SectionHead title="Organized by problem, not by technology." inView={inView} />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {PILLARS.map(({ tag, cta, img, when, title, desc }, i) => (
             <article
@@ -945,7 +930,6 @@ function WhatWeBuild({ serviceLines }) {
       <div className={WRAP} ref={ref}>
         <div className={`flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 ${reveal(inView)}`}>
           <div className="max-w-3xl">
-            <Eyebrow className="mb-5">Capabilities</Eyebrow>
             <h2 className="font-display text-[34px] sm:text-5xl lg:text-[56px] font-medium text-white tracking-[-0.03em] leading-[1.04]">What we build.</h2>
             <p className="mt-6 text-white/60 text-base sm:text-lg font-light leading-relaxed max-w-2xl">Each system is engineered around how your organization actually operates.</p>
           </div>
@@ -1010,7 +994,7 @@ function Approach() {
     <section id="approach" className="glow-section py-28 sm:py-36">
       <div className={WRAP} ref={ref}>
         <SectionHead
-          eyebrow="The complexity scale"
+         
           title="Wherever your problem falls, we can engage."
           intro="From connecting the systems you already have to inventing a product that doesn't exist yet, this is the range we operate across."
           inView={inView}
@@ -1117,7 +1101,7 @@ function WhatWeSolve({ problems }) {
       <div className={WRAP}>
         <div ref={ref}>
           <SectionHead
-            eyebrow="Problems we solve"
+           
             title="Where complexity costs you most."
             intro="Five problems we see in almost every organization: what each one looks like today, and what changes once the right system is in place."
             inView={inView}
@@ -1146,7 +1130,7 @@ function Industries({ intro = "The industries above are where we're most often a
     <section id="all-industries" className="glow-section scroll-mt-20 py-28 sm:py-36">
       <div className={WRAP} ref={ref}>
         <SectionHead
-          eyebrow="Also engaging across"
+         
           title="Wherever complexity slows progress."
           intro={intro}
           inView={inView}
@@ -1185,7 +1169,6 @@ function WhyDatatrop() {
       <div className={WRAP} ref={ref}>
         <div className={`grid lg:grid-cols-12 gap-10 mb-16 ${reveal(inView)}`}>
           <div className="lg:col-span-7">
-            <Eyebrow className="mb-5">Our philosophy</Eyebrow>
             <h2 className="font-display text-[34px] sm:text-5xl lg:text-[56px] font-medium text-white tracking-[-0.03em] leading-[1.04]">
               Complexity is inevitable. <span className="text-glow">Chaos is optional.</span>
             </h2>
@@ -1210,7 +1193,7 @@ function Showcase({ items }) {
   return (
     <section className="glow-section py-28 sm:py-36">
       <div className={WRAP} ref={ref}>
-        <SectionHead eyebrow="Systems in the field" title="Intelligence we've shipped." inView={inView} />
+        <SectionHead title="Intelligence we've shipped." inView={inView} />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {items.map((item, i) => (
             <div key={item.id} className={`card card-hover p-7 flex flex-col ${reveal(inView)}`} style={{ transitionDelay: `${i * 70}ms` }}>
@@ -1240,7 +1223,7 @@ function Clients({ customers }) {
   return (
     <section className="glow-section alt py-24">
       <div className={WRAP} ref={ref}>
-        <SectionHead eyebrow="Clients" title="Who we work with." inView={inView} />
+        <SectionHead title="Who we work with." inView={inView} />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-px rounded-[1.25rem] overflow-hidden border border-white/[0.08] bg-white/[0.08]">
           {customers.map((c, i) => (
             <div key={c.id} className={`bg-[rgb(var(--surface))] p-6 transition-all duration-500 ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: `${i * 50}ms` }}>
@@ -1513,7 +1496,6 @@ function FinalCta({ vision = false }) {
                   <span className="text-white font-normal"> intelligence, engineering, and innovation.</span>
                 </p>
               )}
-              <Eyebrow className="mb-6 text-white/70">Ready to Datatrop?</Eyebrow>
               <h2 className="font-display text-4xl sm:text-5xl lg:text-[56px] font-medium text-white tracking-[-0.04em] leading-[1.04]">
                 Have a problem that doesn't fit a product? <span className="text-glow">Let's engineer the answer.</span>
               </h2>
@@ -1640,7 +1622,7 @@ function NewsList({ posts, linkedin }) {
           <>
             {upcoming.length > 0 && (
               <div className="mb-20">
-                <Eyebrow className="mb-8">Upcoming</Eyebrow>
+                <h2 className="font-display text-white text-2xl font-medium tracking-tight mb-8">Upcoming</h2>
                 <div className="grid gap-5">
                   {upcoming.map((p, i) => <PostCard key={p.id} post={p} onOpen={setOpen} i={i} inView={inView} featured />)}
                 </div>
@@ -1648,7 +1630,7 @@ function NewsList({ posts, linkedin }) {
             )}
             {past.length > 0 && (
               <div>
-                <Eyebrow className="mb-8">Latest</Eyebrow>
+                <h2 className="font-display text-white text-2xl font-medium tracking-tight mb-8">Latest</h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                   {past.map((p, i) => <PostCard key={p.id} post={p} onOpen={setOpen} i={i} inView={inView} />)}
                 </div>
@@ -1668,7 +1650,7 @@ function NewsList({ posts, linkedin }) {
 // Every inner page (About, What We Do, Industries, Contact) uses this header at
 // the same fixed height and padding, so the title lands in the same place on
 // each page whatever the copy length.
-function PageHero({ eyebrow, title, glow, intro, links = [], linksLabel = 'On this page', img, imgAlt = '', imgPos = '50% 50%' }) {
+function PageHero({ title, glow, intro, links = [], linksLabel = 'On this page', img, imgAlt = '', imgPos = '50% 50%' }) {
   return (
     <section className="page-hero relative overflow-hidden bg-[#070305] flex flex-col lg:block">
       {/* Photo: left of the header on desktop (fading into the dark), on top on phones */}
@@ -1679,7 +1661,6 @@ function PageHero({ eyebrow, title, glow, intro, links = [], linksLabel = 'On th
 
       <div className={`relative z-10 order-2 ${WRAP} w-full lg:min-h-[max(640px,100svh)] flex items-center pt-10 lg:pt-28 pb-14 sm:pb-16`}>
         <div className="w-full lg:w-[44%] lg:ml-auto">
-          <Eyebrow className="mb-6 anim-fade">{eyebrow}</Eyebrow>
           <h1 className="font-display text-[38px] leading-[1.05] sm:text-5xl lg:text-[52px] font-medium text-white tracking-[-0.035em] mb-6 anim-rise text-balance">
             {title} {glow && <span className="text-glow">{glow}</span>}
           </h1>
@@ -1747,7 +1728,6 @@ function ExplorePages() {
       <div className={WRAP} ref={ref}>
         <div className={`grid lg:grid-cols-12 gap-6 items-end mb-12 sm:mb-14 ${reveal(inView)}`}>
           <div className="lg:col-span-7">
-            <Eyebrow className="mb-5">Explore Datatrop</Eyebrow>
             <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05]">
               See how we turn complexity <span className="text-glow">into systems.</span>
             </h2>
@@ -1807,7 +1787,6 @@ function CaseStudies({ problems }) {
       <div className={WRAP} ref={ref}>
         <div className={`flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 ${reveal(inView)}`}>
           <div>
-            <Eyebrow className="mb-5">Real problems. Real outcomes.</Eyebrow>
             <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05]">From complexity to impact.</h2>
           </div>
           <GhostButton href="/what-we-do#solve">See the problems we solve</GhostButton>
@@ -1873,7 +1852,7 @@ function FeaturedIndustries() {
   return (
     <section id="featured" className="glow-section alt py-24 sm:py-32">
       <div className={WRAP} ref={ref}>
-        <SectionHead eyebrow="Where we're asked most" title="Four industries, one pattern." intro="Different domains, the same underlying problem: disconnected systems, manual work and decisions made on stale data." inView={inView} />
+        <SectionHead title="Four industries, one pattern." intro="Different domains, the same underlying problem: disconnected systems, manual work and decisions made on stale data." inView={inView} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {FEATURED_INDUSTRIES.map((ind, i) => (
             <article
@@ -1914,7 +1893,7 @@ function ContactHero() {
         img={pageContactImg}
         imgAlt="A city at dusk seen from above"
         imgPos="50% 60%"
-        eyebrow="Contact"
+       
         title="Let's talk about the problem"
         glow="you're solving."
         intro="Book a strategy call straight into our calendar, or send us a message and we'll get back to you within 24 hours."
@@ -1999,7 +1978,6 @@ function Contact({ settings }) {
         {/* Native scheduler — writes straight into our Outlook calendar */}
         <div id="book" className="scroll-mt-28 grid lg:grid-cols-12 gap-10 mb-24 sm:mb-32">
           <div className="lg:col-span-4">
-            <Eyebrow className="mb-5">Book a strategy call</Eyebrow>
             <h2 className="font-display text-3xl sm:text-4xl font-medium text-white tracking-[-0.03em] leading-[1.08] mb-4">Pick a time that works for you.</h2>
             <p className="text-white/55 font-light leading-relaxed">30 minutes with an engineer. Times are shown in IST and the invite lands straight in your calendar.</p>
           </div>
@@ -2011,7 +1989,6 @@ function Contact({ settings }) {
         <div ref={ref} id="message" className="scroll-mt-28 grid lg:grid-cols-12 gap-10 items-start">
           {/* Contact details */}
           <div className={`lg:col-span-4 ${reveal(inView)}`}>
-            <Eyebrow className="mb-5">Or send a message</Eyebrow>
             <h2 className="font-display text-3xl sm:text-4xl font-medium text-white tracking-[-0.03em] leading-[1.08] mb-10">Tell us what's getting in the way.</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-y-6 gap-x-4">
               {info.map((it) => {
@@ -2315,7 +2292,7 @@ export default function App({ page: initialPage = 'home' }) {
             img={pageAboutImg}
             imgAlt="A team working through a problem at a whiteboard"
             imgPos="50% 40%"
-            eyebrow="About"
+           
             title="We turn complexity into"
             glow="stable systems."
             intro="We design, build and operate the intelligent systems that restore order wherever complexity slows an organization down."
@@ -2334,7 +2311,7 @@ export default function App({ page: initialPage = 'home' }) {
             img={pageWhatImg}
             imgAlt="Rows of servers in a data centre"
             imgPos="50% 50%"
-            eyebrow="What we do"
+           
             title="Intelligent systems,"
             glow="engineered end to end."
             intro="From a single automated workflow to an operating platform for the whole organization. We design it, build it and keep it running."
@@ -2353,7 +2330,7 @@ export default function App({ page: initialPage = 'home' }) {
             img={pageIndustriesImg}
             imgAlt="A container port with cranes at dusk"
             imgPos="40% 55%"
-            eyebrow="Industries"
+           
             title="Defined by complexity,"
             glow="not by industry."
             intro="We don't define ourselves by industries. We define ourselves by the complexity of the challenge. Wherever it falls on that spectrum, Datatrop can engage."
@@ -2370,7 +2347,7 @@ export default function App({ page: initialPage = 'home' }) {
             img={pageNewsImg}
             imgAlt="An audience watching a talk in a lit auditorium"
             imgPos="50% 50%"
-            eyebrow="News & Events"
+           
             title="What we've been"
             glow="up to."
             intro="Events, talks, launches and milestones from the Datatrop team."

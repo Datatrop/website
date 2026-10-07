@@ -97,10 +97,6 @@ export default function PolicyPage({ which }) {
       </header>
 
       <main className="max-w-3xl mx-auto px-5 sm:px-8 py-16">
-        <span className="inline-flex items-center gap-2 font-mono text-white/55 text-[11px] uppercase tracking-[0.22em] mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-rose" />
-          Legal
-        </span>
         <h1 className="font-display text-3xl sm:text-5xl font-medium tracking-[-0.03em] mb-10">{title}</h1>
         <div>{renderBody(body)}</div>
       </main>
