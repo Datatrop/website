@@ -888,17 +888,9 @@ function WhatWeBuild({ serviceLines }) {
   return (
     <section id="capabilities" className="glow-section alt scroll-mt-20 py-28 sm:py-36 overflow-hidden">
       <div className={WRAP} ref={ref}>
-        <div className={`flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 ${reveal(inView)}`}>
-          <div className="max-w-3xl">
-            <h2 className="font-display text-[34px] sm:text-5xl lg:text-[56px] font-medium text-white tracking-[-0.03em] leading-[1.04]">What we build.</h2>
-            <p className="mt-6 text-white/60 text-base sm:text-lg font-light leading-relaxed max-w-2xl">Each system is engineered around how your organization actually operates.</p>
-          </div>
-          {n > 1 && (
-            <div className="flex gap-3 flex-shrink-0">
-              <button type="button" onClick={() => { setPaused(true); go(-1) }} aria-label="Previous capability" className={arrow}><Arrow className="w-5 h-5 rotate-180" /></button>
-              <button type="button" onClick={() => { setPaused(true); go(1) }} aria-label="Next capability" className={arrow}><Arrow className="w-5 h-5" /></button>
-            </div>
-          )}
+        <div className={`max-w-3xl mb-10 ${reveal(inView)}`}>
+          <h2 className="font-display text-[34px] sm:text-5xl lg:text-[56px] font-medium text-white tracking-[-0.03em] leading-[1.04]">What we build.</h2>
+          <p className="mt-6 text-white/60 text-base sm:text-lg font-light leading-relaxed max-w-2xl">Each system is engineered around how your organization actually operates.</p>
         </div>
 
         <div
@@ -918,6 +910,7 @@ function WhatWeBuild({ serviceLines }) {
           aria-roledescription="carousel"
           aria-label="Capabilities"
         >
+          <div className="relative">
           <div className="grid [perspective:1800px] py-6" style={{ gridTemplateAreas: '"stack"', gridTemplateColumns: 'minmax(0, 1fr)' }}>
             {ring.map((sl, i) => {
               const d = offsetOf(i)
@@ -960,10 +953,20 @@ function WhatWeBuild({ serviceLines }) {
               )
             })}
           </div>
-
-          {/* Dots */}
+          {/* Arrows either side of the cards on larger screens */}
           {n > 1 && (
-            <div className="mt-6 flex justify-center gap-2">
+            <>
+              <button type="button" onClick={() => { setPaused(true); go(-1) }} aria-label="Previous capability" className={`${arrow} hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-10`}><Arrow className="w-5 h-5 rotate-180" /></button>
+              <button type="button" onClick={() => { setPaused(true); go(1) }} aria-label="Next capability" className={`${arrow} hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-10`}><Arrow className="w-5 h-5" /></button>
+            </>
+          )}
+          </div>
+
+          {/* Dots, with the arrows beside them on phones and tablets */}
+          {n > 1 && (
+            <div className="mt-6 flex items-center justify-center gap-6">
+              <button type="button" onClick={() => { setPaused(true); go(-1) }} aria-label="Previous capability" className={`${arrow} lg:hidden`}><Arrow className="w-5 h-5 rotate-180" /></button>
+              <div className="flex gap-2">
               {serviceLines.map((sl, i) => (
                 <button
                   key={sl.id}
@@ -973,6 +976,8 @@ function WhatWeBuild({ serviceLines }) {
                   className={`h-1.5 rounded-full transition-all duration-500 ${active % n === i ? 'w-8 bg-rose' : 'w-1.5 bg-white/25 hover:bg-white/50'}`}
                 />
               ))}
+              </div>
+              <button type="button" onClick={() => { setPaused(true); go(1) }} aria-label="Next capability" className={`${arrow} lg:hidden`}><Arrow className="w-5 h-5" /></button>
             </div>
           )}
         </div>
