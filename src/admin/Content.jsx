@@ -16,6 +16,7 @@ const DEFAULTS = {
   brand_color: '#6B1E72',
   accent_color: '#E0457B',
   google_reviews_url: '',
+  booking_url: '',
 }
 
 const KEYS = Object.keys(DEFAULTS)
@@ -150,6 +151,11 @@ export default function Content() {
             <label className={lbl}>Google Reviews URL</label>
             <input type="url" value={form.google_reviews_url} onChange={set('google_reviews_url')} placeholder="https://g.page/r/…/review" className={inp} />
             <p className="text-slate-500 dark:text-gray-700 text-xs mt-1.5">Adds a "Read all reviews on Google" button under the client feedback section</p>
+          </div>
+          <div>
+            <label className={lbl}>Booking page URL</label>
+            <input type="url" value={form.booking_url} onChange={set('booking_url')} placeholder="https://outlook.office.com/book/…" className={inp} />
+            <p className="text-slate-500 dark:text-gray-700 text-xs mt-1.5">Your Microsoft Bookings page for sales@datatrop.in. When set, the Contact page shows it for booking a call (no Outlook connection needed). Leave empty to use the built-in scheduler.</p>
           </div>
         </div>
 

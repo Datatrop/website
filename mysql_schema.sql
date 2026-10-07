@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS site_content (
   brand_color    VARCHAR(16),
   accent_color   VARCHAR(16),
   google_reviews_url VARCHAR(512),
+  booking_url    VARCHAR(512),
   privacy_policy LONGTEXT,
   terms          LONGTEXT,
   updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -55,6 +56,8 @@ CREATE TABLE IF NOT EXISTS testimonials (
 -- Upgrade path for tables created before these columns existed
 ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS source VARCHAR(32) NULL DEFAULT 'Google';
 ALTER TABLE site_content ADD COLUMN IF NOT EXISTS google_reviews_url VARCHAR(512) NULL;
+-- Microsoft Bookings (or similar) page shown on /contact instead of the built-in scheduler
+ALTER TABLE site_content ADD COLUMN IF NOT EXISTS booking_url VARCHAR(512) NULL;
 
 -- ── News & events (the /news page) ──────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS posts (

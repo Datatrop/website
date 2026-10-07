@@ -79,6 +79,25 @@ function Arrow({ className = 'w-4 h-4' }) {
 }
 
 // ── Booking widget — real availability from Outlook, books onto the calendar ──
+// A hosted booking page (Microsoft Bookings for sales@datatrop.in, set in
+// Admin → Site Settings), shown in place of the built-in scheduler. It reads
+// and writes that mailbox's calendar itself, so no Azure app is needed.
+function BookingPage({ url }) {
+  return (
+    <div className="flex flex-col">
+      <iframe
+        src={url}
+        title="Book a strategy call"
+        loading="lazy"
+        className="w-full h-[760px] border-0 bg-white"
+      />
+      <a href={url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 py-3.5 text-sm text-white/70 hover:text-white border-t border-white/[0.07]">
+        Open the booking page in a new tab <Arrow className="w-3.5 h-3.5" />
+      </a>
+    </div>
+  )
+}
+
 function BookingWidget() {
   const [days, setDays] = useState([])
   const [date, setDate] = useState('')
@@ -2122,6 +2141,7 @@ function Contact({ settings }) {
   }
 
   const email = settings.contact_email || 'sales@datatrop.in'
+  const bookingUrl = /^https:\/\//i.test(settings.booking_url || '') ? settings.booking_url : ''
   const phone = settings.contact_phone || '+91 79029 17795'
   const linkedin = settings.linkedin_url || DEFAULT_LINKEDIN
   const location = settings.location || 'Kerala, India'
@@ -2144,7 +2164,7 @@ function Contact({ settings }) {
             <p className="text-white/55 font-light leading-relaxed">30 minutes with an engineer. Times are shown in IST and the invite lands straight in your calendar.</p>
           </div>
           <div className="lg:col-span-8 card overflow-hidden">
-            <BookingWidget />
+            {bookingUrl ? <BookingPage url={bookingUrl} /> : <BookingWidget />}
           </div>
         </div>
 

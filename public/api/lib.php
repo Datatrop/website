@@ -123,7 +123,7 @@ function resources(): array
             'columns' => [
                 'company_name', 'tagline', 'hero_headline', 'hero_subtext', 'about_bio',
                 'contact_email', 'contact_phone', 'linkedin_url', 'location',
-                'brand_color', 'accent_color', 'google_reviews_url', 'privacy_policy', 'terms',
+                'brand_color', 'accent_color', 'google_reviews_url', 'booking_url', 'privacy_policy', 'terms',
             ],
             'json'    => [],
             'bool'    => [],
