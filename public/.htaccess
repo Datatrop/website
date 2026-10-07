@@ -18,13 +18,10 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.html [L]
 
-# Caching: pages must always be re-checked so visitors get a new release straight
-# away; the hashed files under /assets never change, so they can be kept a year.
+# Pages must always be re-checked, so visitors get a new release straight away
+# instead of a copy their browser kept. (Hashed /assets files are unaffected.)
 <IfModule mod_headers.c>
   <FilesMatch "\.html$">
     Header set Cache-Control "no-cache, must-revalidate"
   </FilesMatch>
-  <If "%{REQUEST_URI} =~ m#^/assets/#">
-    Header set Cache-Control "public, max-age=31536000, immutable"
-  </If>
 </IfModule>
