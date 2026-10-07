@@ -268,6 +268,9 @@ function SectionHead({ eyebrow, title, intro, inView, center = false }) {
 
 const WRAP = 'max-w-[1240px] mx-auto px-5 sm:px-8 lg:px-10'
 
+// Used until Admin → Site Settings provides one (and in the static preview)
+const DEFAULT_LINKEDIN = 'https://www.linkedin.com/company/datatrop-ai'
+
 // ── Logo (vector, see src/Logo.jsx) ───────────────────────────────────────────
 function LogoMark({ footer = false }) {
   return <Logo className="block w-auto text-white" style={{ height: footer ? '32px' : '28px' }} />
@@ -2066,6 +2069,13 @@ function ContactHero({ settings }) {
 const INDUSTRY_OPTIONS = ['Manufacturing', 'Distribution & Trading', 'Healthcare', 'Financial Services', 'Retail', 'Automotive', 'Logistics', 'Other']
 const SIZE_OPTIONS = ['1–50', '50–200', '200–1,000', '1,000+']
 
+const CONTACT_ICONS = {
+  mail: <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>,
+  phone: <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.95.68l1.5 4.49a1 1 0 01-.5 1.21l-2.26 1.13a11.04 11.04 0 005.52 5.52l1.13-2.26a1 1 0 011.21-.5l4.49 1.5a1 1 0 01.68.95V19a2 2 0 01-2 2h-1C9.72 21 3 14.28 3 6V5z" /></svg>,
+  linkedin: <svg className="w-[17px] h-[17px]" fill="currentColor" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45z" /></svg>,
+  pin: <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.66 16.66L13.41 20.9a2 2 0 01-2.83 0l-4.24-4.24a8 8 0 1111.32 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+}
+
 function Contact({ settings }) {
   const [ref, inView] = useInView()
   const emptyForm = { name: '', company: '', email: '', industry: '', size: '', challenge: '' }
@@ -2100,14 +2110,14 @@ function Contact({ settings }) {
 
   const email = settings.contact_email || 'sales@datatrop.in'
   const phone = settings.contact_phone || '+91 79029 17795'
-  const linkedin = settings.linkedin_url || ''
+  const linkedin = settings.linkedin_url || DEFAULT_LINKEDIN
   const location = settings.location || 'Kerala, India'
 
   const info = [
-    { label: 'Email', value: email, href: `mailto:${email}` },
-    { label: 'Phone', value: phone, href: `tel:${phone.replace(/[^0-9+]/g, '')}` },
-    { label: 'LinkedIn', value: (linkedin || 'linkedin.com/company/datatrop').replace(/^https?:\/\//, ''), href: linkedin || '#' },
-    { label: 'Location', value: location, href: null },
+    { label: 'Email', value: email, href: `mailto:${email}`, icon: CONTACT_ICONS.mail },
+    { label: 'Phone', value: phone, href: `tel:${phone.replace(/[^0-9+]/g, '')}`, icon: CONTACT_ICONS.phone },
+    { label: 'LinkedIn', value: linkedin.replace(/^https?:\/\/(www\.)?/, ''), href: linkedin, icon: CONTACT_ICONS.linkedin, external: true },
+    { label: 'Location', value: location, href: null, icon: CONTACT_ICONS.pin },
   ]
 
   return (
@@ -2130,15 +2140,24 @@ function Contact({ settings }) {
           <div className={`lg:col-span-4 ${reveal(inView)}`}>
             <Eyebrow className="mb-5">Or send a message</Eyebrow>
             <h2 className="font-display text-3xl sm:text-4xl font-medium text-white tracking-[-0.03em] leading-[1.08] mb-10">Tell us what's getting in the way.</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-1 gap-y-7 gap-x-4">
-              {info.map((it) => (
-                <div key={it.label}>
-                  <div className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] mb-1.5">{it.label}</div>
-                  {it.href
-                    ? <a href={it.href} className="text-white text-sm hover:text-rose-soft transition-colors break-words">{it.value}</a>
-                    : <div className="text-white text-sm break-words">{it.value}</div>}
-                </div>
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-y-6 gap-x-4">
+              {info.map((it) => {
+                const ext = it.external ? { target: '_blank', rel: 'noopener noreferrer' } : {}
+                const tile = 'flex-shrink-0 w-11 h-11 rounded-full border border-[rgb(var(--accent)_/_0.35)] bg-[rgb(var(--maroon)_/_0.35)] flex items-center justify-center text-white transition-colors'
+                return (
+                  <div key={it.label} className="flex items-center gap-3.5 min-w-0">
+                    {it.href
+                      ? <a href={it.href} {...ext} aria-label={it.label} className={`${tile} hover:border-rose hover:bg-[rgb(var(--accent)_/_0.25)]`}>{it.icon}</a>
+                      : <span className={tile}>{it.icon}</span>}
+                    <div className="min-w-0">
+                      <div className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] mb-1">{it.label}</div>
+                      {it.href
+                        ? <a href={it.href} {...ext} className="text-white text-sm hover:text-rose-soft transition-colors break-words">{it.value}</a>
+                        : <div className="text-white text-sm break-words">{it.value}</div>}
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
 
@@ -2202,7 +2221,7 @@ function Footer({ settings }) {
   const tagline = settings.tagline || 'Engineering Intelligence. Solving Complexity.'
   const location = settings.location || 'Kerala, India'
   const email = settings.contact_email || 'sales@datatrop.in'
-  const linkedin = settings.linkedin_url || ''
+  const linkedin = settings.linkedin_url || DEFAULT_LINKEDIN
 
   return (
     <footer className="bg-[rgb(var(--page))] relative overflow-hidden border-t border-white/[0.07] pt-20 pb-10">
@@ -2471,7 +2490,7 @@ export default function App({ page: initialPage = 'home' }) {
             glow="up to."
             intro="Events, talks, launches and milestones from the Datatrop team."
           />
-          <NewsList posts={posts} linkedin={settings.linkedin_url} />
+          <NewsList posts={posts} linkedin={settings.linkedin_url || DEFAULT_LINKEDIN} />
           <FinalCta />
         </>
       )}
