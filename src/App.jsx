@@ -718,7 +718,6 @@ function Philosophy() {
           {PHILOSOPHY.map((st, i) => (
             <li key={st.n} className={`relative flex flex-col ${reveal(inView)}`} style={{ transitionDelay: `${150 + i * 150}ms` }}>
               <div className="flex items-center gap-4 mb-5">
-                <span className="w-11 h-11 rounded-full border border-[rgb(var(--accent)_/_0.6)] flex items-center justify-center font-mono text-[12px] text-white">{st.n}</span>
                 <h3 className="font-mono text-[15px] uppercase tracking-[0.24em] text-rose-soft">{st.name}</h3>
               </div>
               <p className="text-white/60 font-light leading-relaxed md:min-h-[78px]">{st.body}</p>
