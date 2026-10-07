@@ -2045,9 +2045,7 @@ const CONTACT_STEPS = [
   { title: 'Get a clear next step', desc: 'Whether that is a scoped engagement, a quick fix or an honest “not us”.' },
 ]
 
-function ContactHero({ settings }) {
-  const email = settings.contact_email || 'sales@datatrop.in'
-  const phone = settings.contact_phone || '+91 79029 17795'
+function ContactHero() {
   return (
     <>
       <PageHero
@@ -2071,10 +2069,6 @@ function ContactHero({ settings }) {
                 <p className="text-white/55 text-sm font-light leading-relaxed">{st.desc}</p>
               </div>
             ))}
-          </div>
-          <div className="mt-8 flex flex-wrap gap-x-10 gap-y-3 text-sm">
-            <span className="text-white/45">Prefer email? <a href={`mailto:${email}`} className="text-white hover:text-rose-soft select-all">{email}</a></span>
-            <span className="text-white/45">Or call <a href={`tel:${phone.replace(/[^0-9+]/g, '')}`} className="text-white hover:text-rose-soft">{phone}</a></span>
           </div>
         </div>
       </section>
@@ -2527,7 +2521,7 @@ export default function App({ page: initialPage = 'home' }) {
       )}
       {page === 'contact' && (
         <>
-          <ContactHero settings={settings} />
+          <ContactHero />
           <Contact settings={settings} />
         </>
       )}
