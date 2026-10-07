@@ -2497,7 +2497,6 @@ export default function App({ page: initialPage = 'home' }) {
             img={pageWhatImg}
             imgAlt="Rows of servers in a data centre"
             imgPos="50% 50%"
-            labels={['AI agents', 'ERP', 'Automation', 'Data & BI', 'Platforms', 'Integrations']}
             eyebrow="What we do"
             title="Intelligent systems,"
             glow="engineered end to end."
