@@ -18,6 +18,9 @@ import caseLogisticsImg from './assets/home/case-logistics.jpg'
 import caseVoiceImg from './assets/home/case-voice.jpg'
 import ctaRoadImg from './assets/home/cta-road.jpg'
 import pageAboutImg from './assets/pages/about.jpg'
+import engageBuildImg from './assets/engage/build.jpg'
+import engageSolveImg from './assets/engage/solve.jpg'
+import engageInnovateImg from './assets/engage/innovate.jpg'
 import pageWhatImg from './assets/pages/what-we-do.jpg'
 import pageIndustriesImg from './assets/pages/industries.jpg'
 import pageNewsImg from './assets/pages/news.jpg'
@@ -818,97 +821,29 @@ function HowWeWork() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// FIG 0.1–0.3 — how we engage, organized by problem type not technology
+// HOW WE ENGAGE — organized by problem type, not technology
 // ═══════════════════════════════════════════════════════════════════════════════
-function FigBuild() {
-  return (
-    <svg viewBox="0 0 320 200" className="w-full h-full" fill="none" aria-hidden="true">
-      <defs>
-        <linearGradient id="fb-g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#E0457B" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#3A0B20" stopOpacity="0.3" />
-        </linearGradient>
-      </defs>
-      {[0, 1, 2].map((i) => (
-        <g key={i} className="fig-rise" style={{ animationDelay: `${i * 0.35}s` }}>
-          <path
-            d={`M160 ${48 + i * 38} L250 ${78 + i * 38} L160 ${108 + i * 38} L70 ${78 + i * 38} Z`}
-            fill={i === 0 ? 'url(#fb-g)' : 'rgba(255,255,255,0.03)'}
-            stroke={i === 0 ? '#F08DB0' : 'rgba(255,255,255,0.22)'}
-            strokeWidth="1"
-          />
-        </g>
-      ))}
-      <line x1="70" y1="78" x2="70" y2="154" stroke="rgba(255,255,255,0.18)" className="fig-dash" />
-      <line x1="250" y1="78" x2="250" y2="154" stroke="rgba(255,255,255,0.18)" className="fig-dash" />
-      <circle cx="160" cy="78" r="3" fill="#fff" className="fig-pulse" />
-    </svg>
-  )
-}
-
-function FigSolve() {
-  const nodes = [[52, 46], [96, 150], [36, 112], [268, 40], [282, 132], [226, 168], [140, 30]]
-  return (
-    <svg viewBox="0 0 320 200" className="w-full h-full" fill="none" aria-hidden="true">
-      {nodes.map(([x, y], i) => (
-        <line key={i} x1={x} y1={y} x2="160" y2="100" stroke="rgba(240,141,176,0.45)" strokeWidth="1" className="fig-dash" style={{ animationDelay: `${i * 0.2}s` }} />
-      ))}
-      {nodes.map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r="3.5" fill="rgba(255,255,255,0.65)" />
-      ))}
-      <circle cx="160" cy="100" r="26" fill="rgba(224,69,123,0.12)" stroke="rgba(224,69,123,0.5)" className="fig-pulse" />
-      <circle cx="160" cy="100" r="7" fill="#F08DB0" />
-    </svg>
-  )
-}
-
-function FigInnovate() {
-  return (
-    <svg viewBox="0 0 320 200" className="w-full h-full" fill="none" aria-hidden="true">
-      <defs>
-        <radialGradient id="fi-g">
-          <stop offset="0" stopColor="#F08DB0" />
-          <stop offset="0.5" stopColor="#8A2A91" stopOpacity="0.6" />
-          <stop offset="1" stopColor="#8A2A91" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <circle cx="160" cy="100" r="48" fill="url(#fi-g)" className="fig-pulse" />
-      <g className="fig-spin">
-        <ellipse cx="160" cy="100" rx="128" ry="42" stroke="rgba(255,255,255,0.18)" />
-        <circle cx="288" cy="100" r="4" fill="#fff" />
-      </g>
-      <g className="fig-spin" style={{ animationDuration: '30s', animationDirection: 'reverse' }}>
-        <ellipse cx="160" cy="100" rx="88" ry="76" stroke="rgba(240,141,176,0.35)" strokeDasharray="2 6" />
-        <circle cx="160" cy="24" r="3" fill="#F08DB0" />
-      </g>
-    </svg>
-  )
-}
-
 const PILLARS = [
   {
-    fig: 'FIG 0.1',
     tag: 'Build',
     cta: 'Start a build engagement',
-    Figure: FigBuild,
+    img: engageBuildImg,
     when: 'When you know what you need.',
     title: 'Systems for businesses',
     desc: 'You have a clear vision but lack the engineering capability. We become your engineering partner: AI operating systems, automation, enterprise platforms, integration and intelligence systems. We’re not selling automation. We’re selling capability.',
   },
   {
-    fig: 'FIG 0.2',
     tag: 'Solve',
     cta: 'Bring us a problem',
-    Figure: FigSolve,
+    img: engageSolveImg,
     when: 'When something is wrong, but not the answer.',
     title: 'Systems for unsolved problems',
     desc: 'You’re losing money, time or efficiency, but the solution isn’t obvious yet. We investigate, design, build and deploy. Not an implementation partner. A problem-solving organization.',
   },
   {
-    fig: 'FIG 0.3',
     tag: 'Innovate',
     cta: 'Partner on a product',
-    Figure: FigInnovate,
+    img: engageInnovateImg,
     when: 'When the world needs a new solution.',
     title: 'Products for the world',
     desc: 'We identify global problems ourselves, across healthcare, education, environment, transportation, climate, government, manufacturing and agriculture, and build products around them.',
@@ -922,16 +857,16 @@ function ThreePillars() {
       <div className={WRAP} ref={ref}>
         <SectionHead eyebrow="How we engage" title="Organized by problem, not by technology." inView={inView} />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          {PILLARS.map(({ fig, tag, cta, Figure, when, title, desc }, i) => (
+          {PILLARS.map(({ tag, cta, img, when, title, desc }, i) => (
             <article
               key={tag}
-              className={`card card-hover overflow-hidden flex flex-col ${reveal(inView)}`}
+              className={`group card card-hover overflow-hidden flex flex-col ${reveal(inView)}`}
               style={{ transitionDelay: `${i * 110}ms` }}
             >
-              <div className="relative h-52 border-b border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_100%,rgb(var(--maroon)/0.8),transparent_70%)]">
-                <span className="absolute top-4 left-5 font-mono text-[10px] tracking-[0.2em] text-white/40">{fig}</span>
-                <span className="absolute top-4 right-5 font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft">{tag}</span>
-                <div className="absolute inset-0 px-6 pt-8 pb-2"><Figure /></div>
+              <div className="relative h-52 overflow-hidden border-b border-white/[0.07]">
+                <img src={img} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.55),transparent_45%,rgb(7_3_5/0.35))]" />
+                <span className="absolute top-4 right-5 font-mono text-[10px] uppercase tracking-[0.2em] text-white px-2.5 py-1 rounded-full bg-black/45 backdrop-blur">{tag}</span>
               </div>
               <div className="p-7 flex flex-col flex-1">
                 <p className="text-white/45 text-[13px] font-light italic mb-3">{when}</p>
@@ -1158,10 +1093,9 @@ function WhatWeBuild({ serviceLines }) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// THE COMPLEXITY SCALE — the brand-board gradient bar, five levels
+// THE COMPLEXITY SCALE — the brand-board gradient bar, four levels
 // ═══════════════════════════════════════════════════════════════════════════════
 const APPROACH = [
-  { step: 'Automation', desc: 'Eliminate repetitive tasks.' },
   { step: 'Integration', desc: 'Connect disconnected systems.' },
   { step: 'Intelligence', desc: 'Enable AI-driven decisions.' },
   { step: 'Business Systems', desc: 'Reimagine how organizations operate.' },
@@ -1176,7 +1110,7 @@ function Approach() {
         <SectionHead
           eyebrow="The complexity scale"
           title="Wherever your problem falls, we can engage."
-          intro="From eliminating a repetitive task to inventing a product that doesn't exist yet, this is the range we operate across."
+          intro="From connecting the systems you already have to inventing a product that doesn't exist yet, this is the range we operate across."
           inView={inView}
         />
 
@@ -1186,7 +1120,7 @@ function Approach() {
             className={`h-20 rounded-2xl border border-white/10 origin-left transition-transform duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${inView ? 'scale-x-100' : 'scale-x-0'}`}
             style={{ background: 'linear-gradient(90deg, #8A2A91 0%, #6B1E72 18%, #54133F 40%, #3A0B20 62%, #1B050D 82%, #070305 100%)' }}
           />
-          <div className="grid grid-cols-5">
+          <div className="grid grid-cols-4">
             {APPROACH.map((a, i) => (
               <div
                 key={a.step}
