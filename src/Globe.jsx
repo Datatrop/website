@@ -1,8 +1,7 @@
 // Hero globe: the Earth at night (NASA Black Marble 2016, public domain),
-// slowly turning, with the everyday problems we solve pinned to real places
-// and two orbit rings circling the planet. The globe is drawn in a WebGL
-// fragment shader (ray-cast sphere + rim light); rings, markers and leader
-// lines go on 2D canvases behind and in front of it, and the labels are HTML
+// slowly turning, with the everyday problems we solve pinned to real places.
+// The globe is drawn in a WebGL fragment shader (ray-cast sphere + rim
+// light); markers and leader lines go on a 2D canvas in front of it, and the labels are HTML
 // so they stay crisp. Animates only while on screen; reduced-motion visitors
 // get a still frame, and browsers without WebGL get the static photo.
 import { useEffect, useRef, useState } from 'react'
@@ -17,12 +16,6 @@ const PLACES = [
   ['Supply chains', -23.5, -46.6],
   ['Data', 40.7, -74.0],
   ['Technology', 35.7, 139.7],
-]
-
-// Ring normals (world space) and radii in globe radii
-const RINGS = [
-  { n: [0.34, 0.94, 0], k: 1.2, speed: 0.11 },
-  { n: [-0.55, 0.78, 0.3], k: 1.38, speed: -0.07 },
 ]
 
 const TILT = 0.38 // radians, shows a little more of the northern hemisphere
@@ -79,17 +72,6 @@ function fromLatLon(lat, lon, spin) {
   const f = (lat * Math.PI) / 180, l = (lon * Math.PI) / 180 + spin
   return [Math.cos(f) * Math.sin(l), Math.sin(f), Math.cos(f) * Math.cos(l)]
 }
-function ringBasis(n) {
-  const len = Math.hypot(...n)
-  const nn = n.map((v) => v / len)
-  const a = Math.abs(nn[0]) < 0.9 ? [1, 0, 0] : [0, 0, 1]
-  const cross = (u, v) => [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]]
-  const e1 = cross(nn, a), l1 = Math.hypot(...e1)
-  const u = e1.map((v) => v / l1)
-  return [u, cross(nn, u)]
-}
-const BASES = RINGS.map((r) => ringBasis(r.n))
-
 /**
  * cx, cy: globe centre as a fraction of the box; size: radius as a fraction
  * of the box's smaller side (capped by `maxWidth` × box width).
@@ -97,7 +79,6 @@ const BASES = RINGS.map((r) => ringBasis(r.n))
 export default function Globe({ cx = 0.5, cy = 0.5, size = 0.36, maxWidth = 1, className = '' }) {
   const box = useRef(null)
   const glCanvas = useRef(null)
-  const back = useRef(null)
   const front = useRef(null)
   const labels = useRef([])
   const [fallback, setFallback] = useState(false)
@@ -142,13 +123,13 @@ export default function Globe({ cx = 0.5, cy = 0.5, size = 0.36, maxWidth = 1, c
     const t0 = performance.now()
     const time = () => (still ? 0 : (performance.now() - t0) / 1000)
     let W = 0, H = 0, dpr = 1, raf = 0, visible = false
-    const bctx = back.current.getContext('2d'), fctx = front.current.getContext('2d')
+    const fctx = front.current.getContext('2d')
 
     const resize = () => {
       const r = el.getBoundingClientRect()
       dpr = Math.min(window.devicePixelRatio || 1, 2)
       W = r.width; H = r.height
-      for (const c of [cv, back.current, front.current]) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr) }
+      for (const c of [cv, front.current]) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr) }
       gl.viewport(0, 0, cv.width, cv.height)
       draw(time())
     }
@@ -165,38 +146,7 @@ export default function Globe({ cx = 0.5, cy = 0.5, size = 0.36, maxWidth = 1, c
         gl.uniform1f(uSpin, spin)
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
       }
-      // rings: parts behind the globe on the back canvas, in front on the front one
-      for (const c of [bctx, fctx]) { c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H) }
-      RINGS.forEach((ring, ri) => {
-        const [e1, e2] = BASES[ri]
-        const N = 160
-        const pts = []
-        for (let i = 0; i <= N; i++) {
-          const u = (i / N) * Math.PI * 2
-          const w = [0, 1, 2].map((k) => ring.k * (Math.cos(u) * e1[k] + Math.sin(u) * e2[k]))
-          const [sx, sy, sz] = toScreen(w)
-          pts.push([X + sx * R, Y - sy * R, sz])
-        }
-        for (let i = 0; i < N; i++) {
-          const a = pts[i], b = pts[i + 1]
-          const ctx = (a[2] + b[2]) / 2 < 0 ? bctx : fctx
-          ctx.strokeStyle = `rgba(240,141,176,${ctx === bctx ? 0.22 : 0.5})`
-          ctx.lineWidth = 1
-          ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke()
-        }
-        // light travelling along the ring
-        for (let j = 0; j < 3; j++) {
-          const u = t * ring.speed * Math.PI * 2 + (j * Math.PI * 2) / 3 + ri
-          const w = [0, 1, 2].map((k) => ring.k * (Math.cos(u) * e1[k] + Math.sin(u) * e2[k]))
-          const [sx, sy, sz] = toScreen(w)
-          const ctx = sz < 0 ? bctx : fctx
-          const x = X + sx * R, y = Y - sy * R
-          const g = ctx.createRadialGradient(x, y, 0, x, y, 10)
-          g.addColorStop(0, `rgba(255,220,235,${sz < 0 ? 0.45 : 0.95})`)
-          g.addColorStop(1, 'rgba(224,69,123,0)')
-          ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 10, 0, 7); ctx.fill()
-        }
-      })
+      fctx.setTransform(dpr, 0, 0, dpr, 0, 0); fctx.clearRect(0, 0, W, H)
       // pinned problems: only on the side facing us, fading at the edge
       PLACES.forEach(([, lat, lon, key], i) => {
         const [sx, sy, sz] = toScreen(fromLatLon(lat, lon, spin))
@@ -243,7 +193,6 @@ export default function Globe({ cx = 0.5, cy = 0.5, size = 0.36, maxWidth = 1, c
   }
   return (
     <div ref={box} className={`absolute inset-0 pointer-events-none ${className}`} aria-hidden="true">
-      <canvas ref={back} className="absolute inset-0 w-full h-full" />
       <canvas ref={glCanvas} className="absolute inset-0 w-full h-full" />
       <canvas ref={front} className="absolute inset-0 w-full h-full" />
       {PLACES.map(([text, , , key], i) => (
