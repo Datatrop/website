@@ -65,8 +65,8 @@ function compile(gl, type, src) {
 }
 
 // World point → screen offset (in globe radii, y up) and depth toward the viewer
-function toScreen([x, y, z]) {
-  return [x, y * Math.cos(TILT) - z * Math.sin(TILT), y * Math.sin(TILT) + z * Math.cos(TILT)]
+function toScreen([x, y, z], tilt) {
+  return [x, y * Math.cos(tilt) - z * Math.sin(tilt), y * Math.sin(tilt) + z * Math.cos(tilt)]
 }
 function fromLatLon(lat, lon, spin) {
   const f = (lat * Math.PI) / 180, l = (lon * Math.PI) / 180 + spin
@@ -101,7 +101,6 @@ export default function Globe({ cx = 0.5, cy = 0.5, size = 0.36, maxWidth = 1, c
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
     const U = (n) => gl.getUniformLocation(prog, n)
     const uCenter = U('center'), uRadius = U('radius'), uSpin = U('spin'), uTilt = U('tilt')
-    gl.uniform1f(uTilt, TILT)
 
     let ready = false
     const tex = gl.createTexture()
@@ -123,6 +122,52 @@ export default function Globe({ cx = 0.5, cy = 0.5, size = 0.36, maxWidth = 1, c
     const t0 = performance.now()
     const time = () => (still ? 0 : (performance.now() - t0) / 1000)
     let W = 0, H = 0, dpr = 1, raf = 0, visible = false
+
+    // Rotation state: the globe turns on its own and can be dragged to spin
+    // (left/right) or tip (up/down); a flick keeps it spinning for a moment.
+    let spin = START, tilt = TILT, vel = 0, last = performance.now()
+    let drag = null
+    const geom = () => ({ R: Math.min(Math.min(W, H) * size, W * maxWidth), X: W * cx, Y: H * cy })
+    const onGlobe = (e) => {
+      const r = el.getBoundingClientRect(), { R, X, Y } = geom()
+      return Math.hypot(e.clientX - r.left - X, e.clientY - r.top - Y) <= R * 1.08
+    }
+    const step = () => {
+      const now = performance.now(), dt = Math.min(0.05, (now - last) / 1000)
+      last = now
+      if (drag) return
+      spin += (still ? 0 : SPIN * dt) + vel * dt
+      vel *= Math.pow(0.04, dt) // a flick fades out within about a second
+      tilt += (TILT - tilt) * Math.min(1, dt * 1.5) // ease back to the resting tilt
+    }
+    const onDown = (e) => {
+      if (!onGlobe(e)) return
+      e.preventDefault() // no text selection while dragging
+      drag = { x: e.clientX, y: e.clientY, spin, tilt, lastX: e.clientX, lastT: performance.now() }
+      vel = 0
+      el.setPointerCapture(e.pointerId)
+      el.style.cursor = 'grabbing'
+      if (!raf) raf = requestAnimationFrame(loop)
+    }
+    const onMove = (e) => {
+      if (!drag) { el.style.cursor = onGlobe(e) ? 'grab' : ''; return }
+      const { R } = geom()
+      spin = drag.spin + (e.clientX - drag.x) / R
+      tilt = Math.max(-0.9, Math.min(1.1, drag.tilt + (e.clientY - drag.y) / R))
+      const now = performance.now()
+      if (now > drag.lastT) vel = (e.clientX - drag.lastX) / R / ((now - drag.lastT) / 1000)
+      drag.lastX = e.clientX; drag.lastT = now
+    }
+    const onUp = () => {
+      if (!drag) return
+      drag = null
+      vel = Math.max(-6, Math.min(6, vel))
+      el.style.cursor = 'grab'
+    }
+    el.addEventListener('pointerdown', onDown)
+    el.addEventListener('pointermove', onMove)
+    el.addEventListener('pointerup', onUp)
+    el.addEventListener('pointercancel', onUp)
     const fctx = front.current.getContext('2d')
 
     const resize = () => {
@@ -137,19 +182,19 @@ export default function Globe({ cx = 0.5, cy = 0.5, size = 0.36, maxWidth = 1, c
     const draw = (t) => {
       const R = Math.min(Math.min(W, H) * size, W * maxWidth)
       const X = W * cx, Y = H * cy
-      const spin = START + t * SPIN
       // globe
       gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT)
       if (ready) {
         gl.uniform2f(uCenter, X * dpr, (H - Y) * dpr)
         gl.uniform1f(uRadius, R * dpr)
         gl.uniform1f(uSpin, spin)
+        gl.uniform1f(uTilt, tilt)
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
       }
       fctx.setTransform(dpr, 0, 0, dpr, 0, 0); fctx.clearRect(0, 0, W, H)
       // pinned problems: only on the side facing us, fading at the edge
       PLACES.forEach(([, lat, lon, key], i) => {
-        const [sx, sy, sz] = toScreen(fromLatLon(lat, lon, spin))
+        const [sx, sy, sz] = toScreen(fromLatLon(lat, lon, spin), tilt)
         const vis = Math.min(1, Math.max(0, (sz - 0.12) / 0.25))
         const label = labels.current[i]
         if (label) {
@@ -178,28 +223,35 @@ export default function Globe({ cx = 0.5, cy = 0.5, size = 0.36, maxWidth = 1, c
       })
     }
 
-    const loop = () => { draw(time()); raf = visible && !still ? requestAnimationFrame(loop) : 0 }
+    const loop = () => { step(); draw(time()); raf = visible && (!still || drag || Math.abs(vel) > 0.01) ? requestAnimationFrame(loop) : 0 }
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting
       if (visible && !raf) raf = requestAnimationFrame(loop)
     })
     const ro = new ResizeObserver(resize)
     ro.observe(el); io.observe(el)
-    return () => { ro.disconnect(); io.disconnect(); cancelAnimationFrame(raf) }
+    return () => {
+      ro.disconnect(); io.disconnect(); cancelAnimationFrame(raf)
+      el.removeEventListener('pointerdown', onDown)
+      el.removeEventListener('pointermove', onMove)
+      el.removeEventListener('pointerup', onUp)
+      el.removeEventListener('pointercancel', onUp)
+    }
   }, [cx, cy, size, maxWidth])
 
   if (fallback) {
     return <img src={earthPhoto} alt="" aria-hidden="true" className={`absolute inset-0 w-full h-full object-cover earth-img ${className}`} />
   }
   return (
-    <div ref={box} className={`absolute inset-0 pointer-events-none ${className}`} aria-hidden="true">
+    // pan-y: on phones a sideways drag turns the globe and an up/down swipe still scrolls
+    <div ref={box} className={`absolute inset-0 select-none [touch-action:pan-y] ${className}`} aria-hidden="true">
       <canvas ref={glCanvas} className="absolute inset-0 w-full h-full" />
       <canvas ref={front} className="absolute inset-0 w-full h-full" />
       {PLACES.map(([text, , , key], i) => (
         <span
           key={text}
           ref={(n) => { labels.current[i] = n }}
-          className={`absolute left-0 top-0 whitespace-nowrap font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.22em] opacity-0 ${key ? 'text-white' : 'text-white/75'}`}
+          className={`absolute left-0 top-0 pointer-events-none whitespace-nowrap font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.22em] opacity-0 ${key ? 'text-white' : 'text-white/75'}`}
         >
           {text}
         </span>

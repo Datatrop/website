@@ -497,8 +497,8 @@ function Hero({ headline, subtext }) {
       </div>
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_45%_60%_at_8%_20%,rgb(var(--grape-bright)/0.28),transparent_70%)]" />
 
-      <div className={`relative z-10 ${WRAP} w-full flex-1 flex items-center pt-32 sm:pt-36 pb-10 lg:pb-16`}>
-        <div className="max-w-[640px]">
+      <div className={`relative z-10 ${WRAP} w-full flex-1 flex items-center pt-32 sm:pt-36 pb-10 lg:pb-16 pointer-events-none`}>
+        <div className="max-w-[640px] pointer-events-auto">
           <Eyebrow className="mb-8 anim-fade text-white/70">Engineering impossibilities to reality</Eyebrow>
 
           <h1 className="font-display text-[44px] leading-[1.02] sm:text-7xl lg:text-[64px] xl:text-[72px] font-medium text-white tracking-[-0.045em] mb-8 anim-rise text-balance">
