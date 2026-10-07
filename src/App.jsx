@@ -2196,10 +2196,10 @@ export default function App({ page: initialPage = 'home' }) {
             title="Intelligent systems,"
             glow="engineered end to end."
             intro="From a single automated workflow to an operating platform for the whole organization. We design it, build it and keep it running."
-            links={[['Capabilities', '/what-we-do#capabilities'], ['Industries', '/what-we-do#all-industries']]}
+            links={[['Industries', '/what-we-do#all-industries'], ['Capabilities', '/what-we-do#capabilities']]}
           />
-          <WhatWeBuild serviceLines={serviceLines} />
           <Industries intro="Our systems are not tied to one sector. The pattern repeats everywhere: fragmented systems, manual work and slow decisions." />
+          <WhatWeBuild serviceLines={serviceLines} />
           {showcases.length > 0 && <Showcase items={showcases} />}
           <FinalCta />
         </>
