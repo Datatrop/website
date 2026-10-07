@@ -573,47 +573,18 @@ const PRINCIPLES = [
   'Measurable, lasting value',
 ]
 
-// The everyday shapes of complexity, pinned over a real city at night.
-// x is % across the photo; top labels hang down, bottom ones point up.
-const WHO_LABELS = [
-  { text: 'Supply chain disruptions', x: 9, top: true, len: 38 },
-  { text: 'Manual processes', x: 27, top: true, len: 30, wide: true },
-  { text: 'Data silos', x: 45, top: true, len: 44 },
-  { text: 'Regulatory complexity', x: 15, top: false, len: 32 },
-  { text: 'Unpredictable demand', x: 35, top: false, len: 40, wide: true },
-  { text: 'Disconnected systems', x: 55, top: false, len: 30 },
-]
-
-// Pointer lines with captions laid over the Who we are photo. Top labels hang down; bottom labels point up. `wide` labels
-// are hidden on phones to keep the photo readable.
-function PhotoLabels({ labels, on }) {
-  return labels.map((l, i) => (
-    <div
-      key={l.text}
-      className={`absolute ${l.wide ? 'hidden sm:flex' : 'flex'} ${l.top ? 'top-[9%]' : 'bottom-[9%]'} flex-row items-stretch gap-3 transition-opacity duration-700 ${on ? 'opacity-100' : 'opacity-0'}`}
-      style={{ left: `${l.x}%`, transitionDelay: `${300 + i * 120}ms` }}
-    >
-      <span className={`w-px bg-white/75 shadow-[0_0_4px_rgb(0_0_0/0.8)] ${l.top ? 'origin-top' : 'origin-bottom self-end'} transition-transform duration-700 ${on ? 'scale-y-100' : 'scale-y-0'}`} style={{ height: `${l.len * 4.5}px`, transitionDelay: `${450 + i * 120}ms` }}>
-      </span>
-      <span className={`font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.2em] text-white max-w-[110px] sm:max-w-[150px] leading-snug [text-shadow:0_1px_8px_rgb(0_0_0/0.9)] ${l.top ? '' : 'self-end'}`}>{l.text}</span>
-    </div>
-  ))
-}
-
 function WhoWeAre() {
   const [ref, progress] = useScrollProgress()
-  const [imgRef, inView] = useInView()
   const words = STATEMENT.split(' ')
   const lit = progress * (words.length + 3) * 1.1
   const payoff = lit > words.length + 1
 
   return (
-    <section id="statement" ref={imgRef} className="relative overflow-hidden border-y border-white/[0.06]">
+    <section id="statement" className="relative overflow-hidden border-y border-white/[0.06]">
       {/* Photo spans the left of the band and fades into the page on the right */}
       <div className="relative lg:absolute lg:inset-y-0 lg:left-0 lg:w-[72%] h-[420px] sm:h-[480px] lg:h-auto">
         <img src={whoWeAreImg} alt="A highway curving into a city skyline at night" loading="lazy" className="absolute inset-0 w-full h-full object-cover object-[45%_55%] who-img" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.45),transparent_30%,transparent_70%,rgb(7_3_5/0.55))]" />
-        <PhotoLabels labels={WHO_LABELS} on={inView} />
       </div>
 
       <div className={`relative ${WRAP} lg:min-h-[max(620px,100svh)] flex items-center py-14 lg:py-24`}>
