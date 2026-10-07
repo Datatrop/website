@@ -879,11 +879,11 @@ function ThreePillars() {
             >
               <div className="relative h-52 overflow-hidden border-b border-white/[0.07]">
                 <img src={img} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.55),transparent_45%,rgb(7_3_5/0.35))]" />
-                <span className="absolute top-4 right-5 font-mono text-[10px] uppercase tracking-[0.2em] text-white px-2.5 py-1 rounded-full bg-black/45 backdrop-blur">{tag}</span>
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,rgb(7_3_5/0.45))]" />
               </div>
               <div className="p-7 flex flex-col flex-1">
-                <p className="text-white/45 text-[13px] font-light italic mb-3">{when}</p>
+                <p className="font-display text-glow text-[34px] leading-none font-semibold tracking-[-0.03em] mb-3">{tag}</p>
+                <p className="text-white/45 text-[13px] font-light italic mb-5">{when}</p>
                 <h3 className="font-display text-white text-xl font-medium tracking-tight mb-3">{title}</h3>
                 <p className="text-white/60 text-sm font-light leading-relaxed flex-1">{desc}</p>
                 <a {...bookProps} className="group mt-7 inline-flex items-center gap-2 text-sm text-white/80 hover:text-white">
