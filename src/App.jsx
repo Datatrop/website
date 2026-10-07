@@ -554,8 +554,7 @@ const WHO_LABELS = [
   { text: 'Disconnected systems', x: 55, top: false, len: 30 },
 ]
 
-// Pointer lines with captions laid over a photo, as on Who we are and the
-// page headers. Top labels hang down; bottom labels point up. `wide` labels
+// Pointer lines with captions laid over the Who we are photo. Top labels hang down; bottom labels point up. `wide` labels
 // are hidden on phones to keep the photo readable.
 function PhotoLabels({ labels, on }) {
   return labels.map((l, i) => (
@@ -570,16 +569,6 @@ function PhotoLabels({ labels, on }) {
       <span className={`font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.2em] text-white max-w-[110px] sm:max-w-[150px] leading-snug [text-shadow:0_1px_8px_rgb(0_0_0/0.9)] ${l.top ? '' : 'self-end'}`}>{l.text}</span>
     </div>
   ))
-}
-
-// Spread up to six captions over a photo: three along the top, three along the bottom
-function spreadLabels(texts) {
-  const xs = [[7, 29, 51], [15, 37, 59]]
-  const lens = [[38, 30, 44], [32, 40, 30]]
-  return texts.map((text, i) => {
-    const top = i % 2 === 0, k = Math.floor(i / 2)
-    return { text, top, x: xs[top ? 0 : 1][k], len: lens[top ? 0 : 1][k], wide: k === 1 }
-  })
 }
 
 function WhoWeAre() {
@@ -1818,17 +1807,13 @@ function NewsList({ posts, linkedin }) {
 // Every inner page (About, What We Do, Industries, Contact) uses this header at
 // the same fixed height and padding, so the title lands in the same place on
 // each page whatever the copy length.
-function PageHero({ eyebrow, title, glow, intro, links = [], linksLabel = 'On this page', img, imgAlt = '', imgPos = '50% 50%', labels = [] }) {
-  const [ref, inView] = useInView()
+function PageHero({ eyebrow, title, glow, intro, links = [], linksLabel = 'On this page', img, imgAlt = '', imgPos = '50% 50%' }) {
   return (
-    <section ref={ref} className="page-hero relative overflow-hidden bg-[#070305] flex flex-col lg:block">
+    <section className="page-hero relative overflow-hidden bg-[#070305] flex flex-col lg:block">
       {/* Photo: left of the header on desktop (fading into the dark), on top on phones */}
       <div className="relative order-1 lg:absolute lg:inset-y-0 lg:left-0 lg:w-[64%] h-[360px] sm:h-[440px] lg:h-auto mt-[72px] lg:mt-0">
         <img src={img} alt={imgAlt} className="absolute inset-0 w-full h-full object-cover who-img" style={{ objectPosition: imgPos }} />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(7_3_5/0.6),transparent_35%,transparent_70%,rgb(7_3_5/0.6))]" />
-        <div className="absolute inset-0 lg:top-[72px]">
-          <PhotoLabels labels={spreadLabels(labels)} on={inView} />
-        </div>
       </div>
 
       <div className={`relative z-10 order-2 ${WRAP} w-full lg:min-h-[max(640px,100svh)] flex items-center pt-10 lg:pt-28 pb-14 sm:pb-16`}>
@@ -2069,7 +2054,6 @@ function ContactHero({ settings }) {
         img={pageContactImg}
         imgAlt="A city at dusk seen from above"
         imgPos="50% 60%"
-        labels={['Book a call', 'Email us', 'Send a message', 'LinkedIn', 'Kerala, India', 'Reply in 24 hours']}
         eyebrow="Contact"
         title="Let's talk about the problem"
         glow="you're solving."
@@ -2476,7 +2460,6 @@ export default function App({ page: initialPage = 'home' }) {
             img={pageAboutImg}
             imgAlt="A team working through a problem at a whiteboard"
             imgPos="50% 40%"
-            labels={['Decipher', 'People first', 'Derive', 'Systems over software', 'Datatrop', 'Built to last']}
             eyebrow="About"
             title="We turn complexity into"
             glow="stable systems."
@@ -2516,7 +2499,6 @@ export default function App({ page: initialPage = 'home' }) {
             img={pageIndustriesImg}
             imgAlt="A container port with cranes at dusk"
             imgPos="40% 55%"
-            labels={['Logistics', 'Manufacturing', 'Trade', 'Healthcare', 'Energy', 'Finance']}
             eyebrow="Industries"
             title="Defined by complexity,"
             glow="not by industry."
@@ -2534,7 +2516,6 @@ export default function App({ page: initialPage = 'home' }) {
             img={pageNewsImg}
             imgAlt="An audience watching a talk in a lit auditorium"
             imgPos="50% 50%"
-            labels={['Events', 'Talks', 'Launches', 'Partnerships', 'Awards', 'Milestones']}
             eyebrow="News & Events"
             title="What we've been"
             glow="up to."
