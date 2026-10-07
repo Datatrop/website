@@ -8,10 +8,13 @@
 // ============================================================================
 
 return [
+    // LOCAL DEV ONLY — points at the local MySQL DB set up for previewing this
+    // site. Never commit these values; config.php is gitignored-equivalent by
+    // convention here (see AGENTS/session notes) — do not push this change.
     'db_host' => 'localhost',
-    'db_name' => 'u183482362_datatrop',
-    'db_user' => 'u183482362_datatrop',
-    'db_pass' => 'REPLACE_WITH_DB_PASSWORD',   // the password you set when creating the DB
+    'db_name' => 'datatrop',
+    'db_user' => 'root',
+    'db_pass' => '',   // the password you set when creating the DB
 
     // Only requests from this origin may use the admin/auth endpoints.
     'allowed_origin' => 'https://datatrop.in',
@@ -26,4 +29,9 @@ return [
     // Must match the Redirect URI registered in Azure EXACTLY.
     // /auth/microsoft/callback is rewritten to api/ms_callback.php by .htaccess
     'ms_redirect_uri'  => 'https://datatrop.in/auth/microsoft/callback',
+
+    // LOCAL DEV ONLY — fakes a connected Outlook calendar with a full open
+    // slot grid so the booking widget can be previewed without real Azure
+    // credentials. Never commit this as true / never let it reach production.
+    'dev_mock_booking' => true,
 ];

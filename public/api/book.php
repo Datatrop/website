@@ -77,13 +77,20 @@ function bk_free_slots(DateTime $day, array $busy): array
 
 $action = $_GET['action'] ?? 'slots';
 
+// LOCAL DEV ONLY — see config.php's dev_mock_booking comment. Never true in production.
+$config = require __DIR__ . '/config.php';
+$devMockBooking = !empty($config['dev_mock_booking']);
+
 // ── Availability for one date ───────────────────────────────────────────────
 if ($action === 'slots') {
-    if (!ms_connected()) json_out(['connected' => false, 'slots' => []]);
+    if (!$devMockBooking && !ms_connected()) json_out(['connected' => false, 'slots' => []]);
     $day = bk_validate_date($_GET['date'] ?? '');
     // Weekends closed
     if (in_array((int) $day->format('N'), [6, 7], true)) {
         json_out(['connected' => true, 'slots' => [], 'closed' => true]);
+    }
+    if ($devMockBooking) {
+        json_out(['connected' => true, 'slots' => bk_free_slots($day, [])]);
     }
     $b = bk_busy($day);
     if (isset($b['error'])) json_out(['connected' => true, 'slots' => [], 'error' => $b['error']]);
@@ -93,7 +100,7 @@ if ($action === 'slots') {
 // ── Create the booking ──────────────────────────────────────────────────────
 if ($action === 'create') {
     if (method() !== 'POST') json_error('Method not allowed', 405);
-    if (!ms_connected()) json_error('Booking is temporarily unavailable. Please email us instead.', 503);
+    if (!$devMockBooking && !ms_connected()) json_error('Booking is temporarily unavailable. Please email us instead.', 503);
 
     $b        = read_json_body();
     $name     = trim((string) ($b['name'] ?? ''));
@@ -144,14 +151,16 @@ if ($action === 'create') {
         'onlineMeetingProvider' => 'teamsForBusiness',
     ];
 
-    $r = ms_graph('POST', '/me/events', $event);
-    if ($r['code'] >= 300) {
-        // Retry without Teams (account may not have online meetings enabled)
-        unset($event['isOnlineMeeting'], $event['onlineMeetingProvider']);
+    if (!$devMockBooking) {
         $r = ms_graph('POST', '/me/events', $event);
-    }
-    if ($r['code'] >= 300) {
-        json_error($r['data']['error']['message'] ?? 'Could not create the meeting. Please try again.', 400);
+        if ($r['code'] >= 300) {
+            // Retry without Teams (account may not have online meetings enabled)
+            unset($event['isOnlineMeeting'], $event['onlineMeetingProvider']);
+            $r = ms_graph('POST', '/me/events', $event);
+        }
+        if ($r['code'] >= 300) {
+            json_error($r['data']['error']['message'] ?? 'Could not create the meeting. Please try again.', 400);
+        }
     }
 
     // Mirror into leads so it also shows in the admin panel

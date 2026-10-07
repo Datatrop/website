@@ -17,3 +17,11 @@ RewriteRule ^(.+?)/?$ $1.html [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.html [L]
+
+# Pages must always be re-checked, so visitors get a new release straight away
+# instead of a copy their browser kept. (Hashed /assets files are unaffected.)
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
