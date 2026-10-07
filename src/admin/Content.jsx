@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react'
 import { api } from '../lib/api'
 
 const DEFAULTS = {
-  company_name: 'Datatrop AI Systems',
+  company_name: 'Datatrop',
   tagline: 'Engineering Intelligence. Solving Complexity.',
   hero_headline: 'Engineering Intelligence for Complex Businesses.',
   hero_subtext:
     'When conventional software reaches its limits, we design AI-powered business systems that transform operational complexity into clarity, control, and autonomous execution.',
   about_bio:
-    'Datatrop AI Systems is a technology engineering company focused on solving the complex operational, analytical, and data-driven challenges that conventional software cannot adequately address.',
+    'Datatrop is a technology engineering company focused on solving the complex operational, analytical, and data-driven challenges that conventional software cannot adequately address.',
   contact_email: 'sales@datatrop.in',
   contact_phone: '+91 79029 17795',
   linkedin_url: 'https://www.linkedin.com/company/datatrop-ai',

@@ -555,7 +555,7 @@ const STATEMENT = 'Some problems don’t fit a product. Some ideas don’t have 
 const STATEMENT_PAYOFF = 'That’s where we begin.'
 
 const DEFAULT_ABOUT =
-  'Datatrop AI Systems is an intelligent systems engineering company that designs, builds, and operates solutions for complex business and societal challenges. AI, automation, and software are not our identity; they are the delivery mechanisms we choose once we understand the problem.'
+  'Datatrop is an intelligent systems engineering company that designs, builds, and operates solutions for complex business and societal challenges. AI, automation, and software are not our identity; they are the delivery mechanisms we choose once we understand the problem.'
 
 const PRINCIPLES = [
   'Engineered around the problem',
@@ -2260,7 +2260,7 @@ const FOOTER_COLUMNS = [
 ]
 
 function Footer({ settings, showNews = false }) {
-  const company = settings.company_name || 'Datatrop AI Systems'
+  const company = settings.company_name || 'Datatrop'
   const tagline = settings.tagline || 'Engineering Intelligence. Solving Complexity.'
   const location = settings.location || 'Kerala, India'
   const email = settings.contact_email || 'sales@datatrop.in'

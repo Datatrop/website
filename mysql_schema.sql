@@ -235,11 +235,11 @@ INSERT INTO site_content
   (company_name, tagline, hero_headline, hero_subtext, about_bio,
    contact_email, contact_phone, linkedin_url, location, brand_color, accent_color)
 SELECT
-  'Datatrop AI Systems',
+  'Datatrop',
   'Engineering certainty in a complex world.',
   'Engineering certainty in a complex world.',
   'Datatrop is an intelligent systems engineering company. We design, build, and operate the systems that restore order wherever complexity prevents progress, whether the solution is known, unknown, or yet to be invented.',
-  'Datatrop AI Systems is an intelligent systems engineering company that designs, builds, and operates solutions for complex business and societal challenges. AI, automation, and software are not our identity; they are the delivery mechanisms we choose once we understand the problem.',
+  'Datatrop is an intelligent systems engineering company that designs, builds, and operates solutions for complex business and societal challenges. AI, automation, and software are not our identity; they are the delivery mechanisms we choose once we understand the problem.',
   'sales@datatrop.in',
   '+91 79029 17795',
   'https://www.linkedin.com/company/datatrop-ai',

@@ -4,7 +4,7 @@ import { api } from './lib/api'
 // Default boilerplate shown until you edit the text in Admin → Policies.
 // Use "## " at the start of a line for a section heading.
 export const POLICY_DEFAULTS = {
-  privacy: `Datatrop AI Systems ("Datatrop", "we", "us") respects your privacy. This policy explains what information we collect and how we use it.
+  privacy: `Datatrop ("we", "us") respects your privacy. This policy explains what information we collect and how we use it.
 
 ## Information We Collect
 When you submit the contact or strategy-call form, we collect the details you provide — your name, company, work email, industry, company size, and the challenge you describe. We do not collect payment information through this website.
@@ -27,13 +27,13 @@ You may request access to, correction of, or deletion of the personal informatio
 ## Contact
 For any privacy questions, email us at the address listed in the Contact section of our website.`,
 
-  terms: `These Terms govern your use of the Datatrop AI Systems website. By using this website, you agree to these Terms.
+  terms: `These Terms govern your use of the Datatrop website. By using this website, you agree to these Terms.
 
 ## Use of the Website
 This website and its content are provided for general information about Datatrop's services. You agree to use it lawfully and not to misuse or attempt to disrupt it.
 
 ## Intellectual Property
-All content, branding, and materials on this website are owned by Datatrop AI Systems unless stated otherwise, and may not be reproduced without permission.
+All content, branding, and materials on this website are owned by Datatrop unless stated otherwise, and may not be reproduced without permission.
 
 ## No Warranty
 The website is provided "as is". While we aim for accuracy, we make no warranties about the completeness or reliability of its content.
@@ -71,7 +71,7 @@ export default function PolicyPage({ which }) {
   const title = which === 'terms' ? 'Terms of Service' : 'Privacy Policy'
 
   useEffect(() => {
-    document.title = `${title} — Datatrop AI Systems`
+    document.title = `${title} — Datatrop`
     api.getContent().then((row) => {
       if (!row) return
       setSettings(row)
@@ -82,7 +82,7 @@ export default function PolicyPage({ which }) {
     }).catch(() => {})
   }, [title])
 
-  const company = settings.company_name || 'Datatrop AI Systems'
+  const company = settings.company_name || 'Datatrop'
   const dbText = which === 'terms' ? settings.terms : settings.privacy_policy
   const body = (dbText && dbText.trim()) ? dbText : POLICY_DEFAULTS[which] || POLICY_DEFAULTS.privacy
 

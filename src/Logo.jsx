@@ -53,7 +53,7 @@ export function LogoGlowDefs() {
   )
 }
 
-export default function Logo({ className = '', style, title = 'Datatrop AI Systems', glow = false }) {
+export default function Logo({ className = '', style, title = 'Datatrop', glow = false }) {
   return (
     <svg viewBox={`0 0 ${LOGO_W} ${LOGO_H}`} className={className} style={style} role="img" aria-label={title}>
       <title>{title}</title>
