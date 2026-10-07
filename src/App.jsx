@@ -1006,41 +1006,26 @@ function Approach() {
           inView={inView}
         />
 
-        {/* Desktop: gradient bar with pins */}
-        <div className="hidden md:block">
-          <div
-            className={`h-20 rounded-2xl border border-white/10 origin-left transition-transform duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${inView ? 'scale-x-100' : 'scale-x-0'}`}
-            style={{ background: 'linear-gradient(90deg, #8A2A91 0%, #6B1E72 18%, #54133F 40%, #3A0B20 62%, #1B050D 82%, #070305 100%)' }}
-          />
-          <div className="grid grid-cols-4">
-            {APPROACH.map((a, i) => (
-              <div
-                key={a.step}
-                className={`relative pt-12 pr-6 transition-all duration-700 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-                style={{ transitionDelay: `${600 + i * 120}ms` }}
-              >
-                <span className="absolute left-0 -top-3 flex flex-col items-center">
-                  <span className="w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_12px_rgb(var(--accent))]" />
-                  <span className="w-px h-9 bg-white/50" />
-                </span>
-                <p className="font-mono text-[12px] text-white/90 mb-1">L{i + 1}</p>
-                <h3 className="font-display text-white text-lg font-medium tracking-tight mb-1.5">{a.step}</h3>
-                <p className="text-white/50 text-sm font-light leading-relaxed">{a.desc}</p>
-              </div>
-            ))}
-          </div>
+        {/* Desktop: the gradient bar with each level named inside it */}
+        <div
+          className={`hidden md:grid grid-cols-4 h-24 rounded-2xl border border-white/10 overflow-hidden origin-left transition-transform duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${inView ? 'scale-x-100' : 'scale-x-0'}`}
+          style={{ background: 'linear-gradient(90deg, #8A2A91 0%, #6B1E72 18%, #54133F 40%, #3A0B20 62%, #1B050D 82%, #070305 100%)' }}
+        >
+          {APPROACH.map((a, i) => (
+            <h3
+              key={a.step}
+              className={`flex items-center px-8 font-display text-white text-xl font-medium tracking-tight ${i ? 'border-l border-white/10' : ''} transition-opacity duration-700 ${inView ? 'opacity-100' : 'opacity-0'}`}
+              style={{ transitionDelay: `${700 + i * 120}ms` }}
+            >
+              {a.step}
+            </h3>
+          ))}
         </div>
 
-        {/* Mobile: vertical scale */}
-        <ol className="md:hidden relative pl-8">
-          <span className="absolute left-[5px] top-2 bottom-2 w-[3px] rounded-full" style={{ background: 'linear-gradient(180deg, #8A2A91, #54133F 45%, #1B050D)' }} />
+        {/* Mobile: the same bar, stacked */}
+        <ol className="md:hidden rounded-2xl border border-white/10 overflow-hidden" style={{ background: 'linear-gradient(180deg, #8A2A91, #54133F 45%, #1B050D 85%, #070305)' }}>
           {APPROACH.map((a, i) => (
-            <li key={a.step} className="relative pb-8 last:pb-0">
-              <span className="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-white shadow-[0_0_10px_rgb(var(--accent))]" />
-              <p className="font-mono text-[12px] text-white/70 mb-1">L{i + 1}</p>
-              <h3 className="font-display text-white text-lg font-medium mb-1">{a.step}</h3>
-              <p className="text-white/55 text-sm font-light">{a.desc}</p>
-            </li>
+            <li key={a.step} className={`px-6 py-5 font-display text-white text-lg font-medium ${i ? 'border-t border-white/10' : ''}`}>{a.step}</li>
           ))}
         </ol>
       </div>
