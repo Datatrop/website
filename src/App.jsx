@@ -8,6 +8,7 @@ import philNoiseImg from './assets/philosophy/noise.jpg'
 import philClarityImg from './assets/philosophy/clarity.jpg'
 import philSystemImg from './assets/philosophy/system.jpg'
 import Globe from './Globe.jsx'
+import OrderViz from './OrderViz.jsx'
 import whoWeAreImg from './assets/home/who-we-are.jpg'
 import exploreAboutImg from './assets/home/explore-about.jpg'
 import exploreWhatImg from './assets/home/explore-what-we-do.jpg'
@@ -32,7 +33,9 @@ import { initAnalytics, trackPageView, track, analyticsAvailable, getConsent, se
 const BOOKING_URL = ''
 
 // ── Scroll progress through an element (0 → 1), used by the statement reveal ──
-function useScrollProgress() {
+// `endAt`: fraction of the screen height the element's centre must reach
+// before progress hits 1 (lower = the effect plays over more scrolling)
+function useScrollProgress(endAt = 0.6) {
   const ref = useRef(null)
   const reduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const [progress, setProgress] = useState(reduced ? 1 : 0)
@@ -49,7 +52,7 @@ function useScrollProgress() {
       // lit by the time its centre reaches 60% of the screen height, so the
       // whole line is readable while it sits mid-screen.
       const start = vh * 0.9
-      const end = vh * 0.6 - r.height / 2
+      const end = vh * endAt - r.height / 2
       const v = (start - r.top) / Math.max(1, start - end)
       setProgress(Math.max(0, Math.min(1, v)))
     }
@@ -62,7 +65,7 @@ function useScrollProgress() {
       window.removeEventListener('resize', onScroll)
       cancelAnimationFrame(raf)
     }
-  }, [reduced])
+  }, [reduced, endAt])
   return [ref, progress]
 }
 
@@ -345,7 +348,7 @@ const MEGA_MENU = [
     href: '/about',
     panel: [
       { title: 'Who We Are', desc: 'Why we exist and what we believe.', href: '/about#who-we-are' },
-      { title: 'Our Philosophy', desc: 'Decipher, derive, Datatrop.', href: '/about#philosophy' },
+      { title: 'Our Philosophy', desc: 'Decipher, derive, Datatrop.', href: '/#philosophy' },
       { title: 'How We Engage', desc: 'Build, solve and innovate.', href: '/about#engage' },
       { title: 'Why Datatrop', desc: 'Our approach, in numbers.', href: '/about#why' },
     ],
@@ -628,25 +631,38 @@ function WhoWeAre() {
 // About page opener: the admin-editable bio + principles
 function AboutIntro({ about }) {
   const [ref, inView] = useInView()
+  const [vizRef, progress] = useScrollProgress(0.3)
+  const hubs = useRef([])
   return (
     <section id="who-we-are" className="glow-section scroll-mt-20 py-24 sm:py-32">
-      <div ref={ref} className={`${WRAP} grid lg:grid-cols-12 gap-10 ${reveal(inView)}`}>
+      <div ref={ref} className={`${WRAP} grid lg:grid-cols-12 gap-12 lg:gap-14 items-center ${reveal(inView)}`}>
         <div className="lg:col-span-5">
           <Eyebrow className="mb-5">Who we are</Eyebrow>
-          <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.06]">
+          <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.06] mb-8">
             Whenever complexity prevents progress, we build the system that <span className="text-glow">restores order.</span>
           </h2>
+          <p className="text-white/60 font-light leading-relaxed">{about || DEFAULT_ABOUT}</p>
         </div>
-        <div className="lg:col-span-7 lg:pt-14">
-          <p className="text-white/75 text-lg font-light leading-relaxed mb-6">{about || DEFAULT_ABOUT}</p>
-          <p className="text-white/55 font-light leading-relaxed mb-8">
-            The market doesn't need to remember every service we offer. It needs to remember one thing: Datatrop exists
-            to solve complex problems by designing intelligent systems that create stability, capability and long-term value.
-          </p>
-          <div className="flex flex-wrap gap-2.5">
-            {PRINCIPLES.map((p) => (
-              <span key={p} className="text-[13px] px-4 py-2 rounded-full border border-white/10 bg-white/[0.03] text-white/70">{p}</span>
+
+        {/* Scroll to watch the tangle of signals settle into one working system */}
+        <div className="lg:col-span-7">
+          <div ref={vizRef} className="relative aspect-square sm:aspect-[5/4] rounded-[1.5rem] overflow-hidden border border-white/[0.07] bg-[radial-gradient(ellipse_at_50%_50%,rgb(var(--maroon)/0.55),#070305_70%)]">
+            <OrderViz p={progress} hubsRef={hubs} />
+            {PRINCIPLES.map((t, i) => (
+              <span
+                key={t}
+                ref={(n) => { hubs.current[i] = n }}
+                className="absolute left-0 top-0 pointer-events-none opacity-0 transition-opacity duration-300"
+              >
+                <span className={`absolute whitespace-nowrap px-3 py-1.5 rounded-full border border-[rgb(var(--accent)_/_0.5)] bg-[rgb(7_3_5/0.75)] backdrop-blur text-[11px] sm:text-[12px] text-white ${
+                  ['-translate-x-1/2 -translate-y-[calc(100%+14px)]', 'translate-x-[14px] -translate-y-1/2', '-translate-x-1/2 translate-y-[14px]', '-translate-x-[calc(100%+14px)] -translate-y-1/2'][i]
+                }`}>{t}</span>
+              </span>
             ))}
+            <div className="absolute inset-x-0 bottom-0 flex justify-between px-5 pb-4 font-mono text-[10px] uppercase tracking-[0.22em]">
+              <span className={`transition-colors duration-500 ${progress < 0.5 ? 'text-[#F6C453]' : 'text-white/30'}`}>Complexity</span>
+              <span className={`transition-colors duration-500 ${progress >= 0.5 ? 'text-rose-soft' : 'text-white/30'}`}>Order</span>
+            </div>
           </div>
         </div>
       </div>
@@ -2253,7 +2269,7 @@ function Contact({ settings }) {
 // FOOTER
 // ═══════════════════════════════════════════════════════════════════════════════
 const FOOTER_COLUMNS = [
-  { title: 'About', links: [['Who We Are', '/about#who-we-are'], ['Our Philosophy', '/about#philosophy'], ['How We Engage', '/about#engage'], ['Complexity Scale', '/about#approach'], ['Why Datatrop', '/about#why']] },
+  { title: 'About', links: [['Who We Are', '/about#who-we-are'], ['Our Philosophy', '/#philosophy'], ['How We Engage', '/about#engage'], ['Complexity Scale', '/about#approach'], ['Why Datatrop', '/about#why']] },
   { title: 'What We Do', links: [['Capabilities', '/what-we-do#capabilities'], ['AI Workforce', '/what-we-do#workforce'], ['Problems We Solve', '/what-we-do#solve'], ['Industries', '/industries']] },
   { title: 'Connect', links: [['News & Events', '/news'], ['Contact Us', '/contact'], ['Book a Call', '/contact#book'], ['Send a Message', '/contact#message']] },
   { title: 'Legal', links: [['Privacy Policy', '/privacy'], ['Terms of Service', '/terms']] },
@@ -2490,10 +2506,9 @@ export default function App({ page: initialPage = 'home' }) {
             title="We turn complexity into"
             glow="stable systems."
             intro="We design, build and operate the intelligent systems that restore order wherever complexity slows an organization down."
-            links={[['Who we are', '/about#who-we-are'], ['Our philosophy', '/about#philosophy'], ['How we engage', '/about#engage'], ['Complexity scale', '/about#approach'], ['Why Datatrop', '/about#why']]}
+            links={[['Who we are', '/about#who-we-are'], ['How we engage', '/about#engage'], ['Complexity scale', '/about#approach'], ['Why Datatrop', '/about#why']]}
           />
           <AboutIntro about={settings.about_bio} />
-          <Philosophy />
           <ThreePillars />
           <Approach />
           <WhyDatatrop />
