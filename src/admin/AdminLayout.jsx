@@ -158,9 +158,10 @@ function SidebarContent({ onClose, user, onLogout }) {
   return (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-black/[0.07] dark:border-[#2A0F1D] flex items-center justify-between">
-        <a href="/" className="flex items-center gap-2.5">
-          <Logo className="h-8 w-auto text-[#1B050D] dark:text-white" title="Datatrop" />
+      {/* The full logo nearly fills the 224px sidebar, so the badge sits under it */}
+      <div className="px-5 py-5 border-b border-black/[0.07] dark:border-[#2A0F1D] flex flex-col items-start gap-2">
+        <a href="/" className="block max-w-full">
+          <Logo className="h-7 w-auto max-w-full text-[#1B050D] dark:text-white" title="Datatrop" />
         </a>
         <span className="text-[9px] font-semibold uppercase tracking-widest text-slate-500 dark:text-gray-600 border border-black/10 dark:border-[#33142A] rounded-md px-2 py-0.5">
           Admin
