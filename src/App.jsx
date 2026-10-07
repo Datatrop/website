@@ -855,7 +855,7 @@ const capImage = (name, i) => CAP_IMAGES[capabilityKind(name)] || CAP_FALLBACK[i
 // in the middle and its neighbours swing back and fade towards the sides. Goes
 // round endlessly, so any number of service lines fit; arrows, swipe and
 // clicking a side card all work, and it pauses while hovered or focused.
-const CAP_SLIDE_MS = 4500
+const CAP_SLIDE_MS = 2000
 
 function WhatWeBuild({ serviceLines }) {
   const [ref, inView] = useInView()
