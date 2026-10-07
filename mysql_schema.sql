@@ -252,7 +252,7 @@ SELECT title, symptoms, solution, reference_case, sort_order FROM (
   SELECT 'Fragmented Operations' AS title,
          'Excel everywhere, data duplication, manual handoffs, no visibility.' AS symptoms,
          'Disconnected systems become one intelligent operating platform.' AS solution,
-         'Unified Operations Systems, covering sales, procurement, inventory, dispatch, finance, accounting and HR in one platform.' AS reference_case,
+         'Unified Operating Systems, covering sales, procurement, inventory, dispatch, finance, accounting and HR in one platform.' AS reference_case,
          0 AS sort_order
   UNION ALL SELECT 'Revenue Leakage',
          'Missed leads, poor follow-up, lost opportunities, low conversion.',
@@ -260,7 +260,7 @@ SELECT title, symptoms, solution, reference_case, sort_order FROM (
   UNION ALL SELECT 'Communication Chaos',
          'Calls on personal phones, no visibility, lost customers, no accountability.',
          'Unify calls, messages, and customer interactions into one intelligent communication layer.',
-         'Automotive communication system with centralized IVR, CRM tracking, dashboards and AI call intelligence.', 2
+         'Logistics and supply chain, with centralized IVR, CRM tracking, dashboards and AI call intelligence.', 2
   UNION ALL SELECT 'Organizational Intelligence',
          'Knowledge trapped in employees, decisions depend on individuals, no institutional memory.',
          'Turn scattered knowledge into permanent institutional memory.', NULL, 3
