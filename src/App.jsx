@@ -374,7 +374,7 @@ const MEGA_MENU = [
   },
 ]
 
-function Navbar({ page }) {
+function Navbar({ page, showNews = false }) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [openPanel, setOpenPanel] = useState(null)
@@ -420,7 +420,7 @@ function Navbar({ page }) {
                   </a>
                 </div>
               ))}
-              <a href="/news" onMouseEnter={() => setOpenPanel(null)} aria-current={page === 'news' ? 'page' : undefined} className={`px-4 py-2.5 text-[14px] hover:text-white transition-colors duration-200 ${page === 'news' ? 'text-white' : 'text-white/65'}`}>News</a>
+              {showNews && <a href="/news" onMouseEnter={() => setOpenPanel(null)} aria-current={page === 'news' ? 'page' : undefined} className={`px-4 py-2.5 text-[14px] hover:text-white transition-colors duration-200 ${page === 'news' ? 'text-white' : 'text-white/65'}`}>News</a>}
               <a href="/contact" onMouseEnter={() => setOpenPanel(null)} aria-current={page === 'contact' ? 'page' : undefined} className={`px-4 py-2.5 text-[14px] hover:text-white transition-colors duration-200 ${page === 'contact' ? 'text-white' : 'text-white/65'}`}>Contact</a>
             </div>
 
@@ -483,7 +483,7 @@ function Navbar({ page }) {
                 )}
               </div>
             ))}
-            <a href="/news" onClick={() => setMenuOpen(false)} className="px-1 py-4 font-display text-lg text-white border-b border-white/[0.08]">News &amp; Events</a>
+            {showNews && <a href="/news" onClick={() => setMenuOpen(false)} className="px-1 py-4 font-display text-lg text-white border-b border-white/[0.08]">News &amp; Events</a>}
             <a href="/contact" onClick={() => setMenuOpen(false)} className="px-1 py-4 font-display text-lg text-white border-b border-white/[0.08]">Contact</a>
             <div className="pt-6 flex flex-col gap-3" onClick={() => setMenuOpen(false)}>
               <BookButton className="w-full" />
@@ -2257,7 +2257,7 @@ const FOOTER_COLUMNS = [
   { title: 'Legal', links: [['Privacy Policy', '/privacy'], ['Terms of Service', '/terms']] },
 ]
 
-function Footer({ settings }) {
+function Footer({ settings, showNews = false }) {
   const company = settings.company_name || 'Datatrop AI Systems'
   const tagline = settings.tagline || 'Engineering Intelligence. Solving Complexity.'
   const location = settings.location || 'Kerala, India'
@@ -2287,7 +2287,7 @@ function Footer({ settings }) {
             <div key={col.title}>
               <h4 className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] mb-5">{col.title}</h4>
               <div className="flex flex-col gap-3">
-                {col.links.map(([l, h]) => (
+                {col.links.filter(([, h]) => showNews || h !== '/news').map(([l, h]) => (
                   <a key={l} href={h} className="text-white/65 hover:text-white text-sm transition-colors">{l}</a>
                 ))}
               </div>
@@ -2398,6 +2398,8 @@ export default function App({ page: initialPage = 'home' }) {
   const [problems, setProblems] = useState(DEFAULT_PROBLEMS)
   const [serviceLines, setServiceLines] = useState(DEFAULT_SERVICE_LINES)
   const [posts, setPosts] = useState(null)
+  // The News page is only linked once there is something to show on it
+  const hasNews = Array.isArray(posts) && posts.length > 0
 
   useEffect(() => {
     initAnalytics()
@@ -2475,7 +2477,7 @@ export default function App({ page: initialPage = 'home' }) {
     <>
     <IntroOverlay />
     <div className="site min-h-screen overflow-x-clip" onClick={onLinkClick}>
-      <Navbar page={page} />
+      <Navbar page={page} showNews={hasNews} />
       {page === 'about' && (
         <>
           <PageHero
@@ -2566,7 +2568,7 @@ export default function App({ page: initialPage = 'home' }) {
           <FinalCta />
         </>
       )}
-      <Footer settings={settings} />
+      <Footer settings={settings} showNews={hasNews} />
       <ConsentBanner onAccept={() => trackPageView(PAGE_META[page].path, PAGE_META[page].title)} />
     </div>
     </>
