@@ -23,11 +23,6 @@ import capWorkforceImg from './assets/capabilities/workforce.jpg'
 import capRevenueImg from './assets/capabilities/revenue.jpg'
 import capCommunicationImg from './assets/capabilities/communication.jpg'
 import capProductImg from './assets/capabilities/product.jpg'
-import probFragmentedImg from './assets/problems/fragmented.jpg'
-import probRevenueImg from './assets/problems/revenue.jpg'
-import probCommunicationImg from './assets/problems/communication.jpg'
-import probIntelligenceImg from './assets/problems/intelligence.jpg'
-import probHumanImg from './assets/problems/human.jpg'
 import engageSolveImg from './assets/engage/solve.jpg'
 import engageInnovateImg from './assets/engage/innovate.jpg'
 import pageWhatImg from './assets/pages/what-we-do.jpg'
@@ -36,7 +31,7 @@ import pageNewsImg from './assets/pages/news.jpg'
 import pageContactImg from './assets/pages/contact.jpg'
 import IntroOverlay from './IntroOverlay.jsx'
 import Logo from './Logo.jsx'
-import { problemKind, capabilityKind } from './vizKinds'
+import { capabilityKind } from './vizKinds'
 import { initAnalytics, trackPageView, track, analyticsAvailable, getConsent, setConsent } from './analytics'
 
 // ── Booking: handled natively by <BookingWidget/>, which reads real availability
@@ -364,7 +359,6 @@ const MEGA_MENU_ALL = [
     panel: [
       { title: 'Capabilities', desc: 'The five system categories we engineer.', href: '/what-we-do#capabilities' },
       { title: 'AI Workforce Platforms', desc: 'Multi-agent teams that execute operational work.', href: '/what-we-do#capabilities' },
-      { title: 'Problems We Solve', desc: 'Fragmentation, leakage, delay and more.', href: '/what-we-do#solve' },
       { title: 'Talk to an Engineer', desc: 'Book a 30-minute strategy call.', href: '/contact#book' },
     ],
   },
@@ -1042,68 +1036,6 @@ const DEFAULT_PROBLEMS = [
   { id: 'p5', title: 'Human Dependency', symptoms: 'Repetitive work, hiring challenges, process bottlenecks.', solution: 'Deploy AI workforces that execute repetitive work while humans focus on strategy.', reference_case: 'AI Voice Ecosystems capable of autonomous customer interactions with memory and specialized capabilities.' },
 ]
 
-const PROBLEM_IMAGES = { fragmented: probFragmentedImg, leakage: probRevenueImg, communication: probCommunicationImg, knowledge: probIntelligenceImg, dependency: probHumanImg, delay: probIntelligenceImg }
-const PROBLEM_FALLBACK = [probFragmentedImg, probRevenueImg, probCommunicationImg, probIntelligenceImg, probHumanImg]
-const problemImage = (title, i) => PROBLEM_IMAGES[problemKind(title)] || PROBLEM_FALLBACK[i % PROBLEM_FALLBACK.length]
-
-// One row per problem: a real-world photo, what it looks like today, what
-// changes with Datatrop, and what we have built for it. Rows alternate sides.
-function ProblemRow({ p, i }) {
-  const [ref, inView] = useInView()
-  const flip = i % 2 === 1
-  return (
-    <article ref={ref} className={`grid lg:grid-cols-12 gap-6 lg:gap-12 items-center ${reveal(inView)}`}>
-      <div className={`lg:col-span-5 ${flip ? 'lg:order-2' : ''}`}>
-        <div className="group relative aspect-[4/3] rounded-[1.25rem] overflow-hidden border border-white/10">
-          <img src={problemImage(p.title, i)} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,rgb(7_3_5/0.75))]" />
-          <span className="absolute left-5 bottom-4 font-display text-white/90 text-5xl font-medium tracking-tight">{String(i + 1).padStart(2, '0')}</span>
-        </div>
-      </div>
-      <div className={`lg:col-span-7 ${flip ? 'lg:order-1' : ''}`}>
-        <h3 className="font-display text-white text-2xl sm:text-3xl font-medium tracking-tight mb-6">{p.title}</h3>
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div className="rounded-2xl border border-[rgba(246,196,83,0.25)] bg-[rgba(246,196,83,0.05)] p-5">
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#F6C453] mb-2">Today</p>
-            <p className="text-white/70 text-sm font-light leading-relaxed">{p.symptoms}</p>
-          </div>
-          <div className="rounded-2xl border border-[rgb(var(--accent)_/_0.35)] bg-[rgb(var(--maroon)_/_0.4)] p-5">
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft mb-2">With Datatrop</p>
-            <p className="text-white/85 text-sm font-light leading-relaxed">{p.solution || p.description}</p>
-          </div>
-        </div>
-        {p.reference_case && (
-          <p className="mt-5 flex items-start gap-3 text-sm leading-relaxed text-white/65">
-            <span className="mt-0.5 flex-shrink-0 font-mono text-[10px] uppercase tracking-[0.2em] text-rose-soft">Built</span>
-            {p.reference_case}
-          </p>
-        )}
-      </div>
-    </article>
-  )
-}
-
-function WhatWeSolve({ problems }) {
-  const [ref, inView] = useInView()
-  return (
-    <section id="solve" className="glow-section scroll-mt-20 py-28 sm:py-36">
-      <div className={WRAP}>
-        <div ref={ref}>
-          <SectionHead
-           
-            title="Where complexity costs you most."
-            intro="Five problems we see in almost every organization: what each one looks like today, and what changes once the right system is in place."
-            inView={inView}
-          />
-        </div>
-        <div className="flex flex-col gap-16 sm:gap-20">
-          {problems.map((p, i) => <ProblemRow key={p.id} p={p} i={i} />)}
-        </div>
-      </div>
-    </section>
-  )
-}
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // INDUSTRIES — breadth without claiming false depth in every domain
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1740,13 +1672,13 @@ function CaseStudies({ problems }) {
           <div>
             <h2 className="font-display text-[34px] sm:text-5xl font-medium text-white tracking-[-0.03em] leading-[1.05]">From complexity to impact.</h2>
           </div>
-          <GhostButton href="/what-we-do#solve">See the problems we solve</GhostButton>
+          <GhostButton href="/what-we-do">See what we build</GhostButton>
         </div>
         <div className={`grid sm:grid-cols-2 ${cases.length > 3 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-5`}>
           {cases.map((p, i) => (
             <a
               key={p.id}
-              href="/what-we-do#solve"
+              href="/what-we-do"
               title={p.reference_case}
               className={`group relative aspect-[4/3] sm:aspect-[4/5] lg:aspect-[4/3] rounded-[1.25rem] overflow-hidden border border-white/10 ${reveal(inView)}`}
               style={{ transitionDelay: `${i * 110}ms` }}
@@ -2011,7 +1943,7 @@ function Contact({ settings }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 const FOOTER_COLUMNS = [
   { title: 'About', links: [['Who We Are', '/about#who-we-are'], ['Our Philosophy', '/#philosophy'], ['How We Engage', '/about#engage'], ['Complexity Scale', '/about#approach']] },
-  { title: 'What We Do', links: [['Capabilities', '/what-we-do#capabilities'], ['Problems We Solve', '/what-we-do#solve'], ['Industries', '/industries']] },
+  { title: 'What We Do', links: [['Capabilities', '/what-we-do#capabilities'], ['Industries', '/industries']] },
   { title: 'Connect', links: [['News & Events', '/news'], ['Contact Us', '/contact'], ['Book a Call', '/contact#book'], ['Send a Message', '/contact#message']] },
   { title: 'Legal', links: [['Privacy Policy', '/privacy'], ['Terms of Service', '/terms']] },
 ]
@@ -2264,11 +2196,10 @@ export default function App({ page: initialPage = 'home' }) {
             title="Intelligent systems,"
             glow="engineered end to end."
             intro="From a single automated workflow to an operating platform for the whole organization. We design it, build it and keep it running."
-            links={[['Capabilities', '/what-we-do#capabilities'], ['Industries', '/what-we-do#all-industries'], ['Problems we solve', '/what-we-do#solve']]}
+            links={[['Capabilities', '/what-we-do#capabilities'], ['Industries', '/what-we-do#all-industries']]}
           />
           <WhatWeBuild serviceLines={serviceLines} />
           <Industries intro="Our systems are not tied to one sector. The pattern repeats everywhere: fragmented systems, manual work and slow decisions." />
-          <WhatWeSolve problems={problems} />
           {showcases.length > 0 && <Showcase items={showcases} />}
           <FinalCta />
         </>
