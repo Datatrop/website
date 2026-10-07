@@ -593,8 +593,7 @@ function PhotoLabels({ labels, on }) {
       className={`absolute ${l.wide ? 'hidden sm:flex' : 'flex'} ${l.top ? 'top-[9%]' : 'bottom-[9%]'} flex-row items-stretch gap-3 transition-opacity duration-700 ${on ? 'opacity-100' : 'opacity-0'}`}
       style={{ left: `${l.x}%`, transitionDelay: `${300 + i * 120}ms` }}
     >
-      <span className={`relative w-px bg-white/75 shadow-[0_0_4px_rgb(0_0_0/0.8)] ${l.top ? 'origin-top' : 'origin-bottom self-end'} transition-transform duration-700 ${on ? 'scale-y-100' : 'scale-y-0'}`} style={{ height: `${l.len * 4.5}px`, transitionDelay: `${450 + i * 120}ms` }}>
-        <span className={`absolute left-1/2 -translate-x-1/2 w-[7px] h-[7px] rounded-full bg-white shadow-[0_0_10px_2px_rgb(255_255_255/0.6)] ${l.top ? 'bottom-0 translate-y-1/2' : 'top-0 -translate-y-1/2'}`} />
+      <span className={`w-px bg-white/75 shadow-[0_0_4px_rgb(0_0_0/0.8)] ${l.top ? 'origin-top' : 'origin-bottom self-end'} transition-transform duration-700 ${on ? 'scale-y-100' : 'scale-y-0'}`} style={{ height: `${l.len * 4.5}px`, transitionDelay: `${450 + i * 120}ms` }}>
       </span>
       <span className={`font-mono text-[9px] sm:text-[11px] uppercase tracking-[0.2em] text-white max-w-[110px] sm:max-w-[150px] leading-snug [text-shadow:0_1px_8px_rgb(0_0_0/0.9)] ${l.top ? '' : 'self-end'}`}>{l.text}</span>
     </div>
@@ -688,17 +687,11 @@ function Philosophy() {
   return (
     <section id="philosophy" className="glow-section alt scroll-mt-20 py-24 sm:py-32 border-t border-white/[0.06]">
       <div className={WRAP} ref={ref}>
-        <div className={`mb-12 sm:mb-14 ${reveal(inView)}`}>
-          <h2 className="text-white/65 text-lg sm:text-xl font-light leading-relaxed max-w-xl">
-            A disciplined approach to turn complexity into engineered systems.
-          </h2>
-        </div>
         <ol className="grid md:grid-cols-3 gap-12 md:gap-8 lg:gap-12">
           {PHILOSOPHY.map((st, i) => (
             <li key={st.n} className={`relative flex flex-col ${reveal(inView)}`} style={{ transitionDelay: `${150 + i * 150}ms` }}>
-              <h3 className={`font-display text-[44px] sm:text-[52px] lg:text-[60px] font-medium tracking-[-0.045em] leading-none mb-5 pb-1 ${st.tone}`}>{st.name}.</h3>
-              <p className="text-white/60 font-light leading-relaxed md:min-h-[78px]">{st.body}</p>
-              <div className="group relative mt-8 aspect-square rounded-[1.25rem] overflow-hidden bg-black border border-white/[0.06]">
+              <h3 className={`font-display text-[44px] sm:text-[52px] lg:text-[60px] font-medium tracking-[-0.045em] leading-none mb-6 pb-1 ${st.tone}`}>{st.name}.</h3>
+              <div className="group relative aspect-square rounded-[1.25rem] overflow-hidden bg-black border border-white/[0.06]">
                 <img
                   src={st.img}
                   alt=""
@@ -707,9 +700,9 @@ function Philosophy() {
                   style={{ animationDelay: `${i * -3}s` }}
                 />
               </div>
-              <p className="mt-5 text-center font-mono text-[11px] uppercase tracking-[0.26em] text-white/45">{st.caption}</p>
+              <p className="mt-6 text-white/60 font-light leading-relaxed">{st.body}</p>
               {i < PHILOSOPHY.length - 1 && (
-                <Arrow className="hidden md:block absolute -right-6 lg:-right-8 top-[58%] w-5 h-5 text-white/30" />
+                <Arrow className="hidden md:block absolute -right-6 lg:-right-8 top-[48%] w-5 h-5 text-white/30" />
               )}
             </li>
           ))}
