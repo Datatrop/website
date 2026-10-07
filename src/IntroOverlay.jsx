@@ -24,7 +24,6 @@ export default function IntroOverlay() {
   const [show, setShow] = useState(introRequested)
   const [leaving, setLeaving] = useState(false)
   const [muted, setMuted] = useState(true)
-  const [progress, setProgress] = useState(0)
   const done = useRef(false)
 
   const finish = () => {
@@ -83,9 +82,7 @@ export default function IntroOverlay() {
         onEnded={finish}
         onError={finish}
         onTimeUpdate={(e) => {
-          const t = e.currentTarget.currentTime
-          setProgress(Math.min(1, t / END_AT))
-          if (t >= END_AT) finish()
+          if (e.currentTarget.currentTime >= END_AT) finish()
         }}
         className="intro-video absolute inset-0 w-full h-full"
         aria-hidden="true"
@@ -113,9 +110,6 @@ export default function IntroOverlay() {
         </button>
       </div>
 
-      <div className="absolute bottom-0 inset-x-0 h-[3px] bg-white/10">
-        <div className="h-full bg-[linear-gradient(90deg,#8A2A91,#E0457B)]" style={{ width: `${Math.round(progress * 100)}%` }} />
-      </div>
     </div>
   )
 }
