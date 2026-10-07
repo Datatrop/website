@@ -249,7 +249,7 @@ export default function Problems() {
                   value={form.reference_case}
                   onChange={(e) => setForm((f) => ({ ...f, reference_case: e.target.value }))}
                   rows={2}
-                  placeholder="Sufi Group Unified Operations System — covering sales, procurement, inventory…"
+                  placeholder="Unified Operations Systems — covering sales, procurement, inventory…"
                   className={`${inp} resize-none`}
                 />
               </div>

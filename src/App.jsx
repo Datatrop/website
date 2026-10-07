@@ -38,9 +38,12 @@ function useScrollProgress() {
       if (!el) return
       const r = el.getBoundingClientRect()
       const vh = window.innerHeight
-      const start = vh * 0.85
-      const end = vh * 0.4
-      const v = (start - r.top) / (r.height + (start - end))
+      // Starts as the text enters the lower part of the screen and is fully
+      // lit by the time its centre reaches 60% of the screen height, so the
+      // whole line is readable while it sits mid-screen.
+      const start = vh * 0.9
+      const end = vh * 0.6 - r.height / 2
+      const v = (start - r.top) / Math.max(1, start - end)
       setProgress(Math.max(0, Math.min(1, v)))
     }
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update) }
@@ -1112,7 +1115,7 @@ function Approach() {
 // WHAT WE SOLVE  (DB-backed problems, row list)
 // ═══════════════════════════════════════════════════════════════════════════════
 const DEFAULT_PROBLEMS = [
-  { id: 'p1', title: 'Fragmented Operations', symptoms: 'Excel everywhere, data duplication, manual handoffs, no visibility.', solution: 'Disconnected systems become one intelligent operating platform.', reference_case: 'Sufi Group Unified Operations System, covering sales, procurement, inventory, dispatch, finance, accounting and HR in one platform.' },
+  { id: 'p1', title: 'Fragmented Operations', symptoms: 'Excel everywhere, data duplication, manual handoffs, no visibility.', solution: 'Disconnected systems become one intelligent operating platform.', reference_case: 'Unified Operations Systems, covering sales, procurement, inventory, dispatch, finance, accounting and HR in one platform.' },
   { id: 'p2', title: 'Revenue Leakage', symptoms: 'Missed leads, poor follow-up, lost opportunities, low conversion.', solution: 'Capture every opportunity with AI-driven sales intelligence.' },
   { id: 'p3', title: 'Communication Chaos', symptoms: 'Calls on personal phones, no visibility, lost customers, no accountability.', solution: 'Unify calls, messages, and customer interactions into one intelligent communication layer.', reference_case: 'Automotive communication system with centralized IVR, CRM tracking, dashboards and AI call intelligence.' },
   { id: 'p4', title: 'Organizational Intelligence', symptoms: 'Knowledge trapped in employees, decisions depend on individuals, no institutional memory.', solution: 'Turn scattered knowledge into permanent institutional memory.' },
@@ -1857,7 +1860,7 @@ const CASE_IMAGES = [
 ]
 const caseImage = (p, i) =>
   (CASE_IMAGES.find(([re]) => re.test(`${p.title} ${p.reference_case}`)) || CASE_IMAGES[i % CASE_IMAGES.length])[1]
-// "Sufi Group Unified Operations System, covering sales…" → "Sufi Group Unified Operations System"
+// "Unified Operations Systems, covering sales…" → "Unified Operations Systems"
 const caseTitle = (text) => text.split(/,| with | capable | covering | that /)[0].trim()
 
 function CaseStudies({ problems }) {

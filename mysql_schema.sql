@@ -252,7 +252,7 @@ SELECT title, symptoms, solution, reference_case, sort_order FROM (
   SELECT 'Fragmented Operations' AS title,
          'Excel everywhere, data duplication, manual handoffs, no visibility.' AS symptoms,
          'Disconnected systems become one intelligent operating platform.' AS solution,
-         'Sufi Group Unified Operations System, covering sales, procurement, inventory, dispatch, finance, accounting and HR in one platform.' AS reference_case,
+         'Unified Operations Systems, covering sales, procurement, inventory, dispatch, finance, accounting and HR in one platform.' AS reference_case,
          0 AS sort_order
   UNION ALL SELECT 'Revenue Leakage',
          'Missed leads, poor follow-up, lost opportunities, low conversion.',
