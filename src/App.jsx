@@ -851,112 +851,131 @@ const CAP_IMAGES = { enterprise: capEnterpriseImg, workforce: capWorkforceImg, r
 const CAP_FALLBACK = [capEnterpriseImg, capWorkforceImg, capRevenueImg, capCommunicationImg, capProductImg]
 const capImage = (name, i) => CAP_IMAGES[capabilityKind(name)] || CAP_FALLBACK[i % CAP_FALLBACK.length]
 
-// Capabilities as a sliding row: any number of service lines fit without
-// making the page longer. Glides on its own; arrows, swipe and the scrollbar
-// all work, and it pauses while hovered or focused.
+// Capabilities as a coverflow, like the testimonials: the focused card sits
+// in the middle and its neighbours swing back and fade towards the sides. Goes
+// round endlessly, so any number of service lines fit; arrows, swipe and
+// clicking a side card all work, and it pauses while hovered or focused.
 const CAP_SLIDE_MS = 4500
 
 function WhatWeBuild({ serviceLines }) {
   const [ref, inView] = useInView()
-  const track = useRef(null)
+  const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
-  const settle = useRef(0)
+  const touchX = useRef(null)
   const n = serviceLines.length
-  // Three copies of the cards side by side; we sit in the middle copy and
-  // quietly jump back by one copy whenever the scroll drifts into the outer
-  // ones, so the ring goes round forever in either direction.
-  const loop = [0, 1, 2].flatMap((copy) => serviceLines.map((sl, i) => ({ sl, i, copy })))
+  // The ring needs a card on each side of the centre one
+  const ring = n === 2 ? [...serviceLines, ...serviceLines] : serviceLines
+  const m = ring.length
 
-  const copyWidth = (el) => {
-    const slides = el.querySelectorAll('[data-slide]')
-    return slides.length > n ? slides[n].offsetLeft - slides[0].offsetLeft : 0
-  }
-  const recentre = () => {
-    const el = track.current
-    const w = el && copyWidth(el)
-    if (!w) return
-    if (el.scrollLeft < w * 0.5) el.scrollLeft += w
-    else if (el.scrollLeft >= w * 1.5) el.scrollLeft -= w
-  }
-  const step = (dir) => {
-    const el = track.current
-    if (!el) return
-    const card = el.querySelector('[data-slide]')
-    const by = card ? card.getBoundingClientRect().width + 20 : el.clientWidth * 0.8
-    el.scrollBy({ left: dir * by, behavior: 'smooth' })
-  }
-  const onScroll = () => {
-    clearTimeout(settle.current)
-    settle.current = setTimeout(recentre, 140)
-  }
-
-  // Start on the middle copy, and stay aligned when the window resizes
-  useEffect(() => {
-    const el = track.current
-    if (!el) return
-    const place = () => { el.scrollLeft = copyWidth(el) }
-    place()
-    window.addEventListener('resize', place)
-    return () => { window.removeEventListener('resize', place); clearTimeout(settle.current) }
-  }, [n])
+  const go = (d) => setActive((i) => (i + d + m) % m)
 
   useEffect(() => {
-    if (!inView || paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const t = setInterval(() => step(1), CAP_SLIDE_MS)
-    return () => clearInterval(t)
-  }, [inView, paused])
+    if (!inView || n < 2 || paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const t = setTimeout(() => setActive((i) => (i + 1) % m), CAP_SLIDE_MS)
+    return () => clearTimeout(t)
+  }, [inView, n, m, paused, active])
 
-  const arrow = 'w-12 h-12 rounded-full border border-[rgb(var(--accent)_/_0.45)] bg-[rgb(var(--ink)_/_0.6)] text-white flex items-center justify-center hover:border-rose hover:bg-[rgb(var(--maroon)_/_0.6)] transition-colors disabled:opacity-30'
+  // Position of each card relative to the focused one: -1 left, 0 centre, 1 right
+  const offsetOf = (i) => {
+    let d = i - active
+    if (d > m / 2) d -= m
+    if (d < -m / 2) d += m
+    return d
+  }
+
+  const arrow = 'w-12 h-12 rounded-full border border-[rgb(var(--accent)_/_0.45)] bg-[rgb(var(--ink)_/_0.6)] text-white flex items-center justify-center hover:border-rose hover:bg-[rgb(var(--maroon)_/_0.6)] transition-colors'
 
   return (
-    <section id="capabilities" className="glow-section alt scroll-mt-20 py-28 sm:py-36">
+    <section id="capabilities" className="glow-section alt scroll-mt-20 py-28 sm:py-36 overflow-hidden">
       <div className={WRAP} ref={ref}>
-        <div className={`flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 ${reveal(inView)}`}>
+        <div className={`flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 ${reveal(inView)}`}>
           <div className="max-w-3xl">
             <h2 className="font-display text-[34px] sm:text-5xl lg:text-[56px] font-medium text-white tracking-[-0.03em] leading-[1.04]">What we build.</h2>
             <p className="mt-6 text-white/60 text-base sm:text-lg font-light leading-relaxed max-w-2xl">Each system is engineered around how your organization actually operates.</p>
           </div>
-          <div className="flex gap-3 flex-shrink-0">
-            <button type="button" onClick={() => { setPaused(true); step(-1) }} aria-label="Previous capability" className={arrow}><Arrow className="w-5 h-5 rotate-180" /></button>
-            <button type="button" onClick={() => { setPaused(true); step(1) }} aria-label="Next capability" className={arrow}><Arrow className="w-5 h-5" /></button>
-          </div>
+          {n > 1 && (
+            <div className="flex gap-3 flex-shrink-0">
+              <button type="button" onClick={() => { setPaused(true); go(-1) }} aria-label="Previous capability" className={arrow}><Arrow className="w-5 h-5 rotate-180" /></button>
+              <button type="button" onClick={() => { setPaused(true); go(1) }} aria-label="Next capability" className={arrow}><Arrow className="w-5 h-5" /></button>
+            </div>
+          )}
         </div>
-      </div>
 
-      <div
-        ref={track}
-        onScroll={onScroll}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onFocus={() => setPaused(true)}
-        onBlur={() => setPaused(false)}
-        onTouchStart={() => setPaused(true)}
-        className={`cap-track flex gap-5 overflow-x-auto snap-x snap-mandatory pb-4 ${reveal(inView)}`}
-        style={{ paddingInline: 'max(20px, calc((100vw - 1240px) / 2 + 40px))', scrollPaddingInline: 'max(20px, calc((100vw - 1240px) / 2 + 40px))' }}
-        aria-roledescription="carousel"
-        aria-label="Capabilities"
-      >
-        {loop.map(({ sl, i, copy }) => (
-          <article
-            key={`${copy}-${sl.id}`}
-            data-slide
-            aria-hidden={copy !== 1 || undefined}
-            className="group snap-start flex-shrink-0 w-[82vw] sm:w-[46vw] lg:w-[380px] card card-hover overflow-hidden flex flex-col"
-          >
-            <div className="relative h-56 overflow-hidden border-b border-white/[0.07]">
-              <img src={capImage(sl.name, i)} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              {i === 0 && <span className="absolute top-4 left-4 font-mono text-[10px] uppercase tracking-[0.2em] text-white px-2.5 py-1 rounded-full bg-black/50 backdrop-blur">Flagship</span>}
+        <div
+          className={`relative ${reveal(inView)}`}
+          style={{ transitionDelay: '120ms' }}
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onFocus={() => setPaused(true)}
+          onBlur={() => setPaused(false)}
+          onTouchStart={(e) => { touchX.current = e.touches[0].clientX }}
+          onTouchEnd={(e) => {
+            if (touchX.current == null) return
+            const dx = e.changedTouches[0].clientX - touchX.current
+            if (n > 1 && Math.abs(dx) > 40) go(dx < 0 ? 1 : -1)
+            touchX.current = null
+          }}
+          aria-roledescription="carousel"
+          aria-label="Capabilities"
+        >
+          <div className="grid [perspective:1800px] py-6" style={{ gridTemplateAreas: '"stack"', gridTemplateColumns: 'minmax(0, 1fr)' }}>
+            {ring.map((sl, i) => {
+              const d = offsetOf(i)
+              const isCenter = d === 0
+              const side = Math.abs(d) === 1
+              const k = i % n
+              const transform = isCenter
+                ? 'translateX(0) translateZ(0) rotateY(0deg) scale(1)'
+                : side
+                  ? `translateX(${d * 80}%) translateZ(-120px) rotateY(${-d * 22}deg) scale(0.86)`
+                  : `translateX(${Math.sign(d) * 170}%) translateZ(-260px) rotateY(${-Math.sign(d) * 30}deg) scale(0.7)`
+              return (
+                <article
+                  key={i}
+                  style={{ gridArea: 'stack', transform, zIndex: isCenter ? 3 : side ? 2 : 1 }}
+                  aria-hidden={!isCenter}
+                  onClick={() => !isCenter && setActive(i)}
+                  className={`group justify-self-center w-[min(440px,92%)] sm:w-[min(440px,58%)] lg:w-[min(440px,36%)] transition-[transform,opacity] duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                    isCenter ? 'opacity-100' : side ? 'opacity-45 hidden sm:block cursor-pointer hover:opacity-75' : 'opacity-0 pointer-events-none'
+                  }`}
+                >
+                  <div className={`h-full flex flex-col overflow-hidden rounded-[1.5rem] bg-[rgb(var(--ink))] transition-[box-shadow,border-color] duration-700 ${
+                    isCenter
+                      ? 'border-[1.5px] border-[rgb(var(--accent)_/_0.8)] bg-[linear-gradient(165deg,rgb(var(--grape-bright)/0.3),rgb(var(--maroon)/0.55)_55%,rgb(var(--ink)/0.92))] shadow-[0_0_0_1px_rgb(var(--accent)/0.15),0_0_80px_-8px_rgb(var(--accent)/0.5),0_40px_80px_-40px_rgb(0_0_0/0.9)]'
+                      : 'border border-white/10 bg-[linear-gradient(165deg,rgb(var(--deep-grape)/0.5),rgb(var(--dark-maroon)/0.88))] shadow-[0_30px_60px_-30px_rgb(0_0_0/0.9)]'
+                  }`}>
+                    <div className="relative h-56 overflow-hidden border-b border-white/[0.07]">
+                      <img src={capImage(sl.name, k)} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                      {k === 0 && <span className="absolute top-4 left-4 font-mono text-[10px] uppercase tracking-[0.2em] text-white px-2.5 py-1 rounded-full bg-black/50 backdrop-blur">Flagship</span>}
+                    </div>
+                    <div className="p-7 flex flex-col flex-1">
+                      <h3 className="font-display text-white text-xl font-medium tracking-tight mb-2">{sl.name}</h3>
+                      <p className="text-white/60 text-sm font-light leading-relaxed flex-1">{sl.examples}</p>
+                      <a {...bookProps} tabIndex={isCenter ? undefined : -1} className="mt-6 inline-flex items-center gap-2 text-sm text-white/80 hover:text-white">
+                        Talk to an engineer <Arrow className="w-4 h-4 text-rose-soft transition-transform group-hover:translate-x-1" />
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+
+          {/* Dots */}
+          {n > 1 && (
+            <div className="mt-6 flex justify-center gap-2">
+              {serviceLines.map((sl, i) => (
+                <button
+                  key={sl.id}
+                  type="button"
+                  onClick={() => { setPaused(true); setActive(i) }}
+                  aria-label={`Show ${sl.name}`}
+                  className={`h-1.5 rounded-full transition-all duration-500 ${active % n === i ? 'w-8 bg-rose' : 'w-1.5 bg-white/25 hover:bg-white/50'}`}
+                />
+              ))}
             </div>
-            <div className="p-7 flex flex-col flex-1">
-              <span className="font-mono text-[11px] text-rose-soft mb-3">{String(i + 1).padStart(2, '0')}</span>
-              <h3 className="font-display text-white text-xl font-medium tracking-tight mb-2">{sl.name}</h3>
-              <p className="text-white/55 text-sm font-light leading-relaxed flex-1">{sl.examples}</p>
-              <a {...bookProps} tabIndex={copy === 1 ? undefined : -1} className="mt-6 inline-flex items-center gap-2 text-sm text-white/80 hover:text-white">
-                Talk to an engineer <Arrow className="w-4 h-4 text-rose-soft transition-transform group-hover:translate-x-1" />
-              </a>
-            </div>
-          </article>
-        ))}
+          )}
+        </div>
       </div>
     </section>
   )
